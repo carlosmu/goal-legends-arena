@@ -4,8 +4,7 @@ import { setupUi } from './ui'
 
 
 export function main() {
-    // uncomment the line below to initialize UI from ui.tsx
-    //setupUi()
+    setupUi()
 
     // your scene code here
 }
