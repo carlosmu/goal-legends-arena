@@ -1,6 +1,13 @@
 {
   "ecs7": true,
   "runtimeVersion": "7",
+  "authoritativeMultiplayer": true,
+  "worldConfiguration": {
+    "name": "goal-legends-arena.dcl.eth"
+  },
+  "logsPermissions": [
+    "0x4B538E1E044922aec2F428EC7E17A99f44205fF9"
+  ],
   "display": {
     "title": "Goal Legends Arena",
     "description": "Goal Legends Arena is a fast-paced penalty shooter for Decentraland. Duel a friend in quick PvP rounds or PvE. Choose your corner, score or save, and celebrate with broadcast-style replays and live crowd reactions.",
