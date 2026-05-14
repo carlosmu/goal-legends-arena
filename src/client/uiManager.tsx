@@ -87,26 +87,47 @@ const RootUi = () => {
         </UiEntity>
       )}
 
+      {/* ========== UI: LEADERBOARD (panel superior izquierdo) ==========
+          · Contenedor exterior: mueve todo el bloque editando `padding` (top/left/right/bottom) y `zIndex`.
+          · Contenedor interior (fondo negro): tamaño, padding del panel, `maxWidth`, `uiBackground`.
+          · Labels: título "Leaderboard" y líneas de datos (`lbLines` viene de `formatLeaderboardLines` en leaderboardManager.ts).
+          Fin bloque leaderboard → siguiente sección: Welcome / Lobby.
+      */}
       <UiEntity
         uiTransform={{
           positionType: 'absolute',
-          position: { top: '15vh', left: 16 },
+          width: '100%',
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'flex-start',
-          padding: 12,
-          maxWidth: 420
+          justifyContent: 'flex-start',
+          padding: { top: '10vh', left: '5vh' },
+          zIndex: 50,
+          pointerFilter: 'none'
         }}
-        uiBackground={{ color: Color4.create(0, 0, 0, 0.75) }}
       >
-        <Label value="Leaderboard" fontSize={16} color={Color4.White()} uiTransform={{ margin: { bottom: 8 } }} />
-        <Label
-          value={lbLines.length ? lbLines.join('   |   ') : '(no wins yet)'}
-          fontSize={13}
-          color={Color4.create(0.9, 0.95, 1, 1)}
-          uiTransform={{ margin: { top: 6 }, maxWidth: 400 }}
-        />
+        {/* Panel visible del leaderboard (fondo + texto) */}
+        <UiEntity
+          uiTransform={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            padding: 12,
+            maxWidth: 420
+          }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.75) }}
+        >
+          <Label value="DEV-Leeaderboard" fontSize={16} color={Color4.White()} uiTransform={{ margin: { bottom: 8 } }} />
+          <Label
+            value={lbLines.length ? lbLines.join('   |   ') : '(no wins yet)'}
+            fontSize={13}
+            color={Color4.create(0.9, 0.95, 1, 1)}
+            uiTransform={{ margin: { top: 6 }, maxWidth: 400 }}
+          />
+        </UiEntity>
       </UiEntity>
+      {/* ========== fin UI LEADERBOARD ========== */}
 
       {showWelcome && (
         <UiEntity
@@ -325,19 +346,29 @@ const RootUi = () => {
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
-            position: { top: 60, left: '50%' },
-            padding: { top: 8, bottom: 8, left: 16, right: 16 }
-          }}
-          uiBackground={{
-            color: side === 'red' ? Color4.create(0.75, 0.12, 0.18, 0.92) : Color4.create(0.12, 0.35, 0.85, 0.92)
+            position: { top: 60, left: 0, right: 0 },
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'flex-start'
           }}
         >
-          <Label
-            value={`You are ${side === 'red' ? 'RED' : 'BLUE'} — seat OK`}
-            fontSize={18}
-            color={Color4.White()}
-            textAlign="middle-center"
-          />
+          <UiEntity
+            uiTransform={{
+              padding: { top: 8, bottom: 8, left: 16, right: 16 }
+            }}
+            uiBackground={{
+              color: side === 'red' ? Color4.create(0.75, 0.12, 0.18, 0.92) : Color4.create(0.12, 0.35, 0.85, 0.92)
+            }}
+          >
+            <Label
+              value={`You are ${side === 'red' ? 'RED' : 'BLUE'} — seat OK`}
+              fontSize={18}
+              color={Color4.White()}
+              textAlign="middle-center"
+            />
+          </UiEntity>
         </UiEntity>
       )}
 
