@@ -159,7 +159,9 @@ export function createStateEntity(): Entity {
     suddenDeath: 0,
     stateEpoch: 0,
     phaseDeadlineMs: 0,
-    pveHumanIsRed: 1
+    pveHumanIsRed: 1,
+    serverTickCounter: 0,
+    lastServerEvent: 'server-boot'
   })
   syncEntity(stateEntity, [PenaltyMatchState.componentId], SYNC_STATE_ENTITY_ENUM)
   return stateEntity
@@ -403,6 +405,7 @@ function applyEarlyOrContinueAfterRound(): boolean {
 export function serverTick() {
   const m = mut()
   const t = nowMs()
+  m.serverTickCounter = (m.serverTickCounter || 0) + 1
 
   if (m.phase === GameState.WaitingOpponent && m.waitEndMs > 0 && t >= m.waitEndMs) {
     const hasRed = !!m.redAddr
@@ -443,10 +446,14 @@ export function registerServerMessages() {
   room.onMessage('clientReadyPing', () => {})
 
   room.onMessage('occupySpot', async (data, ctx) => {
-    if (!ctx) return
-    const addr = ctx.from
-    if (await isBanned(addr)) {
-      console.log(`[Server] banned player tried spot: ${addr}`)
+    const addrRaw = ctx?.from ?? ''
+    const addr = addrRaw || `guest-${Math.random().toString(36).slice(2, 8)}`
+    const mDbg = mut()
+    mDbg.lastServerEvent = `occupySpot team=${data.team} from=${addrRaw || '(empty)'}`
+    console.log(`[Server] occupySpot team=${data.team} from=${addrRaw || '(empty)'}`)
+
+    if (addrRaw && (await isBanned(addrRaw))) {
+      console.log(`[Server] banned player tried spot: ${addrRaw}`)
       return
     }
     const team = data.team === 'red' ? 'red' : data.team === 'blue' ? 'blue' : null

@@ -26,6 +26,8 @@ export type ClientSnapshot = {
   leaderboardJson: string
   playersInScene: number
   suddenDeath: number
+  serverTickCounter: number
+  lastServerEvent: string
 }
 
 export const defaultSnapshot: ClientSnapshot = {
@@ -51,7 +53,9 @@ export const defaultSnapshot: ClientSnapshot = {
   winnerStreakAddr: '',
   leaderboardJson: '{}',
   playersInScene: 0,
-  suddenDeath: 0
+  suddenDeath: 0,
+  serverTickCounter: 0,
+  lastServerEvent: ''
 }
 
 export let penaltyStateEntity: Entity | null = null
@@ -98,7 +102,9 @@ export function readPenaltySnapshot(): ClientSnapshot {
     winnerStreakAddr: p.winnerStreakAddr,
     leaderboardJson: p.leaderboardJson,
     playersInScene: p.playersInScene,
-    suddenDeath: p.suddenDeath
+    suddenDeath: p.suddenDeath,
+    serverTickCounter: p.serverTickCounter,
+    lastServerEvent: p.lastServerEvent
   }
   return clientSnapshot
 }

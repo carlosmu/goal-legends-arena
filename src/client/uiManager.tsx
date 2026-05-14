@@ -7,13 +7,12 @@ import { formatLeaderboardLines } from './leaderboardManager'
 import { room } from '../shared/messages'
 import { GameState } from '../shared/gameState'
 
-/** El runtime de React-ECS no repinta solo; hay que pulsar para leer el estado sincronizado cada frame. */
-let pulseGameUi: () => void = () => {}
-
-export function bumpGameUiFrame() {
-  pulseGameUi()
-}
-
+/**
+ * React-ECS ya re-renderiza el árbol cada frame (`@dcl/react-ecs` lo registra como un system).
+ * Por eso `RootUi` se ejecuta cada tick sin necesidad de `useState`/`useEffect`. Forzar setState
+ * cada frame descuadra el reconciler y produce errores tipo `parent ... do not have
+ * $UITransformComponent`.
+ */
 export function setupUi() {
   ReactEcsRenderer.setUiRenderer(RootUi, { virtualWidth: 1920, virtualHeight: 1080 })
 }
@@ -32,14 +31,6 @@ function isKickerView(s: typeof clientSnapshot, side: 'red' | 'blue' | null): bo
 }
 
 const RootUi = () => {
-  const [, setUiFrame] = ReactEcs.useState(0)
-  ReactEcs.useEffect(() => {
-    pulseGameUi = () => setUiFrame((n) => n + 1)
-    return () => {
-      pulseGameUi = () => {}
-    }
-  }, [])
-
   readPenaltySnapshot()
   const s = clientSnapshot
   const me = getPlayer()?.userId || ''
@@ -330,23 +321,68 @@ const RootUi = () => {
         </UiEntity>
       )}
 
+      {side && (
+        <UiEntity
+          uiTransform={{
+            positionType: 'absolute',
+            position: { top: 60, left: '50%' },
+            padding: { top: 8, bottom: 8, left: 16, right: 16 }
+          }}
+          uiBackground={{
+            color: side === 'red' ? Color4.create(0.75, 0.12, 0.18, 0.92) : Color4.create(0.12, 0.35, 0.85, 0.92)
+          }}
+        >
+          <Label
+            value={`You are ${side === 'red' ? 'RED' : 'BLUE'} — seat OK`}
+            fontSize={18}
+            color={Color4.White()}
+            textAlign="middle-center"
+          />
+        </UiEntity>
+      )}
+
       <UiEntity
         uiTransform={{
           positionType: 'absolute',
-          position: { bottom: 24, left: '50%' },
+          position: { bottom: 16, left: '50%' },
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center'
+          alignItems: 'flex-start',
+          padding: { top: 8, bottom: 8, left: 12, right: 12 },
+          maxWidth: 720
         }}
+        uiBackground={{ color: Color4.create(0, 0, 0, 0.85) }}
       >
         <Label
-          value={`state: ${s.phase} | sync: ${isStateSyncronized() ? 'ok' : 'no'} | match: ${penaltyStateEntityReady() ? 'ok' : '—'}`}
-          fontSize={14}
-          color={Color4.create(0.7, 1, 0.75, 1)}
-          textAlign="middle-center"
+          value={`state: ${s.phase} | sync: ${isStateSyncronized() ? 'ok' : 'no'} | match: ${penaltyStateEntityReady() ? 'ok' : '—'} | mode: ${s.mode} | active: ${s.hasActiveMatch}`}
+          fontSize={13}
+          color={Color4.create(0.75, 1, 0.8, 1)}
         />
-        <Label value={`you: ${myName}`} fontSize={12} color={Color4.create(0.65, 0.75, 0.85, 1)} uiTransform={{ margin: { top: 4 } }} />
+        <Label
+          value={`side: ${side ?? '(none)'} | red: ${s.redName || '—'} (${shortAddr(s.redAddr)}) | blue: ${s.blueName || '—'} (${shortAddr(s.blueAddr)})`}
+          fontSize={12}
+          color={Color4.create(0.85, 0.9, 1, 1)}
+          uiTransform={{ margin: { top: 4 } }}
+        />
+        <Label
+          value={`you: ${myName} (${shortAddr(me)}) | server tick: ${s.serverTickCounter}`}
+          fontSize={12}
+          color={Color4.create(0.7, 0.8, 0.95, 1)}
+          uiTransform={{ margin: { top: 4 } }}
+        />
+        <Label
+          value={`last server event: ${s.lastServerEvent || '(none)'}`}
+          fontSize={12}
+          color={Color4.create(1, 0.9, 0.6, 1)}
+          uiTransform={{ margin: { top: 4 } }}
+        />
       </UiEntity>
     </UiEntity>
   )
+}
+
+function shortAddr(addr: string): string {
+  if (!addr) return '—'
+  if (addr.length < 10) return addr
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`
 }

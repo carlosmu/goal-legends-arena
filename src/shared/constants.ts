@@ -21,11 +21,15 @@ export const STANDS_FALLBACK = {
   cam: Vector3.create(16, 1, 16)
 }
 
-/** Direction helper colliders near the goal (scene space). */
+/**
+ * Direction helper colliders near the goal (scene space).
+ * Sit Spots están a z≈23.3 y el POV/portería a z≈16, así que “adelante” (hacia la portería)
+ * es Z decreciente.
+ */
 export const AIM_COLLIDERS = {
-  L: { pos: Vector3.create(11.5, 2, 23), scale: Vector3.create(2, 2.5, 1) },
-  C: { pos: Vector3.create(16, 2, 23), scale: Vector3.create(2, 2.5, 1) },
-  R: { pos: Vector3.create(20.5, 2, 23), scale: Vector3.create(2, 2.5, 1) }
+  L: { pos: Vector3.create(11.5, 2, 18), scale: Vector3.create(2, 2.5, 1) },
+  C: { pos: Vector3.create(16, 2, 18), scale: Vector3.create(2, 2.5, 1) },
+  R: { pos: Vector3.create(20.5, 2, 18), scale: Vector3.create(2, 2.5, 1) }
 } as const
 
 export const SYNC_STATE_ENTITY_ENUM = 9001

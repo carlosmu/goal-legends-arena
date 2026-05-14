@@ -21,7 +21,6 @@ import { AIM_COLLIDERS, SPOT_PROXIMITY_RADIUS } from '../shared/constants'
 import { readPenaltySnapshot, penaltyStateEntityReady } from './gameStore'
 import { initAudioManager, tickAudioManager } from './audioManager'
 import { initAnimationManager, tickAnimationManager } from './animationManager'
-import { bumpGameUiFrame } from './uiManager'
 
 let syncedPinged = false
 let loggedSyncReady = false
@@ -127,7 +126,5 @@ export function initClient() {
         readPenaltySnapshot().phase
       )
     }
-
-    bumpGameUiFrame()
   })
 }

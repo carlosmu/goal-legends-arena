@@ -56,7 +56,11 @@ export const PenaltyMatchState = engine.defineComponent('gla:penalty-match-state
   /** Generic timer for ResolvingRound / MatchEnd transitions. */
   phaseDeadlineMs: Schemas.Number,
   /** 1 = human plays red in PvE. */
-  pveHumanIsRed: Schemas.Int
+  pveHumanIsRed: Schemas.Int,
+  /** Debug: incrementa en cada `serverTick`; si en cliente sube → servidor vivo. */
+  serverTickCounter: Schemas.Int,
+  /** Debug: último evento recibido por el servidor (mensaje + ctx.from). */
+  lastServerEvent: Schemas.String
 })
 
 PenaltyMatchState.validateBeforeChange((value) => value.senderAddress === AUTH_SERVER_PEER_ID)
