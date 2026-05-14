@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@dcl/hammurabi-server": "^1.0.0-24834720385.commit-d0cc214"
+  }
+}
