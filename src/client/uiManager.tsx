@@ -344,38 +344,55 @@ const RootUi = () => {
       <UiEntity
         uiTransform={{
           positionType: 'absolute',
-          position: { bottom: 16, left: '50%' },
+          position: { bottom: 0, left: 0, right: 0 },
+          width: '100%',
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          padding: { top: 8, bottom: 8, left: 12, right: 12 },
-          maxWidth: 720
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'flex-end'
         }}
-        uiBackground={{ color: Color4.create(0, 0, 0, 0.85) }}
       >
-        <Label
-          value={`state: ${s.phase} | sync: ${isStateSyncronized() ? 'ok' : 'no'} | match: ${penaltyStateEntityReady() ? 'ok' : '—'} | mode: ${s.mode} | active: ${s.hasActiveMatch}`}
-          fontSize={13}
-          color={Color4.create(0.75, 1, 0.8, 1)}
-        />
-        <Label
-          value={`side: ${side ?? '(none)'} | red: ${s.redName || '—'} (${shortAddr(s.redAddr)}) | blue: ${s.blueName || '—'} (${shortAddr(s.blueAddr)})`}
-          fontSize={12}
-          color={Color4.create(0.85, 0.9, 1, 1)}
-          uiTransform={{ margin: { top: 4 } }}
-        />
-        <Label
-          value={`you: ${myName} (${shortAddr(me)}) | server tick: ${s.serverTickCounter}`}
-          fontSize={12}
-          color={Color4.create(0.7, 0.8, 0.95, 1)}
-          uiTransform={{ margin: { top: 4 } }}
-        />
-        <Label
-          value={`last server event: ${s.lastServerEvent || '(none)'}`}
-          fontSize={12}
-          color={Color4.create(1, 0.9, 0.6, 1)}
-          uiTransform={{ margin: { top: 4 } }}
-        />
+        <UiEntity
+          uiTransform={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            padding: { top: 8, bottom: 8, left: 12, right: 12 },
+            maxWidth: 720
+          }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.85) }}
+        >
+          <Label
+            value="DEV-INFO"
+            fontSize={17}
+            color={Color4.create(0.55, 1, 0.75, 1)}
+            textAlign="middle-center"
+            uiTransform={{ margin: { bottom: 6 } }}
+          />
+          <Label
+            value={`state: ${s.phase} | sync: ${isStateSyncronized() ? 'ok' : 'no'} | match: ${penaltyStateEntityReady() ? 'ok' : '—'} | mode: ${s.mode} | active: ${s.hasActiveMatch}`}
+            fontSize={14}
+            color={Color4.create(0.75, 1, 0.8, 1)}
+          />
+          <Label
+            value={`side: ${side ?? '(none)'} | red: ${s.redName || '—'} (${shortAddr(s.redAddr)}) | blue: ${s.blueName || '—'} (${shortAddr(s.blueAddr)})`}
+            fontSize={13}
+            color={Color4.create(0.85, 0.9, 1, 1)}
+            uiTransform={{ margin: { top: 4 } }}
+          />
+          <Label
+            value={`you: ${myName} (${shortAddr(me)}) | server tick: ${s.serverTickCounter}`}
+            fontSize={13}
+            color={Color4.create(0.7, 0.8, 0.95, 1)}
+            uiTransform={{ margin: { top: 4 } }}
+          />
+          <Label
+            value={`last server event: ${s.lastServerEvent || '(none)'}`}
+            fontSize={13}
+            color={Color4.create(1, 0.9, 0.6, 1)}
+            uiTransform={{ margin: { top: 4 } }}
+          />
+        </UiEntity>
       </UiEntity>
     </UiEntity>
   )
