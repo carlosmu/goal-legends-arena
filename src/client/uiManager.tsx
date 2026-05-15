@@ -415,17 +415,18 @@ const RootUi = () => {
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
-            position: { top: 60, left: 0, right: 0 },
+            position: { bottom: 170, left: 0, right: 0 },
             width: '100%',
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
-            alignItems: 'flex-start'
+            alignItems: 'flex-start',
+            zIndex: 100
           }}
         >
           <UiEntity
             uiTransform={{
-              padding: { top: 8, bottom: 8, left: 16, right: 16 }
+              padding: { top: 2, bottom: 2, left: 16, right: 16 }
             }}
             uiBackground={{
               color: side === 'red' ? Color4.create(0.75, 0.12, 0.18, 0.92) : Color4.create(0.12, 0.35, 0.85, 0.92)
