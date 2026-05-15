@@ -3,7 +3,8 @@ import { Color4 } from '@dcl/sdk/math'
 import { isStateSyncronized } from '@dcl/sdk/network'
 import { getPlayer } from '@dcl/sdk/src/players'
 import { readPenaltySnapshot, clientSnapshot, penaltyStateEntityReady } from './gameStore'
-import { formatLeaderboardLines } from './leaderboardManager'
+import { getLeaderboardRows } from './leaderboardManager'
+import { getLeaderboardFaceUrl } from './leaderboardProfileCache'
 import { room } from '../shared/messages'
 import { GameState } from '../shared/gameState'
 
@@ -30,6 +31,8 @@ function isKickerView(s: typeof clientSnapshot, side: 'red' | 'blue' | null): bo
   return (kr && side === 'red') || (!kr && side === 'blue')
 }
 
+const LEADERBOARD_TOP_N = 5
+
 const RootUi = () => {
   readPenaltySnapshot()
   const s = clientSnapshot
@@ -39,7 +42,7 @@ const RootUi = () => {
   const kicker = isKickerView(s, side)
   const waitLeft = s.waitEndMs > 0 ? Math.max(0, Math.ceil((s.waitEndMs - Date.now()) / 1000)) : 0
   const roundLabel = s.suddenDeath ? `Sudden death — shot ${s.shotIndex + 1}` : `Shoot ${Math.min(s.shotIndex + 1, 10)} / 10`
-  const lbLines = formatLeaderboardLines(s.leaderboardJson, 10)
+  const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
 
   /** Partida en curso (oculta welcome para nuevos hasta que termine). No incluye solo “esperando rival”. */
   const showWelcome = s.hasActiveMatch === 0 && s.phase === GameState.LobbyIdle
@@ -90,7 +93,7 @@ const RootUi = () => {
       {/* ========== UI: LEADERBOARD (panel superior izquierdo) ==========
           · Contenedor exterior: mueve todo el bloque editando `padding` (top/left/right/bottom) y `zIndex`.
           · Contenedor interior (fondo negro): tamaño, padding del panel, `maxWidth`, `uiBackground`.
-          · Labels: título y **una fila por jugador** (`lbLines.map`); datos de `formatLeaderboardLines` en `leaderboardManager.ts`.
+          · Filas: top 5 con `getLeaderboardRows`; miniatura vía `getLeaderboardFaceUrl` (cache en `leaderboardProfileCache`).
           Fin bloque leaderboard → siguiente sección: Welcome / Lobby.
       */}
       <UiEntity
@@ -119,7 +122,7 @@ const RootUi = () => {
           uiBackground={{ color: Color4.create(0, 0, 0, 0.85) }}
         >
           <Label value="DEV-Leaderboard" fontSize={16} color={Color4.White()} uiTransform={{ margin: { bottom: 8 } }} />
-          {lbLines.length === 0 ? (
+          {lbRows.length === 0 ? (
             <Label
               value="(no wins yet)"
               fontSize={13}
@@ -127,11 +130,69 @@ const RootUi = () => {
               uiTransform={{ margin: { top: 6 }, maxWidth: 400 }}
             />
           ) : (
-            lbLines.map((line, i) => (
-              <UiEntity key={i} uiTransform={{ margin: { top: i === 0 ? 6 : 4 }, maxWidth: 400 }}>
-                <Label value={line} fontSize={13} color={Color4.create(0.9, 0.95, 1, 1)} />
-              </UiEntity>
-            ))
+            lbRows.map((row) => {
+              const face = getLeaderboardFaceUrl(row.addr)
+              const rowH = 40
+              const faceSz = 36
+              return (
+                <UiEntity
+                  key={row.addr}
+                  uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    minHeight: rowH,
+                    margin: { top: row.rank === 1 ? 6 : 4 },
+                    maxWidth: 400
+                  }}
+                >
+                  <UiEntity
+                    uiTransform={{
+                      width: 32,
+                      height: rowH,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      margin: { right: 4 }
+                    }}
+                  >
+                    <Label value={`${row.rank}.`} fontSize={13} color={Color4.White()} textAlign="middle-center" />
+                  </UiEntity>
+                  <UiEntity
+                    uiTransform={{
+                      width: faceSz,
+                      height: faceSz,
+                      margin: { right: 8 },
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center'
+                    }}
+                    uiBackground={
+                      face
+                        ? { textureMode: 'stretch', texture: { src: face } }
+                        : { color: Color4.create(0.22, 0.24, 0.3, 1) }
+                    }
+                  />
+                  <UiEntity
+                    uiTransform={{
+                      flexGrow: 1,
+                      minHeight: rowH,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'flex-start'
+                    }}
+                  >
+                    <Label
+                      value={`${row.name} - wins: ${row.wins} | streak: ${row.streak}`}
+                      fontSize={13}
+                      color={Color4.create(0.9, 0.95, 1, 1)}
+                      textAlign="middle-left"
+                    />
+                  </UiEntity>
+                </UiEntity>
+              )
+            })
           )}
         </UiEntity>
       </UiEntity>

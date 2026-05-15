@@ -4,6 +4,15 @@ export type ParsedLeaderboard = {
   names: Record<string, string>
 }
 
+/** One row for UI (rank 1-based, wallet key = `addr`). */
+export type LeaderboardRow = {
+  rank: number
+  addr: string
+  name: string
+  wins: number
+  streak: number
+}
+
 export function parseLeaderboardJson(json: string): ParsedLeaderboard {
   try {
     const o = JSON.parse(json) as ParsedLeaderboard
@@ -17,16 +26,15 @@ export function parseLeaderboardJson(json: string): ParsedLeaderboard {
   }
 }
 
-export function formatLeaderboardLines(json: string, maxLines: number): string[] {
+export function getLeaderboardRows(json: string, maxLines: number): LeaderboardRow[] {
   const { wins, sessionMax, names } = parseLeaderboardJson(json)
-  const rows = Object.keys(wins).map((addr) => {
+  const sorted = Object.keys(wins).sort((a, b) => (wins[b] || 0) - (wins[a] || 0))
+  return sorted.slice(0, maxLines).map((addr, i) => {
     const w = wins[addr] || 0
     const ms = sessionMax[addr] || 0
-    const label = (names[addr] && names[addr].trim()) || shortAddr(addr)
-    return { addr, line: `${label} — wins: ${w} | max streak: ${ms}` }
+    const name = (names[addr] && names[addr].trim()) || shortAddr(addr)
+    return { rank: i + 1, addr, name, wins: w, streak: ms }
   })
-  rows.sort((a, b) => (wins[b.addr] || 0) - (wins[a.addr] || 0))
-  return rows.slice(0, maxLines).map((r) => r.line)
 }
 
 function shortAddr(addr: string): string {

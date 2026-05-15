@@ -18,6 +18,8 @@ import { movePlayerTo } from '~system/RestrictedActions'
 import { getPlayer } from '@dcl/sdk/src/players'
 import { room } from '../shared/messages'
 import { AIM_COLLIDERS, POINTER_EVENT_MAX_DISTANCE, SPOT_PROXIMITY_RADIUS } from '../shared/constants'
+import { getLeaderboardRows } from './leaderboardManager'
+import { prefetchLeaderboardFaces } from './leaderboardProfileCache'
 import { readPenaltySnapshot, penaltyStateEntityReady } from './gameStore'
 import { initAudioManager, tickAudioManager } from './audioManager'
 import { initAnimationManager, tickAnimationManager } from './animationManager'
@@ -53,6 +55,8 @@ function findEntityByName(target: string): Entity | undefined {
   }
   return undefined
 }
+
+let lastLeaderboardJson = ''
 
 export function initClient() {
   initAudioManager()
@@ -100,6 +104,11 @@ export function initClient() {
 
   engine.addSystem(() => {
     const s = readPenaltySnapshot()
+    const lj = s.leaderboardJson
+    if (lj !== lastLeaderboardJson) {
+      lastLeaderboardJson = lj
+      prefetchLeaderboardFaces(getLeaderboardRows(lj, 5).map((r) => r.addr))
+    }
 
     if (isStateSyncronized() && getPlayer()?.userId && Transform.has(engine.PlayerEntity)) {
       const p = Transform.get(engine.PlayerEntity).position
