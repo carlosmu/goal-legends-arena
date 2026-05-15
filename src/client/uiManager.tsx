@@ -90,7 +90,7 @@ const RootUi = () => {
       {/* ========== UI: LEADERBOARD (panel superior izquierdo) ==========
           · Contenedor exterior: mueve todo el bloque editando `padding` (top/left/right/bottom) y `zIndex`.
           · Contenedor interior (fondo negro): tamaño, padding del panel, `maxWidth`, `uiBackground`.
-          · Labels: título "Leaderboard" y líneas de datos (`lbLines` viene de `formatLeaderboardLines` en leaderboardManager.ts).
+          · Labels: título y **una fila por jugador** (`lbLines.map`); datos de `formatLeaderboardLines` en `leaderboardManager.ts`.
           Fin bloque leaderboard → siguiente sección: Welcome / Lobby.
       */}
       <UiEntity
@@ -102,7 +102,7 @@ const RootUi = () => {
           flexDirection: 'column',
           alignItems: 'flex-start',
           justifyContent: 'flex-start',
-          padding: { top: '10vh', left: '5vh' },
+          padding: { top: '15vh', left: '5vh' },
           zIndex: 50,
           pointerFilter: 'none'
         }}
@@ -116,15 +116,23 @@ const RootUi = () => {
             padding: 12,
             maxWidth: 420
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.75) }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.85) }}
         >
-          <Label value="DEV-Leeaderboard" fontSize={16} color={Color4.White()} uiTransform={{ margin: { bottom: 8 } }} />
-          <Label
-            value={lbLines.length ? lbLines.join('   |   ') : '(no wins yet)'}
-            fontSize={13}
-            color={Color4.create(0.9, 0.95, 1, 1)}
-            uiTransform={{ margin: { top: 6 }, maxWidth: 400 }}
-          />
+          <Label value="DEV-Leaderboard" fontSize={16} color={Color4.White()} uiTransform={{ margin: { bottom: 8 } }} />
+          {lbLines.length === 0 ? (
+            <Label
+              value="(no wins yet)"
+              fontSize={13}
+              color={Color4.create(0.9, 0.95, 1, 1)}
+              uiTransform={{ margin: { top: 6 }, maxWidth: 400 }}
+            />
+          ) : (
+            lbLines.map((line, i) => (
+              <UiEntity key={i} uiTransform={{ margin: { top: i === 0 ? 6 : 4 }, maxWidth: 400 }}>
+                <Label value={line} fontSize={13} color={Color4.create(0.9, 0.95, 1, 1)} />
+              </UiEntity>
+            ))
+          )}
         </UiEntity>
       </UiEntity>
       {/* ========== fin UI LEADERBOARD ========== */}

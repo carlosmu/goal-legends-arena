@@ -21,6 +21,7 @@ const LB_KEY = 'gla_leaderboard_v1'
 
 type LeaderboardFile = {
   wins: Record<string, number>
+  names?: Record<string, string>
 }
 
 let stateEntity: Entity = 0 as Entity
@@ -29,6 +30,7 @@ const sessionStreak = new Map<string, number>()
 const sessionMaxStreak = new Map<string, number>()
 
 let lbWins: Record<string, number> = {}
+let lbDisplayNames: Record<string, string> = {}
 
 function nowMs(): number {
   return Date.now()
@@ -46,7 +48,7 @@ function bumpEpoch() {
 function packLeaderboardJson(): string {
   const sessionMax: Record<string, number> = {}
   for (const [k, v] of sessionMaxStreak.entries()) sessionMax[k] = v
-  return JSON.stringify({ wins: lbWins, sessionMax })
+  return JSON.stringify({ wins: lbWins, sessionMax, names: lbDisplayNames })
 }
 
 function syncLbToState() {
@@ -63,11 +65,14 @@ export async function loadPersistentLeaderboard() {
       try {
         const j = JSON.parse(raw) as LeaderboardFile
         lbWins = j.wins || {}
+        lbDisplayNames = j.names || {}
       } catch {
         lbWins = {}
+        lbDisplayNames = {}
       }
     } else if (typeof raw === 'object' && raw.wins) {
       lbWins = raw.wins || {}
+      lbDisplayNames = raw.names || {}
     }
   } catch (e) {
     console.log('[Server] leaderboard load failed', e)
@@ -77,7 +82,7 @@ export async function loadPersistentLeaderboard() {
 
 async function persistWins() {
   try {
-    await Storage.set(LB_KEY, { wins: lbWins })
+    await Storage.set(LB_KEY, { wins: lbWins, names: lbDisplayNames })
   } catch (e) {
     console.log('[Server] leaderboard save failed', e)
   }
@@ -301,6 +306,7 @@ function finishMatch(side: 'red' | 'blue') {
       sessionStreak.set(winAddr, cur)
       sessionMaxStreak.set(winAddr, Math.max(sessionMaxStreak.get(winAddr) || 0, cur))
       lbWins[winAddr] = (lbWins[winAddr] || 0) + 1
+      lbDisplayNames[winAddr] = (winName && winName.trim()) || displayNameFor(winAddr)
       void persistWins()
     }
   }

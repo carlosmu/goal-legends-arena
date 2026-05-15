@@ -45,7 +45,7 @@ export const PenaltyMatchState = engine.defineComponent('gla:penalty-match-state
   streakPromptAddr: Schemas.String,
   /** Stable until streak answered (same as winner wallet in PvP). */
   winnerStreakAddr: Schemas.String,
-  /** JSON: { wins: Record<addr, number>, sessionMax: Record<addr, number> } */
+  /** JSON: { wins, sessionMax, names? } — names: addr → display name at last win */
   leaderboardJson: Schemas.String,
   /** Updated by server for cooldown rule (≤2 players → no ban). */
   playersInScene: Schemas.Int,
