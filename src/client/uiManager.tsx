@@ -92,7 +92,7 @@ const RootUi = () => {
             zIndex: 55
           }}
         >
-          {/* Left player */}
+          {/* Left player (blue) */}
           <UiEntity
             uiTransform={{
               display: 'flex',
@@ -101,15 +101,26 @@ const RootUi = () => {
               margin: { right: 16 }
             }}
           >
+            {/* Avatar: bg → face → mask overlay */}
             <UiEntity
               uiTransform={{ width: 64, height: 64, margin: { bottom: 4 } }}
-              uiBackground={
-                getLeaderboardFaceUrl(s.redAddr)
-                  ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.redAddr)! } }
-                  : { color: Color4.create(0.55, 0.1, 0.1, 1) }
-              }
-            />
-            <Label value={s.redName || 'Red'} fontSize={14} color={Color4.White()} textAlign="middle-center" />
+              uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/blue_pic_bg.png' } }}
+            >
+              <UiEntity
+                uiTransform={{ width: 64, height: 64 }}
+                uiBackground={
+                  getLeaderboardFaceUrl(s.blueAddr)
+                    ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.blueAddr)! } }
+                    : { color: Color4.create(0, 0, 0, 0) }
+                }
+              >
+                <UiEntity
+                  uiTransform={{ width: 64, height: 64 }}
+                  uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/mask_pic.png' } }}
+                />
+              </UiEntity>
+            </UiEntity>
+            <Label value={s.blueName || 'Blue'} fontSize={14} color={Color4.White()} textAlign="middle-center" />
           </UiEntity>
 
           {/* Score */}
@@ -121,7 +132,7 @@ const RootUi = () => {
             uiTransform={{ margin: { left: 8, right: 8 } }}
           />
 
-          {/* Right player */}
+          {/* Right player (red) */}
           <UiEntity
             uiTransform={{
               display: 'flex',
@@ -130,15 +141,26 @@ const RootUi = () => {
               margin: { left: 16 }
             }}
           >
+            {/* Avatar: bg → face → mask overlay */}
             <UiEntity
               uiTransform={{ width: 64, height: 64, margin: { bottom: 4 } }}
-              uiBackground={
-                getLeaderboardFaceUrl(s.blueAddr)
-                  ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.blueAddr)! } }
-                  : { color: Color4.create(0.1, 0.25, 0.6, 1) }
-              }
-            />
-            <Label value={s.blueName || 'Blue'} fontSize={14} color={Color4.White()} textAlign="middle-center" />
+              uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/red_pic_bg.png' } }}
+            >
+              <UiEntity
+                uiTransform={{ width: 64, height: 64 }}
+                uiBackground={
+                  getLeaderboardFaceUrl(s.redAddr)
+                    ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.redAddr)! } }
+                    : { color: Color4.create(0, 0, 0, 0) }
+                }
+              >
+                <UiEntity
+                  uiTransform={{ width: 64, height: 64 }}
+                  uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/mask_pic.png' } }}
+                />
+              </UiEntity>
+            </UiEntity>
+            <Label value={s.redName || 'Red'} fontSize={14} color={Color4.White()} textAlign="middle-center" />
           </UiEntity>
         </UiEntity>
       )}
