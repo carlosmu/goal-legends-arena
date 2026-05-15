@@ -2,6 +2,7 @@ export type ParsedLeaderboard = {
   wins: Record<string, number>
   sessionMax: Record<string, number>
   names: Record<string, string>
+  countries: Record<string, string>
 }
 
 /** One row for UI (rank 1-based, wallet key = `addr`). */
@@ -11,6 +12,7 @@ export type LeaderboardRow = {
   name: string
   wins: number
   streak: number
+  country: string
 }
 
 export function parseLeaderboardJson(json: string): ParsedLeaderboard {
@@ -19,21 +21,23 @@ export function parseLeaderboardJson(json: string): ParsedLeaderboard {
     return {
       wins: o.wins || {},
       sessionMax: o.sessionMax || {},
-      names: o.names || {}
+      names: o.names || {},
+      countries: o.countries || {}
     }
   } catch {
-    return { wins: {}, sessionMax: {}, names: {} }
+    return { wins: {}, sessionMax: {}, names: {}, countries: {} }
   }
 }
 
 export function getLeaderboardRows(json: string, maxLines: number): LeaderboardRow[] {
-  const { wins, sessionMax, names } = parseLeaderboardJson(json)
+  const { wins, sessionMax, names, countries } = parseLeaderboardJson(json)
   const sorted = Object.keys(wins).sort((a, b) => (wins[b] || 0) - (wins[a] || 0))
   return sorted.slice(0, maxLines).map((addr, i) => {
     const w = wins[addr] || 0
     const ms = sessionMax[addr] || 0
     const name = (names[addr] && names[addr].trim()) || shortAddr(addr)
-    return { rank: i + 1, addr, name, wins: w, streak: ms }
+    const country = countries[addr] || ''
+    return { rank: i + 1, addr, name, wins: w, streak: ms, country }
   })
 }
 

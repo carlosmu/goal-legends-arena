@@ -6,6 +6,7 @@ export const Messages = {
   submitDirection: Schemas.Map({ dir: Schemas.String }),
   streakDecision: Schemas.Map({ continue: Schemas.Int }),
   spectatorChallenge: Schemas.Map({ accept: Schemas.Int }),
+  setCountry: Schemas.Map({ iso: Schemas.String }),
   clientReadyPing: Schemas.Map({}),
   teleport: Schemas.Map({
     x: Schemas.Number,

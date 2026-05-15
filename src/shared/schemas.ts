@@ -55,6 +55,10 @@ export const PenaltyMatchState = engine.defineComponent('gla:penalty-match-state
   stateEpoch: Schemas.Int,
   /** Generic timer for ResolvingRound / MatchEnd transitions. */
   phaseDeadlineMs: Schemas.Number,
+  /** ISO flag code for red player (e.g. "ar"); empty if not set. */
+  redCountry: Schemas.String,
+  /** ISO flag code for blue player (e.g. "br"); empty if not set. */
+  blueCountry: Schemas.String,
   /** 1 = human plays red in PvE. */
   pveHumanIsRed: Schemas.Int,
   /** Debug: incrementa en cada `serverTick`; si en cliente sube → servidor vivo. */

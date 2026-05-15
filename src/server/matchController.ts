@@ -22,6 +22,7 @@ const LB_KEY = 'gla_leaderboard_v1'
 type LeaderboardFile = {
   wins: Record<string, number>
   names?: Record<string, string>
+  countries?: Record<string, string>
 }
 
 let stateEntity: Entity = 0 as Entity
@@ -31,6 +32,7 @@ const sessionMaxStreak = new Map<string, number>()
 
 let lbWins: Record<string, number> = {}
 let lbDisplayNames: Record<string, string> = {}
+let lbCountries: Record<string, string> = {}
 
 function nowMs(): number {
   return Date.now()
@@ -48,7 +50,7 @@ function bumpEpoch() {
 function packLeaderboardJson(): string {
   const sessionMax: Record<string, number> = {}
   for (const [k, v] of sessionMaxStreak.entries()) sessionMax[k] = v
-  return JSON.stringify({ wins: lbWins, sessionMax, names: lbDisplayNames })
+  return JSON.stringify({ wins: lbWins, sessionMax, names: lbDisplayNames, countries: lbCountries })
 }
 
 function syncLbToState() {
@@ -66,13 +68,16 @@ export async function loadPersistentLeaderboard() {
         const j = JSON.parse(raw) as LeaderboardFile
         lbWins = j.wins || {}
         lbDisplayNames = j.names || {}
+        lbCountries = j.countries || {}
       } catch {
         lbWins = {}
         lbDisplayNames = {}
+        lbCountries = {}
       }
     } else if (typeof raw === 'object' && raw.wins) {
       lbWins = raw.wins || {}
       lbDisplayNames = raw.names || {}
+      lbCountries = raw.countries || {}
     }
   } catch (e) {
     console.log('[Server] leaderboard load failed', e)
@@ -82,7 +87,7 @@ export async function loadPersistentLeaderboard() {
 
 async function persistWins() {
   try {
-    await Storage.set(LB_KEY, { wins: lbWins, names: lbDisplayNames })
+    await Storage.set(LB_KEY, { wins: lbWins, names: lbDisplayNames, countries: lbCountries })
   } catch (e) {
     console.log('[Server] leaderboard save failed', e)
   }
@@ -99,6 +104,24 @@ function displayNameFor(addr: string): string {
 function shortAddr(addr: string): string {
   if (!addr || addr.length < 10) return addr || '?'
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`
+}
+
+const COUNTRY_KEY = 'gla_country'
+
+async function getCountry(addr: string): Promise<string> {
+  try {
+    return (await Storage.player.get<string>(addr, COUNTRY_KEY)) || ''
+  } catch {
+    return ''
+  }
+}
+
+async function saveCountry(addr: string, iso: string) {
+  try {
+    await Storage.player.set(addr, COUNTRY_KEY, iso)
+  } catch (e) {
+    console.log('[Server] country save failed', e)
+  }
 }
 
 async function isBanned(addr: string): Promise<boolean> {
@@ -164,6 +187,8 @@ export function createStateEntity(): Entity {
     suddenDeath: 0,
     stateEpoch: 0,
     phaseDeadlineMs: 0,
+    redCountry: '',
+    blueCountry: '',
     pveHumanIsRed: 1,
     serverTickCounter: 0,
     lastServerEvent: 'server-boot'
@@ -307,6 +332,8 @@ function finishMatch(side: 'red' | 'blue') {
       sessionMaxStreak.set(winAddr, Math.max(sessionMaxStreak.get(winAddr) || 0, cur))
       lbWins[winAddr] = (lbWins[winAddr] || 0) + 1
       lbDisplayNames[winAddr] = (winName && winName.trim()) || displayNameFor(winAddr)
+      const winCountry = (side === 'red' ? m.redCountry : m.blueCountry) || ''
+      if (winCountry) lbCountries[winAddr.toLowerCase()] = winCountry
       void persistWins()
     }
   }
@@ -346,6 +373,8 @@ function clearAllSpots() {
   m.blueAddr = ''
   m.redName = ''
   m.blueName = ''
+  m.redCountry = ''
+  m.blueCountry = ''
 }
 
 function goLobbyIdle() {
@@ -449,6 +478,18 @@ export function refreshPlayerCount() {
 }
 
 export function registerServerMessages() {
+  room.onMessage('setCountry', (data, ctx) => {
+    if (!ctx?.from) return
+    const iso = (data.iso || '').toLowerCase().trim()
+    if (!iso) return
+    void saveCountry(ctx.from, iso)
+    lbCountries[ctx.from.toLowerCase()] = iso
+    const m = mut()
+    if (m.redAddr.toLowerCase() === ctx.from.toLowerCase()) m.redCountry = iso
+    else if (m.blueAddr.toLowerCase() === ctx.from.toLowerCase()) m.blueCountry = iso
+    m.leaderboardJson = packLeaderboardJson()
+  })
+
   room.onMessage('clientReadyPing', () => {})
 
   room.onMessage('occupySpot', async (data, ctx) => {
@@ -457,6 +498,8 @@ export function registerServerMessages() {
     const mDbg = mut()
     mDbg.lastServerEvent = `occupySpot team=${data.team} from=${addrRaw || '(empty)'}`
     console.log(`[Server] occupySpot team=${data.team} from=${addrRaw || '(empty)'}`)
+
+    const savedCountry = addrRaw ? await getCountry(addrRaw) : ''
 
     if (addrRaw && (await isBanned(addrRaw))) {
       console.log(`[Server] banned player tried spot: ${addrRaw}`)
@@ -487,10 +530,12 @@ export function registerServerMessages() {
       if (m.redAddr && m.redAddr.toLowerCase() !== addr.toLowerCase()) return
       m.redAddr = addr
       m.redName = displayNameFor(addr)
+      if (savedCountry) m.redCountry = savedCountry
     } else {
       if (m.blueAddr && m.blueAddr.toLowerCase() !== addr.toLowerCase()) return
       m.blueAddr = addr
       m.blueName = displayNameFor(addr)
+      if (savedCountry) m.blueCountry = savedCountry
     }
 
     const hasR = !!m.redAddr

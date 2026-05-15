@@ -24,6 +24,8 @@ export type ClientSnapshot = {
   streakPromptAddr: string
   winnerStreakAddr: string
   leaderboardJson: string
+  redCountry: string
+  blueCountry: string
   playersInScene: number
   suddenDeath: number
   serverTickCounter: number
@@ -52,6 +54,8 @@ export const defaultSnapshot: ClientSnapshot = {
   streakPromptAddr: '',
   winnerStreakAddr: '',
   leaderboardJson: '{}',
+  redCountry: '',
+  blueCountry: '',
   playersInScene: 0,
   suddenDeath: 0,
   serverTickCounter: 0,
@@ -101,6 +105,8 @@ export function readPenaltySnapshot(): ClientSnapshot {
     streakPromptAddr: p.streakPromptAddr,
     winnerStreakAddr: p.winnerStreakAddr,
     leaderboardJson: p.leaderboardJson,
+    redCountry: p.redCountry,
+    blueCountry: p.blueCountry,
     playersInScene: p.playersInScene,
     suddenDeath: p.suddenDeath,
     serverTickCounter: p.serverTickCounter,

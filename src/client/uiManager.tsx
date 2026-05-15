@@ -7,6 +7,15 @@ import { getLeaderboardRows } from './leaderboardManager'
 import { getLeaderboardFaceUrl, prefetchLeaderboardFaces } from './leaderboardProfileCache'
 import { room } from '../shared/messages'
 import { GameState } from '../shared/gameState'
+import {
+  COUNTRIES,
+  getLocalCountry,
+  initLocalCountryFromSnapshot,
+  isPickerOpen,
+  openPicker,
+  selectCountry,
+  flagSrc
+} from './countryStore'
 
 /**
  * React-ECS ya re-renderiza el árbol cada frame (`@dcl/react-ecs` lo registra como un system).
@@ -66,6 +75,16 @@ const RootUi = () => {
   // Prefetch scoreboard faces whenever active players change
   if (s.hasActiveMatch === 1) prefetchLeaderboardFaces([s.redAddr, s.blueAddr].filter(Boolean))
 
+  // Seed local country from server snapshot (first time only)
+  const myCountryInSnapshot = side === 'red' ? s.redCountry : side === 'blue' ? s.blueCountry : ''
+  initLocalCountryFromSnapshot(myCountryInSnapshot)
+
+  const localCountry = getLocalCountry()
+  const showCountryPicker = !localCountry || isPickerOpen()
+  const FLAGS_PER_ROW = 6
+  const FLAG_ROWS = 4
+  const visibleCountries = COUNTRIES.slice(0, FLAGS_PER_ROW * FLAG_ROWS)
+
   return (
     <UiEntity
       uiTransform={{
@@ -101,24 +120,47 @@ const RootUi = () => {
               margin: { right: 16 }
             }}
           >
-            {/* Avatar: bg → face → mask overlay */}
+            {/* Row: avatar + flag */}
             <UiEntity
-              uiTransform={{ width: 64, height: 64, margin: { bottom: 4 } }}
-              uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/blue_pic_bg.png' } }}
+              uiTransform={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: { bottom: 4 } }}
             >
+              {/* Avatar: bg → face → mask overlay */}
               <UiEntity
                 uiTransform={{ width: 64, height: 64 }}
-                uiBackground={
-                  getLeaderboardFaceUrl(s.blueAddr)
-                    ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.blueAddr)! } }
-                    : { color: Color4.create(0, 0, 0, 0) }
-                }
+                uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/blue_pic_bg.png' } }}
               >
                 <UiEntity
                   uiTransform={{ width: 64, height: 64 }}
-                  uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/mask_pic.png' } }}
-                />
+                  uiBackground={
+                    getLeaderboardFaceUrl(s.blueAddr)
+                      ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.blueAddr)! } }
+                      : { color: Color4.create(0, 0, 0, 0) }
+                  }
+                >
+                  <UiEntity
+                    uiTransform={{ width: 64, height: 64 }}
+                    uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/mask_pic.png' } }}
+                  />
+                </UiEntity>
               </UiEntity>
+              {/* Blue flag (clickable by blue player to change country) */}
+              {s.blueCountry ? (
+                <Button
+                  value=""
+                  uiTransform={{ width: 48, height: 36, margin: { left: 6 } }}
+                  uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.blueCountry) } }}
+                  onMouseDown={() => { if (side === 'blue') openPicker() }}
+                />
+              ) : (
+                side === 'blue' && (
+                  <Button
+                    value="🌍"
+                    fontSize={20}
+                    uiTransform={{ width: 40, height: 40, margin: { left: 6 } }}
+                    onMouseDown={() => openPicker()}
+                  />
+                )
+              )}
             </UiEntity>
             <Label value={s.blueName || 'Blue'} fontSize={14} color={Color4.White()} textAlign="middle-center" />
           </UiEntity>
@@ -141,23 +183,46 @@ const RootUi = () => {
               margin: { left: 16 }
             }}
           >
-            {/* Avatar: bg → face → mask overlay */}
+            {/* Row: flag + avatar */}
             <UiEntity
-              uiTransform={{ width: 64, height: 64, margin: { bottom: 4 } }}
-              uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/red_pic_bg.png' } }}
+              uiTransform={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: { bottom: 4 } }}
             >
+              {/* Red flag (clickable by red player to change country) */}
+              {s.redCountry ? (
+                <Button
+                  value=""
+                  uiTransform={{ width: 48, height: 36, margin: { right: 6 } }}
+                  uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.redCountry) } }}
+                  onMouseDown={() => { if (side === 'red') openPicker() }}
+                />
+              ) : (
+                side === 'red' && (
+                  <Button
+                    value="🌍"
+                    fontSize={20}
+                    uiTransform={{ width: 40, height: 40, margin: { right: 6 } }}
+                    onMouseDown={() => openPicker()}
+                  />
+                )
+              )}
+              {/* Avatar: bg → face → mask overlay */}
               <UiEntity
                 uiTransform={{ width: 64, height: 64 }}
-                uiBackground={
-                  getLeaderboardFaceUrl(s.redAddr)
-                    ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.redAddr)! } }
-                    : { color: Color4.create(0, 0, 0, 0) }
-                }
+                uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/red_pic_bg.png' } }}
               >
                 <UiEntity
                   uiTransform={{ width: 64, height: 64 }}
-                  uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/mask_pic.png' } }}
-                />
+                  uiBackground={
+                    getLeaderboardFaceUrl(s.redAddr)
+                      ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.redAddr)! } }
+                      : { color: Color4.create(0, 0, 0, 0) }
+                  }
+                >
+                  <UiEntity
+                    uiTransform={{ width: 64, height: 64 }}
+                    uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/mask_pic.png' } }}
+                  />
+                </UiEntity>
               </UiEntity>
             </UiEntity>
             <Label value={s.redName || 'Red'} fontSize={14} color={Color4.White()} textAlign="middle-center" />
@@ -235,11 +300,12 @@ const RootUi = () => {
                   >
                     <Label value={`${row.rank}.`} fontSize={13} color={Color4.White()} textAlign="middle-center" />
                   </UiEntity>
+                  {/* Profile pic */}
                   <UiEntity
                     uiTransform={{
                       width: faceSz,
                       height: faceSz,
-                      margin: { right: 8 },
+                      margin: { right: 6 },
                       display: 'flex',
                       justifyContent: 'center',
                       alignItems: 'center'
@@ -250,6 +316,15 @@ const RootUi = () => {
                         : { color: Color4.create(0.22, 0.24, 0.3, 1) }
                     }
                   />
+                  {/* Country flag */}
+                  {row.country ? (
+                    <UiEntity
+                      uiTransform={{ width: 36, height: 27, margin: { right: 8 } }}
+                      uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(row.country) } }}
+                    />
+                  ) : (
+                    <UiEntity uiTransform={{ width: 44, height: 27, margin: { right: 8 } }} />
+                  )}
                   <UiEntity
                     uiTransform={{
                       flexGrow: 1,
@@ -273,6 +348,85 @@ const RootUi = () => {
         </UiEntity>
       </UiEntity>
       {/* ========== fin UI LEADERBOARD ========== */}
+
+      {/* ========== COUNTRY PICKER ========== */}
+      {showCountryPicker && (
+        <UiEntity
+          uiTransform={{
+            positionType: 'absolute',
+            position: { top: 0, left: 0 },
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 200
+          }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.92) }}
+        >
+          <Label
+            value="Welcome to Goal Legends Arena"
+            fontSize={32}
+            color={Color4.White()}
+            textAlign="middle-center"
+            uiTransform={{ margin: { bottom: 4 } }}
+          />
+          <Label
+            value="World Cup Edition"
+            fontSize={26}
+            color={Color4.create(1, 0.85, 0.1, 1)}
+            textAlign="middle-center"
+            uiTransform={{ margin: { bottom: 20 } }}
+          />
+          <Label
+            value="— Select your country —"
+            fontSize={17}
+            color={Color4.create(0.75, 0.85, 1, 1)}
+            textAlign="middle-center"
+            uiTransform={{ margin: { bottom: 16 } }}
+          />
+          {/* Flag grid: 6 per row, 4 rows */}
+          {Array.from({ length: FLAG_ROWS }, (_, row) => (
+            <UiEntity
+              key={`row-${row}`}
+              uiTransform={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'flex-start'
+              }}
+            >
+              {visibleCountries.slice(row * FLAGS_PER_ROW, (row + 1) * FLAGS_PER_ROW).map((c) => (
+                <UiEntity
+                  key={c.iso}
+                  uiTransform={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    margin: { left: 8, right: 8 }
+                  }}
+                >
+                  <Button
+                    value=""
+                    uiTransform={{ width: 72, height: 54 }}
+                    uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(c.iso) } }}
+                    onMouseDown={() => selectCountry(c.iso)}
+                  />
+                  <Label
+                    value={c.name}
+                    fontSize={10}
+                    color={Color4.White()}
+                    textAlign="middle-center"
+                    uiTransform={{ maxWidth: 88 }}
+                  />
+                </UiEntity>
+              ))}
+            </UiEntity>
+          ))}
+        </UiEntity>
+      )}
+      {/* ========== fin COUNTRY PICKER ========== */}
 
       {showWelcome && (
         <UiEntity
