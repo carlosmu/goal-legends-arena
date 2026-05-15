@@ -17,7 +17,7 @@ import { isStateSyncronized } from '@dcl/sdk/network'
 import { movePlayerTo } from '~system/RestrictedActions'
 import { getPlayer } from '@dcl/sdk/src/players'
 import { room } from '../shared/messages'
-import { AIM_COLLIDERS, SPOT_PROXIMITY_RADIUS } from '../shared/constants'
+import { AIM_COLLIDERS, POINTER_EVENT_MAX_DISTANCE, SPOT_PROXIMITY_RADIUS } from '../shared/constants'
 import { readPenaltySnapshot, penaltyStateEntityReady } from './gameStore'
 import { initAudioManager, tickAudioManager } from './audioManager'
 import { initAnimationManager, tickAnimationManager } from './animationManager'
@@ -33,8 +33,18 @@ function tryOccupySpot(team: 'red' | 'blue') {
 function registerSpotPointerHandlers(entity: Entity | undefined, team: 'red' | 'blue', hover: string) {
   if (!entity) return
   const fire = () => tryOccupySpot(team)
-  pointerEventsSystem.onPointerDown({ entity, opts: { button: InputAction.IA_POINTER, hoverText: hover } }, fire)
-  pointerEventsSystem.onPointerDown({ entity, opts: { button: InputAction.IA_PRIMARY, hoverText: hover } }, fire)
+  const spotOpts = {
+    button: InputAction.IA_POINTER,
+    hoverText: hover,
+    maxDistance: POINTER_EVENT_MAX_DISTANCE
+  } as const
+  const spotOptsE = {
+    button: InputAction.IA_PRIMARY,
+    hoverText: hover,
+    maxDistance: POINTER_EVENT_MAX_DISTANCE
+  } as const
+  pointerEventsSystem.onPointerDown({ entity, opts: spotOpts }, fire)
+  pointerEventsSystem.onPointerDown({ entity, opts: spotOptsE }, fire)
 }
 
 function findEntityByName(target: string): Entity | undefined {
@@ -64,10 +74,17 @@ export function initClient() {
     const e = engine.addEntity()
     Transform.create(e, { position: pos, scale })
     MeshRenderer.setBox(e)
-    Material.setPbrMaterial(e, { albedoColor: Color4.create(0.2, 0.85, 0.35, 0.4) })
+    Material.setPbrMaterial(e, { albedoColor: Color4.create(0.2, 0.85, 0, 0.6) })
     MeshCollider.setBox(e, ColliderLayer.CL_POINTER)
     pointerEventsSystem.onPointerDown(
-      { entity: e, opts: { button: InputAction.IA_POINTER, hoverText: `Shoot ${key}` } },
+      {
+        entity: e,
+        opts: {
+          button: InputAction.IA_POINTER,
+          hoverText: `Shoot ${key}`,
+          maxDistance: POINTER_EVENT_MAX_DISTANCE
+        }
+      },
       () => {
         room.send('submitDirection', { dir: key })
       }

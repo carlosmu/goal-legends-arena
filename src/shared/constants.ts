@@ -27,10 +27,13 @@ export const STANDS_FALLBACK = {
  * es Z decreciente.
  */
 export const AIM_COLLIDERS = {
-  L: { pos: Vector3.create(11.5, 2, 18), scale: Vector3.create(2, 2.5, 1) },
-  C: { pos: Vector3.create(16, 2, 18), scale: Vector3.create(2, 2.5, 1) },
-  R: { pos: Vector3.create(20.5, 2, 18), scale: Vector3.create(2, 2.5, 1) }
+  L: { pos: Vector3.create(17.3, 1.3, 10.5), scale: Vector3.create(1.2, 2, 0.1) },
+  C: { pos: Vector3.create(16, 1.3, 10.5), scale: Vector3.create(1.2, 2, 0.1) },
+  R: { pos: Vector3.create(14.7, 1.3, 10.5), scale: Vector3.create(1.2, 2, 0.1) }
 } as const
+
+/** Máx. distancia (m) jugador → hit para `pointerEventsSystem` (clic en spots y bloques L/C/R). */
+export const POINTER_EVENT_MAX_DISTANCE = 20
 
 export const SYNC_STATE_ENTITY_ENUM = 9001
 
