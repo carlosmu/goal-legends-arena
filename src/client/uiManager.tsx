@@ -4,7 +4,7 @@ import { isStateSyncronized } from '@dcl/sdk/network'
 import { getPlayer } from '@dcl/sdk/src/players'
 import { readPenaltySnapshot, clientSnapshot, penaltyStateEntityReady } from './gameStore'
 import { getLeaderboardRows } from './leaderboardManager'
-import { getLeaderboardFaceUrl } from './leaderboardProfileCache'
+import { getLeaderboardFaceUrl, prefetchLeaderboardFaces } from './leaderboardProfileCache'
 import { room } from '../shared/messages'
 import { GameState } from '../shared/gameState'
 
@@ -63,7 +63,8 @@ const RootUi = () => {
     !!s.winnerStreakAddr &&
     me.toLowerCase() !== s.winnerStreakAddr.toLowerCase()
 
-  const scoreLine = `@${s.redName || 'Red'}: ${s.redScore} - ${s.blueScore} :@${s.blueName || 'Blue'}`
+  // Prefetch scoreboard faces whenever active players change
+  if (s.hasActiveMatch === 1) prefetchLeaderboardFaces([s.redAddr, s.blueAddr].filter(Boolean))
 
   return (
     <UiEntity
@@ -76,19 +77,72 @@ const RootUi = () => {
         justifyContent: 'flex-start'
       }}
     >
+      {/* ========== SCOREBOARD ========== */}
       {s.hasActiveMatch === 1 && (
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
-            position: { top: 12, left: '50%' },
+            position: { top: 12, left: 0, right: 0 },
+            width: '100%',
             display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            pointerFilter: 'none',
+            zIndex: 55
           }}
         >
-          <Label value={scoreLine} fontSize={20} color={Color4.White()} textAlign="middle-center" />
+          {/* Left player */}
+          <UiEntity
+            uiTransform={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              margin: { right: 16 }
+            }}
+          >
+            <UiEntity
+              uiTransform={{ width: 64, height: 64, margin: { bottom: 4 } }}
+              uiBackground={
+                getLeaderboardFaceUrl(s.redAddr)
+                  ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.redAddr)! } }
+                  : { color: Color4.create(0.55, 0.1, 0.1, 1) }
+              }
+            />
+            <Label value={s.redName || 'Red'} fontSize={14} color={Color4.White()} textAlign="middle-center" />
+          </UiEntity>
+
+          {/* Score */}
+          <Label
+            value={`${s.redScore} - ${s.blueScore}`}
+            fontSize={52}
+            color={Color4.White()}
+            textAlign="middle-center"
+            uiTransform={{ margin: { left: 8, right: 8 } }}
+          />
+
+          {/* Right player */}
+          <UiEntity
+            uiTransform={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              margin: { left: 16 }
+            }}
+          >
+            <UiEntity
+              uiTransform={{ width: 64, height: 64, margin: { bottom: 4 } }}
+              uiBackground={
+                getLeaderboardFaceUrl(s.blueAddr)
+                  ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.blueAddr)! } }
+                  : { color: Color4.create(0.1, 0.25, 0.6, 1) }
+              }
+            />
+            <Label value={s.blueName || 'Blue'} fontSize={14} color={Color4.White()} textAlign="middle-center" />
+          </UiEntity>
         </UiEntity>
       )}
+      {/* ========== fin SCOREBOARD ========== */}
 
       {/* ========== UI: LEADERBOARD (panel superior izquierdo) ==========
           · Contenedor exterior: mueve todo el bloque editando `padding` (top/left/right/bottom) y `zIndex`.
@@ -250,7 +304,7 @@ const RootUi = () => {
       {showPick && (
         <UiEntity
           uiTransform={{
-            margin: { top: '10vh' },
+            margin: { top: '15vh' },
             padding: 20,
             display: 'flex',
             flexDirection: 'column',
@@ -314,13 +368,26 @@ const RootUi = () => {
       {showResult && (
         <UiEntity
           uiTransform={{
-            margin: { top: '8vh' },
-            padding: 22,
-            maxWidth: 900
+            positionType: 'absolute',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            pointerFilter: 'none',
+            zIndex: 62
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.88) }}
         >
-          <Label value={s.resultLine} fontSize={20} color={Color4.Yellow()} textAlign="middle-center" />
+          <UiEntity
+            uiTransform={{
+              padding: 22,
+              maxWidth: 900
+            }}
+            uiBackground={{ color: Color4.create(0, 0, 0, 0.88) }}
+          >
+            <Label value={s.resultLine} fontSize={20} color={Color4.Yellow()} textAlign="middle-center" />
+          </UiEntity>
         </UiEntity>
       )}
 
