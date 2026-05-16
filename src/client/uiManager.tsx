@@ -92,8 +92,8 @@ const RootUi = () => {
 
   const localCountry = getLocalCountry()
   const showCountryPicker = !localCountry || isPickerOpen()
-  const FLAGS_PER_ROW = 6
-  const FLAG_ROWS = 4
+  const FLAGS_PER_ROW = 8
+  const FLAG_ROWS = 6
   const visibleCountries = COUNTRIES.slice(0, FLAGS_PER_ROW * FLAG_ROWS)
 
   return (
