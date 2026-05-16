@@ -12,6 +12,7 @@ export const WAIT_OPPONENT_MS = 30_000
 export const ROUND_RESULT_MS = 4500
 export const MATCH_END_UI_MS = 6500
 export const BAN_COOLDOWN_MS = 120_000
+export const WINNER_STREAK_TIMEOUT_MS = 30_000
 /** Regulation: 5 kicks per player as kicker = 10 alternating shots. */
 export const REGULATION_SHOTS = 10
 
@@ -19,6 +20,25 @@ export const REGULATION_SHOTS = 10
 export const STANDS_FALLBACK = {
   pos: Vector3.create(16, 8, 8),
   cam: Vector3.create(16, 1, 16)
+}
+
+/** Expulsion bounds: players kicked for timeout or losing go to random location within bounds. */
+export const EXPULSION_BOUNDS = {
+  xMin: 14.5,
+  xMax: 17.5,
+  y: 0.5,
+  zMin: 26,
+  zMax: 28,
+  cam: Vector3.create(16, 1, 16)
+}
+
+export function getRandomExpulsionLocation(): { pos: Vector3; cam: Vector3 } {
+  const x = EXPULSION_BOUNDS.xMin + Math.random() * (EXPULSION_BOUNDS.xMax - EXPULSION_BOUNDS.xMin)
+  const z = EXPULSION_BOUNDS.zMin + Math.random() * (EXPULSION_BOUNDS.zMax - EXPULSION_BOUNDS.zMin)
+  return {
+    pos: Vector3.create(x, EXPULSION_BOUNDS.y, z),
+    cam: EXPULSION_BOUNDS.cam
+  }
 }
 
 /**

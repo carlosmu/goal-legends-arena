@@ -13,7 +13,9 @@ import {
   ROUND_RESULT_MS,
   STANDS_FALLBACK,
   SYNC_STATE_ENTITY_ENUM,
-  WAIT_OPPONENT_MS
+  WAIT_OPPONENT_MS,
+  WINNER_STREAK_TIMEOUT_MS,
+  getRandomExpulsionLocation
 } from '../shared/constants'
 import { parseDir, randomDir, regulationEarlyWinner, suddenDeathWinner } from './matchHelpers'
 
@@ -182,6 +184,7 @@ export function createStateEntity(): Entity {
     spectatorAcceptedAddr: '',
     streakPromptAddr: '',
     winnerStreakAddr: '',
+    winnerStreakDeadlineMs: 0,
     leaderboardJson: '{}',
     playersInScene: 0,
     suddenDeath: 0,
@@ -246,6 +249,7 @@ function resetMatchForNewGame(mode: MatchMode, pveHumanIsRed: boolean) {
   m.spectatorWinnerName = ''
   m.streakPromptAddr = ''
   m.winnerStreakAddr = ''
+  m.winnerStreakDeadlineMs = 0
   m.pveHumanIsRed = pveHumanIsRed ? 1 : 0
   m.firstKickerIsRed = Math.random() < 0.5 ? 1 : 0
   m.kickerIsRed = m.firstKickerIsRed
@@ -264,6 +268,7 @@ function startPvPFromWaiting() {
   const x = mut()
   x.redName = displayNameFor(m.redAddr)
   x.blueName = displayNameFor(m.blueAddr)
+  x.winnerStreakDeadlineMs = 0
   resetMatchForNewGame('pvp', true)
 }
 
@@ -280,6 +285,7 @@ function startPvEFromWaiting(humanIsRed: boolean) {
     m.redName = 'Training AI'
     m.redAddr = ''
   }
+  m.winnerStreakDeadlineMs = 0
   resetMatchForNewGame('pve', humanIsRed)
 }
 
@@ -340,12 +346,12 @@ function finishMatch(side: 'red' | 'blue') {
 
   syncLbToState()
 
-  const pov = getPovTransformSafe()
   if (m.mode === 'pvp' && loseAddr) {
     if (m.playersInScene > 2) {
       void setBan(loseAddr, BAN_COOLDOWN_MS)
     }
-    sendTeleport(loseAddr, pov.pos, pov.cam)
+    const expulsion = getRandomExpulsionLocation()
+    sendTeleport(loseAddr, expulsion.pos, expulsion.cam)
   }
 
   if (m.mode === 'pvp' && winAddr) {
@@ -449,6 +455,23 @@ export function serverTick() {
       startPvEFromWaiting(hasRed)
       m.waitEndMs = 0
     }
+  }
+
+  // Check if winner waiting for streak timed out (didn't play another match within 30s)
+  if (
+    m.phase === GameState.WaitingOpponent &&
+    m.winnerStreakAddr &&
+    m.winnerStreakDeadlineMs > 0 &&
+    t >= m.winnerStreakDeadlineMs
+  ) {
+    const winnerAddr = m.winnerStreakAddr
+    const expulsion = getRandomExpulsionLocation()
+    sendTeleport(winnerAddr, expulsion.pos, expulsion.cam)
+    m.winnerStreakAddr = ''
+    m.winnerStreakDeadlineMs = 0
+    goLobbyIdle()
+    bumpEpoch()
+    return
   }
 
   if (
@@ -583,19 +606,21 @@ export function registerServerMessages() {
     const m = mut()
     if (m.phase !== GameState.WinnerContinuePrompt) return
     if (m.winnerStreakAddr.toLowerCase() !== ctx.from.toLowerCase()) return
-    const pov = getPovTransformSafe()
     if (data.continue === 1) {
       m.phase = GameState.WaitingOpponent
       m.waitEndMs = nowMs() + WAIT_OPPONENT_MS
+      m.winnerStreakDeadlineMs = nowMs() + WINNER_STREAK_TIMEOUT_MS
       m.streakPromptAddr = ''
-      m.winnerStreakAddr = ''
+      m.winnerStreakAddr = ctx.from
       m.mode = 'none'
       m.redScore = 0
       m.blueScore = 0
     } else {
-      sendTeleport(ctx.from, pov.pos, pov.cam)
+      const expulsion = getRandomExpulsionLocation()
+      sendTeleport(ctx.from, expulsion.pos, expulsion.cam)
       m.streakPromptAddr = ''
       m.winnerStreakAddr = ''
+      m.winnerStreakDeadlineMs = 0
       goLobbyIdle()
     }
     bumpEpoch()

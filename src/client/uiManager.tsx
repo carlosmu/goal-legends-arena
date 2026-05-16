@@ -107,9 +107,11 @@ const RootUi = () => {
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
+            padding: 8,
             pointerFilter: 'none',
             zIndex: 55
           }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.6) }}
         >
           {/* Left player (blue) */}
           <UiEntity
@@ -120,10 +122,28 @@ const RootUi = () => {
               margin: { right: 16 }
             }}
           >
-            {/* Row: avatar + flag */}
+            {/* Row: flag + avatar */}
             <UiEntity
               uiTransform={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: { bottom: 4 } }}
             >
+              {/* Blue flag (clickable by blue player to change country) */}
+              {s.blueCountry ? (
+                <Button
+                  value=""
+                  uiTransform={{ width: 96, height: 72, margin: { right: 6 } }}
+                  uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.blueCountry) }, color: Color4.White() }}
+                  onMouseDown={() => { if (side === 'blue') openPicker() }}
+                />
+              ) : (
+                side === 'blue' && (
+                  <Button
+                    value="🌍"
+                    fontSize={20}
+                    uiTransform={{ width: 40, height: 40, margin: { right: 6 } }}
+                    onMouseDown={() => openPicker()}
+                  />
+                )
+              )}
               {/* Avatar: bg → face → mask overlay */}
               <UiEntity
                 uiTransform={{ width: 64, height: 64 }}
@@ -143,24 +163,6 @@ const RootUi = () => {
                   />
                 </UiEntity>
               </UiEntity>
-              {/* Blue flag (clickable by blue player to change country) */}
-              {s.blueCountry ? (
-                <Button
-                  value=""
-                  uiTransform={{ width: 48, height: 36, margin: { left: 6 } }}
-                  uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.blueCountry) }, color: Color4.White() }}
-                  onMouseDown={() => { if (side === 'blue') openPicker() }}
-                />
-              ) : (
-                side === 'blue' && (
-                  <Button
-                    value="🌍"
-                    fontSize={20}
-                    uiTransform={{ width: 40, height: 40, margin: { left: 6 } }}
-                    onMouseDown={() => openPicker()}
-                  />
-                )
-              )}
             </UiEntity>
             <Label value={s.blueName || 'Blue'} fontSize={14} color={Color4.White()} textAlign="middle-center" />
           </UiEntity>
@@ -183,28 +185,10 @@ const RootUi = () => {
               margin: { left: 16 }
             }}
           >
-            {/* Row: flag + avatar */}
+            {/* Row: avatar + flag */}
             <UiEntity
               uiTransform={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: { bottom: 4 } }}
             >
-              {/* Red flag (clickable by red player to change country) */}
-              {s.redCountry ? (
-                <Button
-                  value=""
-                  uiTransform={{ width: 48, height: 36, margin: { right: 6 } }}
-                  uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.redCountry) }, color: Color4.White() }}
-                  onMouseDown={() => { if (side === 'red') openPicker() }}
-                />
-              ) : (
-                side === 'red' && (
-                  <Button
-                    value="🌍"
-                    fontSize={20}
-                    uiTransform={{ width: 40, height: 40, margin: { right: 6 } }}
-                    onMouseDown={() => openPicker()}
-                  />
-                )
-              )}
               {/* Avatar: bg → face → mask overlay */}
               <UiEntity
                 uiTransform={{ width: 64, height: 64 }}
@@ -224,6 +208,24 @@ const RootUi = () => {
                   />
                 </UiEntity>
               </UiEntity>
+              {/* Red flag (clickable by red player to change country) */}
+              {s.redCountry ? (
+                <Button
+                  value=""
+                  uiTransform={{ width: 96, height: 72, margin: { left: 6 } }}
+                  uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.redCountry) }, color: Color4.White() }}
+                  onMouseDown={() => { if (side === 'red') openPicker() }}
+                />
+              ) : (
+                side === 'red' && (
+                  <Button
+                    value="🌍"
+                    fontSize={20}
+                    uiTransform={{ width: 40, height: 40, margin: { left: 6 } }}
+                    onMouseDown={() => openPicker()}
+                  />
+                )
+              )}
             </UiEntity>
             <Label value={s.redName || 'Red'} fontSize={14} color={Color4.White()} textAlign="middle-center" />
           </UiEntity>
