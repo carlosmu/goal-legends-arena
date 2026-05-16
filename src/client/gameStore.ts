@@ -30,6 +30,7 @@ export type ClientSnapshot = {
   suddenDeath: number
   serverTickCounter: number
   lastServerEvent: string
+  pveHumanIsRed: number
 }
 
 export const defaultSnapshot: ClientSnapshot = {
@@ -59,7 +60,8 @@ export const defaultSnapshot: ClientSnapshot = {
   playersInScene: 0,
   suddenDeath: 0,
   serverTickCounter: 0,
-  lastServerEvent: ''
+  lastServerEvent: '',
+  pveHumanIsRed: 0
 }
 
 export let penaltyStateEntity: Entity | null = null
@@ -110,7 +112,8 @@ export function readPenaltySnapshot(): ClientSnapshot {
     playersInScene: p.playersInScene,
     suddenDeath: p.suddenDeath,
     serverTickCounter: p.serverTickCounter,
-    lastServerEvent: p.lastServerEvent
+    lastServerEvent: p.lastServerEvent,
+    pveHumanIsRed: p.pveHumanIsRed
   }
   return clientSnapshot
 }

@@ -59,6 +59,11 @@ const RootUi = () => {
   const roundLabel = s.suddenDeath ? `Sudden death — shot ${s.shotIndex + 1}` : `Shoot ${Math.min(s.shotIndex + 1, 10)} / 10`
   const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
 
+  // Determine if engine is red or blue in PvE
+  const isPvE = s.mode === 'pve'
+  const engineIsRed = isPvE && s.pveHumanIsRed === 0
+  const engineIsBlue = isPvE && s.pveHumanIsRed === 1
+
   /** Partida en curso (oculta welcome para nuevos hasta que termine). No incluye solo “esperando rival”. */
   const showWelcome = s.hasActiveMatch === 0 && s.phase === GameState.LobbyIdle
   const showWaiting =
@@ -127,7 +132,13 @@ const RootUi = () => {
             }}
           >
             {/* Blue flag + pic */}
-            {s.blueCountry ? (
+            {engineIsBlue ? (
+              <Button
+                value=""
+                uiTransform={{ width: 96, height: 72, margin: { right: 6 } }}
+                uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/engine_flag.png' }, color: Color4.White() }}
+              />
+            ) : s.blueCountry ? (
               <Button
                 value=""
                 uiTransform={{ width: 96, height: 72, margin: { right: 6 } }}
@@ -151,7 +162,9 @@ const RootUi = () => {
               <UiEntity
                 uiTransform={{ width: 64, height: 64 }}
                 uiBackground={
-                  getLeaderboardFaceUrl(s.blueAddr)
+                  engineIsBlue
+                    ? { textureMode: 'stretch', texture: { src: 'assets/images/engine_pic.png' } }
+                    : getLeaderboardFaceUrl(s.blueAddr)
                     ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.blueAddr)! } }
                     : { color: Color4.create(0, 0, 0, 0) }
                 }
@@ -175,13 +188,21 @@ const RootUi = () => {
               <UiEntity
                 uiTransform={{ width: 64, height: 64 }}
                 uiBackground={
-                  getLeaderboardFaceUrl(s.redAddr)
+                  engineIsRed
+                    ? { textureMode: 'stretch', texture: { src: 'assets/images/engine_pic.png' } }
+                    : getLeaderboardFaceUrl(s.redAddr)
                     ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.redAddr)! } }
                     : { color: Color4.create(0, 0, 0, 0) }
                 }
               />
             </UiEntity>
-            {s.redCountry ? (
+            {engineIsRed ? (
+              <Button
+                value=""
+                uiTransform={{ width: 96, height: 72, margin: { left: 6 } }}
+                uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/engine_flag.png' }, color: Color4.White() }}
+              />
+            ) : s.redCountry ? (
               <Button
                 value=""
                 uiTransform={{ width: 96, height: 72, margin: { left: 6 } }}
