@@ -11,6 +11,7 @@ import {
   MATCH_END_UI_MS,
   REGULATION_SHOTS,
   ROUND_RESULT_MS,
+  SHOOT_TIMEOUT_MS,
   STANDS_FALLBACK,
   SYNC_STATE_ENTITY_ENUM,
   WAIT_OPPONENT_MS,
@@ -254,7 +255,7 @@ function resetMatchForNewGame(mode: MatchMode, pveHumanIsRed: boolean) {
   m.firstKickerIsRed = Math.random() < 0.5 ? 1 : 0
   m.kickerIsRed = m.firstKickerIsRed
   m.phase = GameState.SelectingDirections
-  m.phaseDeadlineMs = 0
+  m.phaseDeadlineMs = nowMs() + SHOOT_TIMEOUT_MS
   if (isAiKicker()) {
     m.kickerPick = randomDir()
     m.gkPick = ''
@@ -357,6 +358,29 @@ function finishMatch(side: 'red' | 'blue') {
   if (m.mode === 'pvp' && winAddr) {
     m.streakPromptAddr = winAddr
     m.winnerStreakAddr = winAddr
+  }
+
+  bumpEpoch()
+}
+
+function finishMatchTimeout() {
+  const m = mut()
+  m.winnerName = 'Timeout'
+  m.winnerSide = ''
+  m.phase = GameState.MatchEnd
+  m.phaseDeadlineMs = nowMs() + MATCH_END_UI_MS
+
+  const redAddr = m.redAddr
+  const blueAddr = m.blueAddr
+  clearAllSpots()
+
+  if (redAddr) {
+    const expulsion = getRandomExpulsionLocation()
+    sendTeleport(redAddr, expulsion.pos, expulsion.cam)
+  }
+  if (blueAddr) {
+    const expulsion = getRandomExpulsionLocation()
+    sendTeleport(blueAddr, expulsion.pos, expulsion.cam)
   }
 
   bumpEpoch()
@@ -471,6 +495,16 @@ export function serverTick() {
     m.winnerStreakDeadlineMs = 0
     goLobbyIdle()
     bumpEpoch()
+    return
+  }
+
+  // Check for shoot timeout (no response for 1 minute)
+  if (
+    m.phase === GameState.SelectingDirections &&
+    m.phaseDeadlineMs > 0 &&
+    t >= m.phaseDeadlineMs
+  ) {
+    finishMatchTimeout()
     return
   }
 
