@@ -423,7 +423,7 @@ const RootUi = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    margin: { left: 8, right: 8 }
+                    margin: { left: 12, right: 12, bottom: 12 }
                   }}
                 >
                   <Button
@@ -437,7 +437,7 @@ const RootUi = () => {
                     fontSize={10}
                     color={Color4.White()}
                     textAlign="middle-center"
-                    uiTransform={{ maxWidth: 88 }}
+                    uiTransform={{ maxWidth: 100 }}
                   />
                 </UiEntity>
               ))}
