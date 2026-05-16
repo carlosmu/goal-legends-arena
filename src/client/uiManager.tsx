@@ -92,8 +92,8 @@ const RootUi = () => {
 
   const localCountry = getLocalCountry()
   const showCountryPicker = !localCountry || isPickerOpen()
-  const FLAGS_PER_ROW = 8
-  const FLAG_ROWS = 6
+  const FLAGS_PER_ROW = 12
+  const FLAG_ROWS = 4
   const visibleCountries = COUNTRIES.slice(0, FLAGS_PER_ROW * FLAG_ROWS)
 
   return (
@@ -423,21 +423,21 @@ const RootUi = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    margin: { left: 12, right: 12, bottom: 12 }
+                    margin: { left: 4, right: 4, bottom: 8 }
                   }}
                 >
                   <Button
                     value=""
-                    uiTransform={{ width: 72, height: 54 }}
+                    uiTransform={{ width: 84, height: 63 }}
                     uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(c.iso) }, color: Color4.White() }}
                     onMouseDown={() => selectCountry(c.iso)}
                   />
                   <Label
                     value={c.name}
-                    fontSize={10}
+                    fontSize={8}
                     color={Color4.White()}
                     textAlign="middle-center"
-                    uiTransform={{ maxWidth: 100 }}
+                    uiTransform={{ maxWidth: 72 }}
                   />
                 </UiEntity>
               ))}
