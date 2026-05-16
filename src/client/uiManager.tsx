@@ -101,11 +101,9 @@ const RootUi = () => {
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
-            position: { top: 12, left: 0, right: 0 },
-            width: '100%',
+            position: { top: 0 },
             display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
+            flexDirection: 'column',
             alignItems: 'center',
             padding: 8,
             pointerFilter: 'none',
@@ -113,121 +111,113 @@ const RootUi = () => {
           }}
           uiBackground={{ color: Color4.create(0, 0, 0, 0.6) }}
         >
-          {/* Left player (blue) */}
+          {/* Row 1: flag-pic-score-pic-flag */}
           <UiEntity
             uiTransform={{
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              margin: { right: 16 }
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center'
             }}
           >
-            {/* Row: flag + avatar */}
-            <UiEntity
-              uiTransform={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: { bottom: 4 } }}
-            >
-              {/* Blue flag (clickable by blue player to change country) */}
-              {s.blueCountry ? (
+            {/* Blue flag + pic */}
+            {s.blueCountry ? (
+              <Button
+                value=""
+                uiTransform={{ width: 96, height: 72, margin: { right: 6 } }}
+                uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.blueCountry) }, color: Color4.White() }}
+                onMouseDown={() => { if (side === 'blue') openPicker() }}
+              />
+            ) : (
+              side === 'blue' && (
                 <Button
-                  value=""
-                  uiTransform={{ width: 96, height: 72, margin: { right: 6 } }}
-                  uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.blueCountry) }, color: Color4.White() }}
-                  onMouseDown={() => { if (side === 'blue') openPicker() }}
+                  value="🌍"
+                  fontSize={20}
+                  uiTransform={{ width: 40, height: 40, margin: { right: 6 } }}
+                  onMouseDown={() => openPicker()}
                 />
-              ) : (
-                side === 'blue' && (
-                  <Button
-                    value="🌍"
-                    fontSize={20}
-                    uiTransform={{ width: 40, height: 40, margin: { right: 6 } }}
-                    onMouseDown={() => openPicker()}
-                  />
-                )
-              )}
-              {/* Avatar: bg → face → mask overlay */}
+              )
+            )}
+            <UiEntity
+              uiTransform={{ width: 64, height: 64 }}
+              uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/blue_pic_bg.png' } }}
+            >
               <UiEntity
                 uiTransform={{ width: 64, height: 64 }}
-                uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/blue_pic_bg.png' } }}
-              >
-                <UiEntity
-                  uiTransform={{ width: 64, height: 64 }}
-                  uiBackground={
-                    getLeaderboardFaceUrl(s.blueAddr)
-                      ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.blueAddr)! } }
-                      : { color: Color4.create(0, 0, 0, 0) }
-                  }
-                >
-                  <UiEntity
-                    uiTransform={{ width: 64, height: 64 }}
-                    uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/mask_pic.png' } }}
-                  />
-                </UiEntity>
-              </UiEntity>
+                uiBackground={
+                  getLeaderboardFaceUrl(s.blueAddr)
+                    ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.blueAddr)! } }
+                    : { color: Color4.create(0, 0, 0, 0) }
+                }
+              />
             </UiEntity>
-            <Label value={s.blueName || 'Blue'} fontSize={14} color={Color4.White()} textAlign="middle-center" />
+
+            {/* Score */}
+            <Label
+              value={`${s.redScore} - ${s.blueScore}`}
+              fontSize={52}
+              color={Color4.White()}
+              textAlign="middle-center"
+              uiTransform={{ margin: { left: 16, right: 16 } }}
+            />
+
+            {/* Red pic + flag */}
+            <UiEntity
+              uiTransform={{ width: 64, height: 64 }}
+              uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/red_pic_bg.png' } }}
+            >
+              <UiEntity
+                uiTransform={{ width: 64, height: 64 }}
+                uiBackground={
+                  getLeaderboardFaceUrl(s.redAddr)
+                    ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.redAddr)! } }
+                    : { color: Color4.create(0, 0, 0, 0) }
+                }
+              />
+            </UiEntity>
+            {s.redCountry ? (
+              <Button
+                value=""
+                uiTransform={{ width: 96, height: 72, margin: { left: 6 } }}
+                uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.redCountry) }, color: Color4.White() }}
+                onMouseDown={() => { if (side === 'red') openPicker() }}
+              />
+            ) : (
+              side === 'red' && (
+                <Button
+                  value="🌍"
+                  fontSize={20}
+                  uiTransform={{ width: 40, height: 40, margin: { left: 6 } }}
+                  onMouseDown={() => openPicker()}
+                />
+              )
+            )}
           </UiEntity>
 
-          {/* Score */}
-          <Label
-            value={`${s.redScore} - ${s.blueScore}`}
-            fontSize={52}
-            color={Color4.White()}
-            textAlign="middle-center"
-            uiTransform={{ margin: { left: 8, right: 8 } }}
-          />
-
-          {/* Right player (red) */}
+          {/* Row 2: names */}
           <UiEntity
             uiTransform={{
               display: 'flex',
-              flexDirection: 'column',
+              flexDirection: 'row',
+              justifyContent: 'center',
               alignItems: 'center',
-              margin: { left: 16 }
+              margin: { top: 4 }
             }}
           >
-            {/* Row: avatar + flag */}
-            <UiEntity
-              uiTransform={{ display: 'flex', flexDirection: 'row', alignItems: 'center', margin: { bottom: 4 } }}
-            >
-              {/* Avatar: bg → face → mask overlay */}
-              <UiEntity
-                uiTransform={{ width: 64, height: 64 }}
-                uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/red_pic_bg.png' } }}
-              >
-                <UiEntity
-                  uiTransform={{ width: 64, height: 64 }}
-                  uiBackground={
-                    getLeaderboardFaceUrl(s.redAddr)
-                      ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.redAddr)! } }
-                      : { color: Color4.create(0, 0, 0, 0) }
-                  }
-                >
-                  <UiEntity
-                    uiTransform={{ width: 64, height: 64 }}
-                    uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/mask_pic.png' } }}
-                  />
-                </UiEntity>
-              </UiEntity>
-              {/* Red flag (clickable by red player to change country) */}
-              {s.redCountry ? (
-                <Button
-                  value=""
-                  uiTransform={{ width: 96, height: 72, margin: { left: 6 } }}
-                  uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.redCountry) }, color: Color4.White() }}
-                  onMouseDown={() => { if (side === 'red') openPicker() }}
-                />
-              ) : (
-                side === 'red' && (
-                  <Button
-                    value="🌍"
-                    fontSize={20}
-                    uiTransform={{ width: 40, height: 40, margin: { left: 6 } }}
-                    onMouseDown={() => openPicker()}
-                  />
-                )
-              )}
-            </UiEntity>
-            <Label value={s.redName || 'Red'} fontSize={14} color={Color4.White()} textAlign="middle-center" />
+            <Label
+              value={s.blueName || 'Blue'}
+              fontSize={18}
+              color={Color4.White()}
+              textAlign="middle-center"
+              uiTransform={{ width: 170, margin: { right: 8 } }}
+            />
+            <Label
+              value={s.redName || 'Red'}
+              fontSize={18}
+              color={Color4.White()}
+              textAlign="middle-center"
+              uiTransform={{ width: 170, margin: { left: 8 } }}
+            />
           </UiEntity>
         </UiEntity>
       )}
@@ -262,7 +252,7 @@ const RootUi = () => {
             padding: 12,
             maxWidth: 420
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.85) }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
           <Label value="DEV-Leaderboard" fontSize={16} color={Color4.White()} uiTransform={{ margin: { bottom: 8 } }} />
           {lbRows.length === 0 ? (
@@ -365,7 +355,7 @@ const RootUi = () => {
             justifyContent: 'center',
             zIndex: 200
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.92) }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.99) }}
         >
           <Label
             value="Welcome to Goal Legends Arena"
@@ -440,7 +430,7 @@ const RootUi = () => {
             padding: { top: 22, bottom: 22, left: 32, right: 32 },
             maxWidth: 720
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.82) }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
           <Label
             value="Welcome to Goal Legends Arena. Choose a Spot to Begin"
@@ -467,7 +457,7 @@ const RootUi = () => {
             flexDirection: 'column',
             alignItems: 'center'
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.78) }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
           <Label value="Waiting for the rival" fontSize={24} color={Color4.White()} textAlign="middle-center" />
           <Label
@@ -489,7 +479,7 @@ const RootUi = () => {
             alignItems: 'center',
             maxWidth: 760
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.82) }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
           <Label value={roundLabel} fontSize={18} color={Color4.create(0.9, 0.95, 1, 1)} uiTransform={{ margin: { bottom: 10 } }} />
           {kicker && (
@@ -562,7 +552,7 @@ const RootUi = () => {
               padding: 22,
               maxWidth: 900
             }}
-            uiBackground={{ color: Color4.create(0, 0, 0, 0.88) }}
+            uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
           >
             <Label value={s.resultLine} fontSize={20} color={Color4.Yellow()} textAlign="middle-center" />
           </UiEntity>
@@ -706,7 +696,7 @@ const RootUi = () => {
             padding: { top: 8, bottom: 8, left: 12, right: 12 },
             maxWidth: 720
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.85) }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
           <Label
             value="DEV-INFO"
