@@ -235,14 +235,14 @@ const RootUi = () => {
               value={s.blueName || 'Blue'}
               fontSize={18}
               color={Color4.White()}
-              textAlign="middle-center"
+              textAlign="middle-right"
               uiTransform={{ width: 170, margin: { right: 8 } }}
             />
             <Label
               value={s.redName || 'Red'}
               fontSize={18}
               color={Color4.White()}
-              textAlign="middle-center"
+              textAlign="middle-left"
               uiTransform={{ width: 170, margin: { left: 8 } }}
             />
           </UiEntity>
