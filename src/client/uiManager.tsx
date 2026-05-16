@@ -49,7 +49,13 @@ const RootUi = () => {
   const myName = getPlayer()?.name || me
   const side = mySide(s, me)
   const kicker = isKickerView(s, side)
-  const waitLeft = s.waitEndMs > 0 ? Math.max(0, Math.ceil((s.waitEndMs - Date.now()) / 1000)) : 0
+
+  // Calculate remaining time directly from server timestamp, rounding UP to prevent flicker
+  let waitLeft = 0
+  if (s.waitEndMs > 0) {
+    waitLeft = Math.max(0, Math.ceil((s.waitEndMs - Date.now()) / 1000))
+  }
+
   const roundLabel = s.suddenDeath ? `Sudden death — shot ${s.shotIndex + 1}` : `Shoot ${Math.min(s.shotIndex + 1, 10)} / 10`
   const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
 
@@ -154,7 +160,7 @@ const RootUi = () => {
 
             {/* Score */}
             <Label
-              value={`${s.redScore} - ${s.blueScore}`}
+              value={`${s.blueScore} - ${s.redScore}`}
               fontSize={52}
               color={Color4.White()}
               textAlign="middle-center"
