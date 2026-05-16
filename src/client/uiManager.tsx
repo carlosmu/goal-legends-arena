@@ -148,7 +148,7 @@ const RootUi = () => {
                 <Button
                   value=""
                   uiTransform={{ width: 48, height: 36, margin: { left: 6 } }}
-                  uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.blueCountry) } }}
+                  uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.blueCountry) }, color: Color4.White() }}
                   onMouseDown={() => { if (side === 'blue') openPicker() }}
                 />
               ) : (
@@ -192,7 +192,7 @@ const RootUi = () => {
                 <Button
                   value=""
                   uiTransform={{ width: 48, height: 36, margin: { right: 6 } }}
-                  uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.redCountry) } }}
+                  uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.redCountry) }, color: Color4.White() }}
                   onMouseDown={() => { if (side === 'red') openPicker() }}
                 />
               ) : (
@@ -320,7 +320,7 @@ const RootUi = () => {
                   {row.country ? (
                     <UiEntity
                       uiTransform={{ width: 36, height: 27, margin: { right: 8 } }}
-                      uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(row.country) } }}
+                      uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(row.country) }, color: Color4.White() }}
                     />
                   ) : (
                     <UiEntity uiTransform={{ width: 44, height: 27, margin: { right: 8 } }} />
@@ -410,7 +410,7 @@ const RootUi = () => {
                   <Button
                     value=""
                     uiTransform={{ width: 72, height: 54 }}
-                    uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(c.iso) } }}
+                    uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(c.iso) }, color: Color4.White() }}
                     onMouseDown={() => selectCountry(c.iso)}
                   />
                   <Label
