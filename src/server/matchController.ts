@@ -313,7 +313,9 @@ function tryEnterResolving() {
   }
   const kLab = aimLabel(m.kickerPick as 'L' | 'C' | 'R')
   const gLab = aimLabel(m.gkPick as 'L' | 'C' | 'R')
-  m.resultLine = `Kicker chose ${kLab} — Goalkeeper chose ${gLab} — ${goal ? 'GOAL!' : 'SAVE!'}`
+  const kickerName = m.kickerIsRed === 1 ? m.redName : m.blueName
+  const gkName = m.kickerIsRed === 1 ? m.blueName : m.redName
+  m.resultLine = `${goal ? 'GOAL!' : 'SAVE!'}\n${kickerName} chose ${kLab}\n${gkName} chose ${gLab}`
   m.phase = GameState.ResolvingRound
   m.phaseDeadlineMs = nowMs() + ROUND_RESULT_MS
   bumpEpoch()

@@ -577,11 +577,33 @@ const RootUi = () => {
           <UiEntity
             uiTransform={{
               padding: 22,
-              maxWidth: 900
+              maxWidth: 900,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
             }}
             uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
           >
-            <Label value={s.resultLine} fontSize={20} color={Color4.Yellow()} textAlign="middle-center" />
+            <Label
+              value={s.resultLine.split('\n')[0] || ''}
+              fontSize={36}
+              color={s.resultLine.startsWith('GOAL') ? Color4.create(1, 0.9, 0.1, 1) : Color4.create(0.4, 0.8, 1, 1)}
+              textAlign="middle-center"
+            />
+            <Label
+              value={s.resultLine.split('\n')[1] || ''}
+              fontSize={18}
+              color={Color4.White()}
+              textAlign="middle-center"
+              uiTransform={{ margin: { top: 10 } }}
+            />
+            <Label
+              value={s.resultLine.split('\n')[2] || ''}
+              fontSize={18}
+              color={Color4.White()}
+              textAlign="middle-center"
+              uiTransform={{ margin: { top: 4 } }}
+            />
           </UiEntity>
         </UiEntity>
       )}
