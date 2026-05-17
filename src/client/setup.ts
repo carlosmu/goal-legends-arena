@@ -64,8 +64,8 @@ export function initClient() {
 
   const blue = findEntityByName('Blue_Spot')
   const red = findEntityByName('Red_Spot')
-  registerSpotPointerHandlers(blue, 'blue', 'Take Blue Spot (click or E)')
-  registerSpotPointerHandlers(red, 'red', 'Take Red Spot (click or E)')
+  registerSpotPointerHandlers(blue, 'blue', '')
+  registerSpotPointerHandlers(red, 'red', '')
 
   const spotClaim = { insideBlue: false, insideRed: false }
 
