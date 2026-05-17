@@ -116,7 +116,7 @@ const RootUi = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: 8,
+            padding: 18,
             pointerFilter: 'none',
             zIndex: 55
           }}
