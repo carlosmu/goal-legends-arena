@@ -367,9 +367,9 @@ function finishMatch(side: 'red' | 'blue') {
   bumpEpoch()
 }
 
-function finishMatchTimeout() {
+function endMatchNoWinner(message: string) {
   const m = mut()
-  m.winnerName = 'Timeout'
+  m.winnerName = message
   m.winnerSide = ''
   m.phase = GameState.MatchEnd
   m.phaseDeadlineMs = nowMs() + MATCH_END_UI_MS
@@ -388,6 +388,10 @@ function finishMatchTimeout() {
   }
 
   bumpEpoch()
+}
+
+function finishMatchTimeout() {
+  endMatchNoWinner('Timeout')
 }
 
 function clearSpotsLoserOnly(side: 'red' | 'blue') {
@@ -671,6 +675,20 @@ export function registerServerMessages() {
       goLobbyIdle()
     }
     bumpEpoch()
+  })
+
+  room.onMessage('leaveMatch', (_data, ctx) => {
+    const m = mut()
+    const addrRaw = ctx?.from ?? ''
+    m.lastServerEvent = `leaveMatch from=${addrRaw}`
+    if (!ctx || !addrRaw) return
+    if (m.phase === GameState.LobbyIdle || m.phase === GameState.MatchEnd) return
+    const addr = addrRaw.toLowerCase()
+    let leaverName = ''
+    if (m.redAddr?.toLowerCase() === addr) leaverName = m.redName
+    else if (m.blueAddr?.toLowerCase() === addr) leaverName = m.blueName
+    else return
+    endMatchNoWinner(`@${leaverName} abandoned the match`)
   })
 
   room.onMessage('startPvE', (_data, ctx) => {

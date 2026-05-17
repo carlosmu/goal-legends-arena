@@ -5,7 +5,8 @@ export const AUDIO = {
   whistle: 'assets/audio/whistle.mp3',
   point: 'assets/audio/point.mp3',
   fail: 'assets/audio/fail.mp3',
-  winner: 'assets/audio/winner.mp3'
+  winner: 'assets/audio/winner.mp3',
+  abandoned: 'assets/audio/abandoned.mp3'
 } as const
 
 export const WAIT_OPPONENT_MS = 30_000

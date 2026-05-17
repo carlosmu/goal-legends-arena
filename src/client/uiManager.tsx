@@ -117,7 +117,6 @@ const RootUi = () => {
             flexDirection: 'column',
             alignItems: 'center',
             padding: 18,
-            pointerFilter: 'none',
             zIndex: 55
           }}
           uiBackground={{ color: Color4.create(0, 0, 0, 0.6) }}
@@ -246,6 +245,16 @@ const RootUi = () => {
               uiTransform={{ width: 170, margin: { left: 8 } }}
             />
           </UiEntity>
+          {side && (
+            <Button
+              value="Leave Match"
+              fontSize={14}
+              color={Color4.White()}
+              uiTransform={{ width: 160, height: 36, margin: { top: 30 } }}
+              uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
+              onMouseDown={() => room.send('leaveMatch', {})}
+            />
+          )}
         </UiEntity>
       )}
       {/* ========== fin SCOREBOARD ========== */}
@@ -631,42 +640,61 @@ const RootUi = () => {
             zIndex: 70
           }}
         >
-          <UiEntity
-            uiTransform={{
-              padding: 32,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
-            }}
-            uiBackground={{ color: Color4.create(0.05, 0.12, 0.08, 0.92) }}
-          >
+          {s.winnerSide ? (
             <UiEntity
-              uiTransform={{ width: 256, height: 256, margin: { bottom: 16 } }}
-              uiBackground={
-                getLeaderboardFaceUrl(s.winnerName === s.redName ? s.redAddr : s.blueAddr)
-                  ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.winnerName === s.redName ? s.redAddr : s.blueAddr)! } }
-                  : { color: Color4.create(0.2, 0.2, 0.2, 1) }
-              }
-            />
-            <Label
-              value={`Winner: @${s.winnerName}`}
-              fontSize={32}
-              color={Color4.create(1, 0.92, 0.35, 1)}
-              textAlign="middle-center"
-            />
-            {(s.winnerName === s.redName ? s.redCountry : s.blueCountry) ? (
+              uiTransform={{
+                padding: 32,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+              uiBackground={{ color: Color4.create(0.05, 0.12, 0.08, 0.92) }}
+            >
               <UiEntity
-                uiTransform={{ width: 96, height: 72, margin: { top: 16 } }}
-                uiBackground={{
-                  textureMode: 'stretch',
-                  texture: { src: flagSrc(s.winnerName === s.redName ? s.redCountry : s.blueCountry) },
-                  color: Color4.White()
-                }}
+                uiTransform={{ width: 256, height: 256, margin: { bottom: 16 } }}
+                uiBackground={
+                  getLeaderboardFaceUrl(s.winnerSide === 'red' ? s.redAddr : s.blueAddr)
+                    ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.winnerSide === 'red' ? s.redAddr : s.blueAddr)! } }
+                    : { color: Color4.create(0.2, 0.2, 0.2, 1) }
+                }
               />
-            ) : (
-              <UiEntity uiTransform={{ width: 1, height: 1 }} />
-            )}
-          </UiEntity>
+              <Label
+                value={`Winner: @${s.winnerName}`}
+                fontSize={32}
+                color={Color4.create(1, 0.92, 0.35, 1)}
+                textAlign="middle-center"
+              />
+              {(s.winnerSide === 'red' ? s.redCountry : s.blueCountry) ? (
+                <UiEntity
+                  uiTransform={{ width: 96, height: 72, margin: { top: 16 } }}
+                  uiBackground={{
+                    textureMode: 'stretch',
+                    texture: { src: flagSrc(s.winnerSide === 'red' ? s.redCountry : s.blueCountry) },
+                    color: Color4.White()
+                  }}
+                />
+              ) : (
+                <UiEntity uiTransform={{ width: 1, height: 1 }} />
+              )}
+            </UiEntity>
+          ) : (
+            <UiEntity
+              uiTransform={{
+                padding: 32,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+              uiBackground={{ color: Color4.create(0.1, 0.08, 0.08, 0.92) }}
+            >
+              <Label
+                value={s.winnerName}
+                fontSize={28}
+                color={Color4.create(0.9, 0.6, 0.6, 1)}
+                textAlign="middle-center"
+              />
+            </UiEntity>
+          )}
         </UiEntity>
       )}
 

@@ -8,6 +8,7 @@ export const Messages = {
   spectatorChallenge: Schemas.Map({ accept: Schemas.Int }),
   setCountry: Schemas.Map({ iso: Schemas.String }),
   startPvE: Schemas.Map({}),
+  leaveMatch: Schemas.Map({}),
   clientReadyPing: Schemas.Map({}),
   teleport: Schemas.Map({
     x: Schemas.Number,

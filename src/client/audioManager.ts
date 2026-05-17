@@ -83,7 +83,7 @@ export function tickAudioManager(s: ClientSnapshot) {
     })
   }
   if (prevPhase !== GameState.MatchEnd && ph === GameState.MatchEnd) {
-    playOneShot(AUDIO.winner)
+    playOneShot(s.winnerSide ? AUDIO.winner : AUDIO.abandoned)
   }
   prevPhase = ph
 }

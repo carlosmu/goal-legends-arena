@@ -18,6 +18,7 @@ export type ClientSnapshot = {
   resultLine: string
   lastRoundWasGoal: number
   winnerName: string
+  winnerSide: string
   spectatorWinnerName: string
   spectatorChallengeActive: number
   spectatorAcceptedAddr: string
@@ -50,6 +51,7 @@ export const defaultSnapshot: ClientSnapshot = {
   resultLine: '',
   lastRoundWasGoal: 0,
   winnerName: '',
+  winnerSide: '',
   spectatorWinnerName: '',
   spectatorChallengeActive: 0,
   spectatorAcceptedAddr: '',
@@ -103,6 +105,7 @@ export function readPenaltySnapshot(): ClientSnapshot {
     resultLine: p.resultLine,
     lastRoundWasGoal: p.lastRoundWasGoal,
     winnerName: p.winnerName,
+    winnerSide: p.winnerSide,
     spectatorWinnerName: p.spectatorWinnerName,
     spectatorChallengeActive: p.spectatorChallengeActive,
     spectatorAcceptedAddr: p.spectatorAcceptedAddr,
