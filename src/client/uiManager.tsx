@@ -707,7 +707,7 @@ const RootUi = () => {
       <UiEntity
         uiTransform={{
           positionType: 'absolute',
-          position: { bottom: 0, left: 0, right: 0 },
+          position: { bottom: 10, left: 0, right: 0 },
           width: '100%',
           display: 'flex',
           flexDirection: 'row',
@@ -720,8 +720,9 @@ const RootUi = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-start',
-            padding: { top: 8, bottom: 8, left: 12, right: 12 },
-            maxWidth: 720
+            padding: { top: 8, bottom: 18, left: 12, right: 12 },
+            maxWidth: 720,
+            minHeight: 180
           }}
           uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
@@ -747,6 +748,18 @@ const RootUi = () => {
             value={`you: ${myName} (${shortAddr(me)}) | server tick: ${s.serverTickCounter}`}
             fontSize={13}
             color={Color4.create(0.7, 0.8, 0.95, 1)}
+            uiTransform={{ margin: { top: 4 } }}
+          />
+          <Label
+            value={`Timeout DEBUG: raw=${String(s.inactivityDeadlineMs)} now=${Date.now()}`}
+            fontSize={13}
+            color={Color4.create(1, 0.5, 0.5, 1)}
+            uiTransform={{ margin: { top: 4 } }}
+          />
+          <Label
+            value={'Timeout in: ' + (typeof s.inactivityDeadlineMs === 'number' && s.inactivityDeadlineMs > 0 ? Math.max(0, Math.ceil((s.inactivityDeadlineMs - Date.now()) / 1000)) + 's' : 'off')}
+            fontSize={13}
+            color={Color4.create(1, 0.7, 0.7, 1)}
             uiTransform={{ margin: { top: 4 } }}
           />
           <Label

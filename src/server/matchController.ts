@@ -191,6 +191,7 @@ export function createStateEntity(): Entity {
     suddenDeath: 0,
     stateEpoch: 0,
     phaseDeadlineMs: 0,
+    inactivityDeadlineMs: 0,
     redCountry: '',
     blueCountry: '',
     pveHumanIsRed: 1,
@@ -255,7 +256,8 @@ function resetMatchForNewGame(mode: MatchMode, pveHumanIsRed: boolean) {
   m.firstKickerIsRed = Math.random() < 0.5 ? 1 : 0
   m.kickerIsRed = m.firstKickerIsRed
   m.phase = GameState.SelectingDirections
-  m.phaseDeadlineMs = nowMs() + SHOOT_TIMEOUT_MS
+  m.phaseDeadlineMs = 0
+  m.inactivityDeadlineMs = 0
   if (isAiKicker()) {
     m.kickerPick = randomDir()
     m.gkPick = ''
@@ -441,6 +443,8 @@ function applyEarlyOrContinueAfterRound(): boolean {
       m.gkPick = ''
       m.kickerIsRed = m.shotIndex % 2 === 0 ? fk : fk === 1 ? 0 : 1
       m.phase = GameState.SelectingDirections
+      m.phaseDeadlineMs = 0
+      m.inactivityDeadlineMs = nowMs() + SHOOT_TIMEOUT_MS
       if (isAiKicker()) m.kickerPick = randomDir()
       bumpEpoch()
       return true
@@ -462,6 +466,8 @@ function applyEarlyOrContinueAfterRound(): boolean {
   m.gkPick = ''
   m.kickerIsRed = m.shotIndex % 2 === 0 ? fk : fk === 1 ? 0 : 1
   m.phase = GameState.SelectingDirections
+  m.phaseDeadlineMs = 0
+  m.inactivityDeadlineMs = nowMs() + SHOOT_TIMEOUT_MS
   if (isAiKicker()) m.kickerPick = randomDir()
   bumpEpoch()
   return true
@@ -498,12 +504,14 @@ export function serverTick() {
     return
   }
 
-  // Check for shoot timeout (no response for 1 minute)
+  // Check for shoot inactivity timeout (no player interaction for SHOOT_TIMEOUT_MS).
+  // Uses inactivityDeadlineMs so phaseDeadlineMs can stay dedicated to animation timers.
   if (
     m.phase === GameState.SelectingDirections &&
-    m.phaseDeadlineMs > 0 &&
-    t >= m.phaseDeadlineMs
+    m.inactivityDeadlineMs > 0 &&
+    t >= m.inactivityDeadlineMs
   ) {
+    m.inactivityDeadlineMs = 0
     finishMatchTimeout()
     return
   }
@@ -629,6 +637,9 @@ export function registerServerMessages() {
       if (m.mode === 'pve' && isAiGk()) return
       m.gkPick = dir
     }
+
+    // Reset inactivity timer on every player action
+    m.inactivityDeadlineMs = nowMs() + SHOOT_TIMEOUT_MS
 
     maybeFillAiGk()
     tryEnterResolving()
