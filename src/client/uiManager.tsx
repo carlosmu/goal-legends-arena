@@ -611,15 +611,54 @@ const RootUi = () => {
       {showMatchEnd && (
         <UiEntity
           uiTransform={{
-            margin: { top: '8vh' },
-            padding: 26,
+            positionType: 'absolute',
+            position: { top: 0, left: 0, right: 0, bottom: 0 },
+            width: '100%',
+            height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center'
+            justifyContent: 'center',
+            alignItems: 'center',
+            pointerFilter: 'none',
+            zIndex: 70
           }}
-          uiBackground={{ color: Color4.create(0.05, 0.12, 0.08, 0.92) }}
         >
-          <Label value={`Winner: @${s.winnerName}`} fontSize={32} color={Color4.create(1, 0.92, 0.35, 1)} textAlign="middle-center" />
+          <UiEntity
+            uiTransform={{
+              padding: 32,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
+            uiBackground={{ color: Color4.create(0.05, 0.12, 0.08, 0.92) }}
+          >
+            <UiEntity
+              uiTransform={{ width: 256, height: 256, margin: { bottom: 16 } }}
+              uiBackground={
+                getLeaderboardFaceUrl(s.winnerName === s.redName ? s.redAddr : s.blueAddr)
+                  ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.winnerName === s.redName ? s.redAddr : s.blueAddr)! } }
+                  : { color: Color4.create(0.2, 0.2, 0.2, 1) }
+              }
+            />
+            <Label
+              value={`Winner: @${s.winnerName}`}
+              fontSize={32}
+              color={Color4.create(1, 0.92, 0.35, 1)}
+              textAlign="middle-center"
+            />
+            {(s.winnerName === s.redName ? s.redCountry : s.blueCountry) ? (
+              <UiEntity
+                uiTransform={{ width: 96, height: 72, margin: { top: 16 } }}
+                uiBackground={{
+                  textureMode: 'stretch',
+                  texture: { src: flagSrc(s.winnerName === s.redName ? s.redCountry : s.blueCountry) },
+                  color: Color4.White()
+                }}
+              />
+            ) : (
+              <UiEntity uiTransform={{ width: 1, height: 1 }} />
+            )}
+          </UiEntity>
         </UiEntity>
       )}
 
