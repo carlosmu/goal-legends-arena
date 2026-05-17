@@ -673,10 +673,41 @@ const RootUi = () => {
         </UiEntity>
       )}
 
+      {side && (
+        <UiEntity
+          uiTransform={{
+            positionType: 'absolute',
+            position: { bottom: 170, left: 0, right: 0 },
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            zIndex: 100
+          }}
+        >
+          <UiEntity
+            uiTransform={{
+              padding: { top: 2, bottom: 2, left: 16, right: 16 }
+            }}
+            uiBackground={{
+              color: side === 'red' ? Color4.create(0.75, 0.12, 0.18, 0.92) : Color4.create(0.12, 0.35, 0.85, 0.92)
+            }}
+          >
+            <Label
+              value={`You are ${side === 'red' ? 'RED' : 'BLUE'} — seat OK`}
+              fontSize={18}
+              color={Color4.White()}
+              textAlign="middle-center"
+            />
+          </UiEntity>
+        </UiEntity>
+      )}
+
       <UiEntity
         uiTransform={{
           positionType: 'absolute',
-          position: { bottom: 0, left: 0, right: 0 },
+          position: { bottom: 10, left: 0, right: 0 },
           width: '100%',
           display: 'flex',
           flexDirection: 'row',
@@ -689,7 +720,7 @@ const RootUi = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-start',
-            padding: { top: 8, bottom: 8, left: 12, right: 12 },
+            padding: { top: 8, bottom: 0, left: 12, right: 12 },
             maxWidth: 720,
             minHeight: 180
           }}
