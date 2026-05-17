@@ -673,6 +673,22 @@ export function registerServerMessages() {
     bumpEpoch()
   })
 
+  room.onMessage('startPvE', (_data, ctx) => {
+    const m = mut()
+    const addrRaw = ctx?.from ?? ''
+    m.lastServerEvent = `startPvE from=${addrRaw} phase=${m.phase} red=${m.redAddr} blue=${m.blueAddr}`
+    console.log(`[Server] startPvE from=${addrRaw} phase=${m.phase} red=${m.redAddr} blue=${m.blueAddr}`)
+    if (!ctx) return
+    if (m.phase !== GameState.WaitingOpponent) return
+    const addr = addrRaw.toLowerCase()
+    const humanIsRed = m.redAddr?.toLowerCase() === addr
+    const humanIsBlue = m.blueAddr?.toLowerCase() === addr
+    if (!humanIsRed && !humanIsBlue) return
+    if (m.redAddr && m.blueAddr) return
+    startPvEFromWaiting(humanIsRed)
+    bumpEpoch()
+  })
+
   room.onMessage('spectatorChallenge', (data, ctx) => {
     if (!ctx) return
     const m = mut()

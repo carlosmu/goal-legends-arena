@@ -493,6 +493,14 @@ const RootUi = () => {
             color={Color4.create(1, 0.85, 0.2, 1)}
             uiTransform={{ margin: { top: 10 } }}
           />
+          <Button
+            value="Training Mode (PvE)"
+            fontSize={16}
+            color={Color4.White()}
+            uiTransform={{ width: 220, height: 44, margin: { top: 18 } }}
+            uiBackground={{ color: Color4.create(0.2, 0.45, 0.25, 1) }}
+            onMouseDown={() => room.send('startPvE', {})}
+          />
         </UiEntity>
       )}
 
