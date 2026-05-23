@@ -52,6 +52,8 @@ const LEADERBOARD_TOP_N = 10
 
 let lbShowUntilMs = 0
 let prevPhase = ''
+let pickerPage = 0
+let prevPickerOpen = false
 
 const RootUi = () => {
   readPenaltySnapshot()
@@ -108,9 +110,13 @@ const RootUi = () => {
   initLocalCountryFromSnapshot(myCountryInSnapshot)
 
   const showCountryPicker = isPickerOpen()
-  const FLAGS_PER_ROW = 12
-  const FLAG_ROWS = 4
-  const visibleCountries = COUNTRIES.slice(0, FLAGS_PER_ROW * FLAG_ROWS)
+  if (showCountryPicker && !prevPickerOpen) pickerPage = 0
+  prevPickerOpen = showCountryPicker
+  const FLAGS_PER_ROW = 6
+  const FLAG_ROWS = 2
+  const PAGE_SIZE = FLAGS_PER_ROW * FLAG_ROWS
+  const TOTAL_PAGES = Math.ceil(COUNTRIES.length / PAGE_SIZE)
+  const visibleCountries = COUNTRIES.slice(pickerPage * PAGE_SIZE, (pickerPage + 1) * PAGE_SIZE)
 
   return (
     <UiEntity
@@ -463,26 +469,64 @@ const RootUi = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    margin: { left: 4, right: 4, bottom: 8 }
+                    margin: { left: 4, right: 4, bottom: '3vw' }
                   }}
                 >
                   <Button
                     value=""
-                    uiTransform={{ width: 84, height: 63 }}
+                    uiTransform={{ width: 168, height: 126 }}
                     uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(c.iso) }, color: Color4.White() }}
                     onMouseDown={() => selectCountry(c.iso)}
                   />
                   <Label
-                    value={c.name}
+                    value={c.name.length > 10 ? c.name.slice(0, 10) + '...' : c.name}
                     fontSize={fs(20)}
                     color={Color4.White()}
                     textAlign="middle-center"
-                    uiTransform={{ maxWidth: 72 }}
+                    uiTransform={{ width: 168 }}
                   />
                 </UiEntity>
               ))}
             </UiEntity>
           ))}
+          {/* Pagination */}
+          <UiEntity
+            uiTransform={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              margin: { top: 16 }
+            }}
+          >
+            {pickerPage > 0 && (
+              <Button
+                value="← Prev"
+                fontSize={fs(20)}
+                color={Color4.White()}
+                uiTransform={{ width: 140, height: 44, margin: { right: 16 } }}
+                uiBackground={{ color: Color4.create(0.2, 0.3, 0.5, 1) }}
+                onMouseDown={() => { pickerPage-- }}
+              />
+            )}
+            <Label
+              value={`${pickerPage + 1} / ${TOTAL_PAGES}`}
+              fontSize={fs(20)}
+              color={Color4.create(0.8, 0.85, 1, 1)}
+              textAlign="middle-center"
+              uiTransform={{ width: 60 }}
+            />
+            {pickerPage < TOTAL_PAGES - 1 && (
+              <Button
+                value="Next →"
+                fontSize={fs(20)}
+                color={Color4.White()}
+                uiTransform={{ width: 140, height: 44, margin: { left: 16 } }}
+                uiBackground={{ color: Color4.create(0.2, 0.3, 0.5, 1) }}
+                onMouseDown={() => { pickerPage++ }}
+              />
+            )}
+          </UiEntity>
         </UiEntity>
       )}
       {/* ========== fin COUNTRY PICKER ========== */}
