@@ -52,13 +52,28 @@ const HAIR = [
 ]
 
 const UPPER_BODY = [
+  // sporty / football
+  URN + 'soccer_shirt',           // M  - jersey de fútbol
+  URN + 'sport_jacket',           // M  - campera deportiva
+  URN + 'f_sport_purple_tshirt',  // F  - remera deporte violeta
+  // azul
+  URN + 'blue_tshirt',            // M
+  URN + 'simple_blue_tshirt',     // F
+  URN + 'polobluetshirt',         // unisex
+  URN + 'f_blue_jacket',          // F  - campera azul
+  // rojo
+  URN + 'red_tshirt',             // M
+  URN + 'f_red_simple_tshirt',    // F
+  // naranja
+  URN + 'orangebasictshirt',      // unisex
+  // multicolor
+  URN + 'polocoloredtshirt',      // unisex
+  // neutros
   URN + 'safari_shirt',
   URN + 'm_sweater_02',
   URN + 'm_sweater',
-  URN + 'sport_jacket',
   URN + 'black_top',
   URN + 'white_top',
-  URN + 'f_blue_jacket',
   URN + 'f_simple_yellow_tshirt',
 ]
 
