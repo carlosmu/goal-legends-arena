@@ -1,4 +1,5 @@
 ﻿import ReactEcs, { Button, Label, ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
+import { isMobile } from '@dcl/sdk/platform'
 import { Color4 } from '@dcl/sdk/math'
 import { isStateSyncronized } from '@dcl/sdk/network'
 import { getPlayer } from '@dcl/sdk/src/players'
@@ -37,6 +38,14 @@ function isKickerView(s: typeof clientSnapshot, side: 'red' | 'blue' | null): bo
   if (!side) return false
   const kr = s.kickerIsRed === 1
   return (kr && side === 'red') || (!kr && side === 'blue')
+}
+
+function fs(size: number): number {
+  return isMobile() ? Math.ceil(size * 1.5) : size
+}
+
+function vw(size: number): `${number}vw` {
+  return (isMobile() ? `${size * 1.5}vw` : `${size}vw`) as `${number}vw`
 }
 
 const LEADERBOARD_TOP_N = 10
@@ -146,7 +155,7 @@ const RootUi = () => {
               side === 'blue' && (
                 <Button
                   value="🌍"
-                  fontSize={30}
+                  fontSize={fs(30)}
                   uiTransform={{ width: 40, height: 40, margin: { right: 6 } }}
                   onMouseDown={() => openPicker()}
                 />
@@ -171,7 +180,7 @@ const RootUi = () => {
             {/* Score */}
             <Label
               value={`${s.blueScore} - ${s.redScore}`}
-              fontSize={70}
+              fontSize={fs(70)}
               color={Color4.White()}
               textAlign="middle-center"
               uiTransform={{ margin: { left: 16, right: 16 } }}
@@ -210,7 +219,7 @@ const RootUi = () => {
               side === 'red' && (
                 <Button
                   value="🌍"
-                  fontSize={30}
+                  fontSize={fs(30)}
                   uiTransform={{ width: 40, height: 40, margin: { left: 6 } }}
                   onMouseDown={() => openPicker()}
                 />
@@ -230,14 +239,14 @@ const RootUi = () => {
           >
             <Label
               value={s.blueName || 'Blue'}
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               textAlign="middle-right"
               uiTransform={{ width: 170, margin: { right: 8 } }}
             />
             <Label
               value={s.redName || 'Red'}
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               textAlign="middle-left"
               uiTransform={{ width: 170, margin: { left: 8 } }}
@@ -246,7 +255,7 @@ const RootUi = () => {
           {side && (
             <Button
               value="Leave Match"
-              fontSize={20}
+              fontSize={fs(20)}
               color={Color4.White()}
               uiTransform={{ width: 160, height: 36, margin: { top: 30 } }}
               uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
@@ -278,17 +287,17 @@ const RootUi = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: '2vw',
+            padding: isMobile() ? 58 : 38,
             minWidth: '25%',
             minHeight: '25%'
           }}
           uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
-          <Label value="Leaderboard" fontSize={30} color={Color4.White()} textAlign="middle-center" uiTransform={{ width: '100%', margin: { bottom: 8 } }} />
+          <Label value="Leaderboard" fontSize={fs(30)} color={Color4.White()} textAlign="middle-center" uiTransform={{ width: '100%', margin: { bottom: 8 } }} />
           {lbRows.length === 0 ? (
             <Label
               value="(no wins yet)"
-              fontSize={20}
+              fontSize={fs(20)}
               color={Color4.create(0.9, 0.95, 1, 1)}
               uiTransform={{ margin: { top: 6 } }}
             />
@@ -301,30 +310,30 @@ const RootUi = () => {
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'flex-start',
-                  height: '2vw',
+                  height: vw(2),
                   margin: { top: 4, bottom: 2 }
                 }}
               >
                 <UiEntity uiTransform={{ flexGrow: 1 }} />
                 <Label
                   value="wins"
-                  fontSize={20}
+                  fontSize={fs(20)}
                   color={Color4.create(1, 0.9, 0.3, 1)}
                   textAlign="middle-center"
-                  uiTransform={{ width: '5vw', margin: { right: 4 } }}
+                  uiTransform={{ width: vw(5), margin: { right: 4 } }}
                 />
                 <Label
-                  value="streak"
-                  fontSize={20}
+                  value="streaks"
+                  fontSize={fs(20)}
                   color={Color4.create(0.5, 1, 0.6, 1)}
                   textAlign="middle-center"
-                  uiTransform={{ width: '5vw' }}
+                  uiTransform={{ width: vw(5) }}
                 />
               </UiEntity>
             {lbRows.map((row) => {
               const face = getLeaderboardFaceUrl(row.addr)
-              const rowH = '2vw'
-              const faceSz = '2vw'
+              const rowH = vw(2)
+              const faceSz = vw(2)
               return (
                 <UiEntity
                   key={row.addr}
@@ -340,9 +349,9 @@ const RootUi = () => {
                 >
                   {/* Position */}
                   <UiEntity
-                    uiTransform={{ width: '2vw', height: rowH, margin: { right: 5 } }}
+                    uiTransform={{ width: vw(2), height: rowH, margin: { right: 5 } }}
                   >
-                    <Label value={`${row.rank}.`} fontSize={20} color={Color4.White()} textAlign="middle-right" uiTransform={{ width: '100%', height: rowH }} />
+                    <Label value={`${row.rank}.`} fontSize={fs(20)} color={Color4.White()} textAlign="middle-right" uiTransform={{ width: '100%', height: rowH }} />
                   </UiEntity>
                   {/* Profile pic */}
                   <UiEntity
@@ -355,7 +364,7 @@ const RootUi = () => {
                   />
                   {/* Flag */}
                   <UiEntity
-                    uiTransform={{ width: '3vw', height: '2vw', margin: { right: 5 } }}
+                    uiTransform={{ width: vw(3), height: vw(2), margin: { right: 5 } }}
                     uiBackground={
                       row.country
                         ? { textureMode: 'stretch', texture: { src: flagSrc(row.country) }, color: Color4.White() }
@@ -364,21 +373,21 @@ const RootUi = () => {
                   />
                   {/* Username */}
                   <UiEntity
-                    uiTransform={{ width: '10vw', height: rowH, margin: { right: 5 } }}
+                    uiTransform={{ width: vw(10), height: rowH, margin: { right: 5 } }}
                   >
-                    <Label value={truncateName(row.name)} fontSize={20} color={Color4.create(0.9, 0.95, 1, 1)} textAlign="middle-left" uiTransform={{ width: '100%', height: rowH }} />
+                    <Label value={truncateName(row.name)} fontSize={fs(20)} color={Color4.create(0.9, 0.95, 1, 1)} textAlign="middle-left" uiTransform={{ width: '100%', height: rowH }} />
                   </UiEntity>
                   {/* Wins */}
                   <UiEntity
-                    uiTransform={{ width: '5vw', height: rowH, margin: { right: 4 } }}
+                    uiTransform={{ width: vw(5), height: rowH, margin: { right: 4 } }}
                   >
-                    <Label value={`${row.wins}`} fontSize={20} color={Color4.create(1, 0.9, 0.3, 1)} textAlign="middle-center" uiTransform={{ width: '100%', height: rowH }} />
+                    <Label value={`${row.wins}`} fontSize={fs(20)} color={Color4.create(1, 0.9, 0.3, 1)} textAlign="middle-center" uiTransform={{ width: '100%', height: rowH }} />
                   </UiEntity>
                   {/* Streak */}
                   <UiEntity
-                    uiTransform={{ width: '5vw', height: rowH }}
+                    uiTransform={{ width: vw(5), height: rowH }}
                   >
-                    <Label value={`${row.streak}`} fontSize={20} color={Color4.create(0.5, 1, 0.6, 1)} textAlign="middle-center" uiTransform={{ width: '100%', height: rowH }} />
+                    <Label value={`${row.streak}`} fontSize={fs(20)} color={Color4.create(0.5, 1, 0.6, 1)} textAlign="middle-center" uiTransform={{ width: '100%', height: rowH }} />
                   </UiEntity>
                 </UiEntity>
               )
@@ -407,21 +416,21 @@ const RootUi = () => {
         >
           <Label
             value="Welcome to Goal Legends Arena"
-            fontSize={50}
+            fontSize={fs(50)}
             color={Color4.White()}
             textAlign="middle-center"
             uiTransform={{ margin: { bottom: 4 } }}
           />
           <Label
             value="World Cup Edition"
-            fontSize={35}
+            fontSize={fs(35)}
             color={Color4.create(1, 0.85, 0.1, 1)}
             textAlign="middle-center"
             uiTransform={{ margin: { bottom: 20 } }}
           />
           <Label
             value="— Select your country —"
-            fontSize={30}
+            fontSize={fs(30)}
             color={Color4.create(0.75, 0.85, 1, 1)}
             textAlign="middle-center"
             uiTransform={{ margin: { bottom: 16 } }}
@@ -455,7 +464,7 @@ const RootUi = () => {
                   />
                   <Label
                     value={c.name}
-                    fontSize={20}
+                    fontSize={fs(20)}
                     color={Color4.White()}
                     textAlign="middle-center"
                     uiTransform={{ maxWidth: 72 }}
@@ -482,13 +491,13 @@ const RootUi = () => {
         >
           <Label
             value="Welcome to Goal Legends Arena. Choose a Spot to Begin"
-            fontSize={35}
+            fontSize={fs(35)}
             color={Color4.White()}
             textAlign="middle-center"
           />
           <Label
             value="Walk to the Red or Blue spot, then click or press E (same as Sit Here)."
-            fontSize={30}
+            fontSize={fs(30)}
             color={Color4.create(0.88, 0.9, 0.95, 1)}
             textAlign="middle-center"
             uiTransform={{ margin: { top: 14 } }}
@@ -507,16 +516,16 @@ const RootUi = () => {
           }}
           uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
-          <Label value="Waiting for the rival" fontSize={35} color={Color4.White()} textAlign="middle-center" />
+          <Label value="Waiting for the rival" fontSize={fs(35)} color={Color4.White()} textAlign="middle-center" />
           <Label
             value={`${waitLeft}s`}
-            fontSize={30}
+            fontSize={fs(30)}
             color={Color4.create(1, 0.85, 0.2, 1)}
             uiTransform={{ margin: { top: 10 } }}
           />
           <Button
             value="Training Mode (PvE)"
-            fontSize={30}
+            fontSize={fs(30)}
             color={Color4.White()}
             uiTransform={{ width: 220, height: 44, margin: { top: 18 } }}
             uiBackground={{ color: Color4.create(0.2, 0.45, 0.25, 1) }}
@@ -537,11 +546,11 @@ const RootUi = () => {
           }}
           uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
-          <Label value={roundLabel} fontSize={30} color={Color4.create(0.9, 0.95, 1, 1)} uiTransform={{ margin: { bottom: 10 } }} />
+          <Label value={roundLabel} fontSize={fs(30)} color={Color4.create(0.9, 0.95, 1, 1)} uiTransform={{ margin: { bottom: 10 } }} />
           {kicker && (
             <Label
               value="You are the Kicker — choose where to shoot (Left / Center / Right)"
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               textAlign="middle-center"
             />
@@ -549,21 +558,21 @@ const RootUi = () => {
           {!kicker && (
             <Label
               value="You are the Goalkeeper — choose where to dive (Left / Center / Right)"
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               textAlign="middle-center"
             />
           )}
           <Label
             value="Use the green boxes near the goal or the buttons below."
-            fontSize={20}
+            fontSize={fs(20)}
             color={Color4.create(0.8, 0.85, 0.95, 1)}
             uiTransform={{ margin: { top: 12 } }}
           />
           <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 16 } }}>
             <Button
               value="Left"
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               uiTransform={{ width: 120, height: 40, margin: { right: 8 } }}
               uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, 1) }}
@@ -571,7 +580,7 @@ const RootUi = () => {
             />
             <Button
               value="Center"
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               uiTransform={{ width: 120, height: 40, margin: { right: 8 } }}
               uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, 1) }}
@@ -579,7 +588,7 @@ const RootUi = () => {
             />
             <Button
               value="Right"
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               uiTransform={{ width: 120, height: 40 }}
               uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, 1) }}
@@ -615,20 +624,20 @@ const RootUi = () => {
           >
             <Label
               value={s.resultLine.split('\n')[0] || ''}
-              fontSize={60}
+              fontSize={fs(60)}
               color={s.resultLine.startsWith('GOAL') ? Color4.create(1, 0.9, 0.1, 1) : Color4.create(0.4, 0.8, 1, 1)}
               textAlign="middle-center"
             />
             <Label
               value={s.resultLine.split('\n')[1] || ''}
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               textAlign="middle-center"
               uiTransform={{ margin: { top: 10 } }}
             />
             <Label
               value={s.resultLine.split('\n')[2] || ''}
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               textAlign="middle-center"
               uiTransform={{ margin: { top: 4 } }}
@@ -672,7 +681,7 @@ const RootUi = () => {
               />
               <Label
                 value={`Winner: @${s.winnerName}`}
-                fontSize={50}
+                fontSize={fs(50)}
                 color={Color4.create(1, 0.92, 0.35, 1)}
                 textAlign="middle-center"
               />
@@ -701,7 +710,7 @@ const RootUi = () => {
             >
               <Label
                 value={s.winnerName}
-                fontSize={40}
+                fontSize={fs(40)}
                 color={Color4.create(0.9, 0.6, 0.6, 1)}
                 textAlign="middle-center"
               />
@@ -721,11 +730,11 @@ const RootUi = () => {
           }}
           uiBackground={{ color: Color4.create(0.1, 0.1, 0.2, 0.9) }}
         >
-          <Label value="Keep playing on this spot?" fontSize={30} color={Color4.White()} />
+          <Label value="Keep playing on this spot?" fontSize={fs(30)} color={Color4.White()} />
           <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 14 } }}>
             <Button
               value="YES"
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               uiTransform={{ width: 140, height: 44, margin: { right: 12 } }}
               uiBackground={{ color: Color4.create(0.1, 0.65, 0.35, 1) }}
@@ -733,7 +742,7 @@ const RootUi = () => {
             />
             <Button
               value="NO"
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               uiTransform={{ width: 140, height: 44 }}
               uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
@@ -757,14 +766,14 @@ const RootUi = () => {
         >
           <Label
             value={`${s.spectatorWinnerName} is the WINNER! Face the winner?`}
-            fontSize={30}
+            fontSize={fs(30)}
             color={Color4.White()}
             textAlign="middle-center"
           />
           <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 14 } }}>
             <Button
               value="YES"
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               uiTransform={{ width: 120, height: 40, margin: { right: 10 } }}
               uiBackground={{ color: Color4.create(0.2, 0.55, 0.9, 1) }}
@@ -772,7 +781,7 @@ const RootUi = () => {
             />
             <Button
               value="NO"
-              fontSize={30}
+              fontSize={fs(30)}
               color={Color4.White()}
               uiTransform={{ width: 120, height: 40 }}
               uiBackground={{ color: Color4.create(0.35, 0.35, 0.4, 1) }}
@@ -782,7 +791,7 @@ const RootUi = () => {
         </UiEntity>
       )}
 
-      <UiEntity
+      {!isMobile() && <UiEntity
         uiTransform={{
           positionType: 'absolute',
           position: { bottom: 0, left: 0, right: 0 },
@@ -806,29 +815,29 @@ const RootUi = () => {
         >
           <Label
             value={`state: ${s.phase} | sync: ${isStateSyncronized() ? 'ok' : 'no'} | match: ${penaltyStateEntityReady() ? 'ok' : '—'} | mode: ${s.mode} | active: ${s.hasActiveMatch}`}
-            fontSize={20}
+            fontSize={fs(20)}
             color={Color4.create(0.75, 1, 0.8, 1)}
           />
           <Label
             value={`side: ${side ?? '(none)'} | red: ${s.redName || '—'} | blue: ${s.blueName || '—'}`}
-            fontSize={20}
+            fontSize={fs(20)}
             color={Color4.create(0.85, 0.9, 1, 1)}
             uiTransform={{ margin: { top: 4 } }}
           />
           <Label
             value={'Timeout in: ' + (typeof s.inactivityDeadlineMs === 'number' && s.inactivityDeadlineMs > 0 ? Math.max(0, Math.ceil((s.inactivityDeadlineMs - Date.now()) / 1000)) + 's' : 'off') + ` | server tick: ${s.serverTickCounter}`}
-            fontSize={20}
+            fontSize={fs(20)}
             color={Color4.create(1, 0.7, 0.7, 1)}
             uiTransform={{ margin: { top: 4 } }}
           />
           <Label
             value={`last server event: ${resolveEventAddrs(s.lastServerEvent, s.redAddr, s.redName, s.blueAddr, s.blueName) || '(none)'}`}
-            fontSize={20}
+            fontSize={fs(20)}
             color={Color4.create(1, 0.9, 0.6, 1)}
             uiTransform={{ margin: { top: 4 } }}
           />
         </UiEntity>
-      </UiEntity>
+      </UiEntity>}
     </UiEntity>
   )
 }
