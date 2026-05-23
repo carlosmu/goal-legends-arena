@@ -31,7 +31,11 @@ export function parseLeaderboardJson(json: string): ParsedLeaderboard {
 
 export function getLeaderboardRows(json: string, maxLines: number): LeaderboardRow[] {
   const { wins, sessionMax, names, countries } = parseLeaderboardJson(json)
-  const sorted = Object.keys(wins).sort((a, b) => (wins[b] || 0) - (wins[a] || 0))
+  const sorted = Object.keys(wins).sort((a, b) => {
+    const wDiff = (wins[b] || 0) - (wins[a] || 0)
+    if (wDiff !== 0) return wDiff
+    return (sessionMax[b] || 0) - (sessionMax[a] || 0)
+  })
   return sorted.slice(0, maxLines).map((addr, i) => {
     const w = wins[addr] || 0
     const ms = sessionMax[addr] || 0
