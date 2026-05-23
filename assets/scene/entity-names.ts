@@ -17,11 +17,13 @@ export enum EntityNames {
   NPC_Red_3 = "NPC_Red_3",
   NPC_Red_4 = "NPC_Red_4",
   NPC_Red_5 = "NPC_Red_5",
+  NPCs = "NPCs",
   POV = "POV",
   POsition_Exapmple = "POsition Exapmple",
   Red_Spot = "Red_Spot",
   Reds = "Reds",
   Sit_Spot = "Sit Spot",
   Sit_Spots = "Sit_Spots",
+  Video_Screen = "Video Screen",
   futbol_arena_glb = "futbol_arena.glb",
 } 
