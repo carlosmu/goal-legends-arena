@@ -50,6 +50,9 @@ function vw(size: number): `${number}vw` {
 
 const LEADERBOARD_TOP_N = 10
 
+let lbShowUntilMs = 0
+let prevPhase = ''
+
 const RootUi = () => {
   readPenaltySnapshot()
   const s = clientSnapshot
@@ -66,6 +69,12 @@ const RootUi = () => {
 
   const roundLabel = s.suddenDeath ? `Sudden death — shot ${s.shotIndex + 1}` : `Shoot ${Math.min(s.shotIndex + 1, 10)} / 10`
   const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
+
+  if (prevPhase === GameState.MatchEnd && s.phase !== GameState.MatchEnd) {
+    lbShowUntilMs = Date.now() + 5000
+  }
+  prevPhase = s.phase
+  const showLeaderboard = Date.now() < lbShowUntilMs
 
   // Determine if engine is red or blue in PvE
   const isPvE = s.mode === 'pve'
@@ -267,7 +276,7 @@ const RootUi = () => {
       {/* ========== fin SCOREBOARD ========== */}
 
       {/* ========== UI: LEADERBOARD (centrado en pantalla) ========== */}
-      <UiEntity
+      {showLeaderboard && <UiEntity
         uiTransform={{
           positionType: 'absolute',
           position: { top: 0, left: 0, right: 0, bottom: 0 },
@@ -396,6 +405,7 @@ const RootUi = () => {
           )}
         </UiEntity>
       </UiEntity>
+      }
       {/* ========== fin UI LEADERBOARD ========== */}
 
       {/* ========== COUNTRY PICKER ========== */}
