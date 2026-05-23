@@ -9,7 +9,6 @@ import { room } from '../shared/messages'
 import { GameState } from '../shared/gameState'
 import {
   COUNTRIES,
-  getLocalCountry,
   initLocalCountryFromSnapshot,
   isPickerOpen,
   openPicker,
@@ -90,8 +89,7 @@ const RootUi = () => {
   const myCountryInSnapshot = side === 'red' ? s.redCountry : side === 'blue' ? s.blueCountry : ''
   initLocalCountryFromSnapshot(myCountryInSnapshot)
 
-  const localCountry = getLocalCountry()
-  const showCountryPicker = !localCountry || isPickerOpen()
+  const showCountryPicker = isPickerOpen()
   const FLAGS_PER_ROW = 12
   const FLAG_ROWS = 4
   const visibleCountries = COUNTRIES.slice(0, FLAGS_PER_ROW * FLAG_ROWS)
