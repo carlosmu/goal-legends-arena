@@ -111,65 +111,23 @@
             "parent": 0
           }
         },
-        "513": {
-          "json": {
-            "position": {
-              "x": 3.3672609329223633,
-              "y": 5.5,
-              "z": 9.588417053222656
-            },
-            "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "parent": 0
-          }
-        },
         "514": {
           "json": {
             "position": {
-              "x": 30.75,
-              "y": 1,
-              "z": 16
-            },
-            "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "parent": 0
-          }
-        },
-        "515": {
-          "json": {
-            "position": {
               "x": 16,
-              "y": 0,
-              "z": 27.75
-            },
-            "scale": {
-              "x": 1,
               "y": 1,
-              "z": 1
+              "z": 11.75
             },
             "rotation": {
               "x": 0,
               "y": 0,
               "z": 0,
               "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
             },
             "parent": 0
           }
@@ -530,6 +488,195 @@
             },
             "parent": 0
           }
+        },
+        "533": {
+          "json": {
+            "position": {
+              "x": -6.743495646333031e-7,
+              "y": 7.683013916015625,
+              "z": -11.620833396911621
+            },
+            "rotation": {
+              "x": 0.258819043636322,
+              "y": 0,
+              "z": 0,
+              "w": 0.9659258127212524
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "parent": 534
+          }
+        },
+        "534": {
+          "json": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0.3826834261417389,
+              "z": 0,
+              "w": 0.9238795638084412
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "parent": 541
+          }
+        },
+        "535": {
+          "json": {
+            "position": {
+              "x": -0.0013313022209331393,
+              "y": 10.41746997833252,
+              "z": -10.357046127319336
+            },
+            "rotation": {
+              "x": 0.258819043636322,
+              "y": 0,
+              "z": 0,
+              "w": 0.9659258127212524
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "parent": 536
+          }
+        },
+        "536": {
+          "json": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": -0.3825468122959137,
+              "z": 0,
+              "w": 0.923936128616333
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "parent": 541
+          }
+        },
+        "537": {
+          "json": {
+            "position": {
+              "x": -0.12194446474313736,
+              "y": 10.41746997833252,
+              "z": -10.108636856079102
+            },
+            "rotation": {
+              "x": 0.258819043636322,
+              "y": 0,
+              "z": 0,
+              "w": 0.9659258127212524
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "parent": 538
+          }
+        },
+        "538": {
+          "json": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0.9188322424888611,
+              "z": 0,
+              "w": -0.39464834332466125
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "parent": 541
+          }
+        },
+        "539": {
+          "json": {
+            "position": {
+              "x": 0.25801169872283936,
+              "y": 10.41746997833252,
+              "z": -10.61487865447998
+            },
+            "rotation": {
+              "x": 0.258819043636322,
+              "y": 0,
+              "z": 0,
+              "w": 0.9659258127212524
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "parent": 540
+          }
+        },
+        "540": {
+          "json": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0.9170871376991272,
+              "z": 0,
+              "w": 0.39868679642677307
+            },
+            "scale": {
+              "x": 0.9999999403953552,
+              "y": 1,
+              "z": 0.9999999403953552
+            },
+            "parent": 541
+          }
+        },
+        "541": {
+          "json": {
+            "position": {
+              "x": 16,
+              "y": 0,
+              "z": 16
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "parent": 0
+          }
         }
       }
     },
@@ -578,6 +725,31 @@
           "json": {
             "networkId": 0,
             "entityId": 8006
+          }
+        }
+      }
+    },
+    {
+      "name": "core::Animator",
+      "jsonSchema": {
+        "type": "object",
+        "properties": {},
+        "serializationType": "protocol-buffer",
+        "protocolBuffer": "PBAnimator"
+      },
+      "data": {
+        "512": {
+          "json": {
+            "states": [
+              {
+                "clip": "Flag_Wave.026",
+                "playing": false,
+                "weight": 1,
+                "speed": 1,
+                "loop": false,
+                "shouldReset": false
+              }
+            ]
           }
         }
       }
@@ -736,19 +908,9 @@
             "value": "futbol_arena.glb"
           }
         },
-        "513": {
-          "json": {
-            "value": "Reds"
-          }
-        },
         "514": {
           "json": {
             "value": "POV"
-          }
-        },
-        "515": {
-          "json": {
-            "value": "POsition Exapmple"
           }
         },
         "516": {
@@ -834,6 +996,51 @@
         "532": {
           "json": {
             "value": "Video Screen"
+          }
+        },
+        "533": {
+          "json": {
+            "value": "Spotlight"
+          }
+        },
+        "534": {
+          "json": {
+            "value": "Spot Rotation_1"
+          }
+        },
+        "535": {
+          "json": {
+            "value": "Spotlight_2"
+          }
+        },
+        "536": {
+          "json": {
+            "value": "Spot Rotation_2"
+          }
+        },
+        "537": {
+          "json": {
+            "value": "Spotlight_3"
+          }
+        },
+        "538": {
+          "json": {
+            "value": "Spot Rotation_3"
+          }
+        },
+        "539": {
+          "json": {
+            "value": "Spotlight_4"
+          }
+        },
+        "540": {
+          "json": {
+            "value": "Spot Rotation_4"
+          }
+        },
+        "541": {
+          "json": {
+            "value": "Spot Lights"
           }
         }
       }
@@ -999,6 +1206,97 @@
       }
     },
     {
+      "name": "core::LightSource",
+      "jsonSchema": {
+        "type": "object",
+        "properties": {},
+        "serializationType": "protocol-buffer",
+        "protocolBuffer": "PBLightSource"
+      },
+      "data": {
+        "533": {
+          "json": {
+            "active": true,
+            "color": {
+              "r": 1,
+              "g": 1,
+              "b": 1
+            },
+            "intensity": 300000,
+            "range": -1,
+            "shadow": true,
+            "type": {
+              "$case": "spot",
+              "spot": {
+                "innerAngle": 12,
+                "outerAngle": 31
+              }
+            }
+          }
+        },
+        "535": {
+          "json": {
+            "active": true,
+            "color": {
+              "r": 1,
+              "g": 1,
+              "b": 1
+            },
+            "intensity": 300000,
+            "range": -1,
+            "shadow": true,
+            "type": {
+              "$case": "spot",
+              "spot": {
+                "innerAngle": 14,
+                "outerAngle": 34
+              }
+            }
+          }
+        },
+        "537": {
+          "json": {
+            "active": true,
+            "color": {
+              "r": 1,
+              "g": 1,
+              "b": 1
+            },
+            "intensity": 300000,
+            "range": -1,
+            "shadow": true,
+            "type": {
+              "$case": "spot",
+              "spot": {
+                "innerAngle": 10,
+                "outerAngle": 31
+              }
+            }
+          }
+        },
+        "539": {
+          "json": {
+            "active": true,
+            "color": {
+              "r": 1,
+              "g": 1,
+              "b": 1
+            },
+            "intensity": 300000,
+            "range": -1,
+            "shadow": true,
+            "type": {
+              "$case": "spot",
+              "spot": {
+                "innerAngle": 16,
+                "outerAngle": 35
+              }
+            }
+          }
+        }
+      }
+    },
+    {
       "name": "inspector::Selection",
       "jsonSchema": {
         "type": "object",
@@ -1011,9 +1309,9 @@
         "serializationType": "map"
       },
       "data": {
-        "0": {
+        "533": {
           "json": {
-            "gizmo": 0
+            "gizmo": 1
           }
         }
       }
@@ -1065,15 +1363,14 @@
                 "open": true,
                 "children": [
                   512,
-                  513,
                   514,
                   520,
                   521,
-                  515,
                   516,
                   517,
                   531,
-                  532
+                  532,
+                  541
                 ]
               },
               {
@@ -1089,10 +1386,6 @@
                 "children": []
               },
               {
-                "entity": 513,
-                "children": []
-              },
-              {
                 "entity": 514,
                 "children": []
               },
@@ -1105,16 +1398,11 @@
                 "children": []
               },
               {
-                "entity": 515,
-                "children": []
-              },
-              {
                 "entity": 516,
                 "children": []
               },
               {
                 "entity": 517,
-                "open": true,
                 "children": [
                   518
                 ]
@@ -1133,7 +1421,6 @@
               },
               {
                 "entity": 531,
-                "open": true,
                 "children": [
                   526,
                   522,
@@ -1182,6 +1469,60 @@
               {
                 "entity": 532,
                 "children": []
+              },
+              {
+                "entity": 533,
+                "children": []
+              },
+              {
+                "entity": 534,
+                "open": true,
+                "children": [
+                  533
+                ]
+              },
+              {
+                "entity": 536,
+                "open": true,
+                "children": [
+                  535
+                ]
+              },
+              {
+                "entity": 535,
+                "children": []
+              },
+              {
+                "entity": 538,
+                "open": true,
+                "children": [
+                  537
+                ]
+              },
+              {
+                "entity": 537,
+                "children": []
+              },
+              {
+                "entity": 540,
+                "open": true,
+                "children": [
+                  539
+                ]
+              },
+              {
+                "entity": 539,
+                "children": []
+              },
+              {
+                "entity": 541,
+                "open": true,
+                "children": [
+                  534,
+                  536,
+                  538,
+                  540
+                ]
               }
             ]
           }
@@ -1208,13 +1549,7 @@
         "512": {
           "json": {}
         },
-        "513": {
-          "json": {}
-        },
         "514": {
-          "json": {}
-        },
-        "515": {
           "json": {}
         },
         "516": {
@@ -1266,6 +1601,33 @@
           "json": {}
         },
         "532": {
+          "json": {}
+        },
+        "533": {
+          "json": {}
+        },
+        "534": {
+          "json": {}
+        },
+        "535": {
+          "json": {}
+        },
+        "536": {
+          "json": {}
+        },
+        "537": {
+          "json": {}
+        },
+        "538": {
+          "json": {}
+        },
+        "539": {
+          "json": {}
+        },
+        "540": {
+          "json": {}
+        },
+        "541": {
           "json": {}
         }
       }
@@ -1797,6 +2159,374 @@
               "text": "A video screen that can play videos or live streams. It can be used together with the Admin Tools smart item to manage content live."
             },
             "version": 1
+          }
+        },
+        "533": {
+          "json": {
+            "isBasicViewEnabled": true,
+            "componentName": "",
+            "fields": [],
+            "assetId": "87c829b3-8e8d-4fcb-9f43-85d3aa9084f6",
+            "label": "Light Settings",
+            "sections": [
+              {
+                "id": "light-settings",
+                "items": [
+                  {
+                    "component": "core::LightSource",
+                    "widget": "ColorField",
+                    "label": "Color",
+                    "type": "Color3",
+                    "path": "color",
+                    "props": {
+                      "basic": true
+                    },
+                    "transform": {
+                      "in": {
+                        "steps": [
+                          {
+                            "op": "toHex"
+                          }
+                        ]
+                      },
+                      "out": {
+                        "steps": [
+                          {
+                            "op": "toColor3"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "component": "core::LightSource",
+                    "widget": "RangeField",
+                    "label": "Intensity",
+                    "path": "intensity",
+                    "constraints": {
+                      "max": 300000,
+                      "step": 1,
+                      "default": "16000"
+                    }
+                  },
+                  {
+                    "component": "core::LightSource",
+                    "widget": "RangeField",
+                    "label": "Inner Angle",
+                    "path": "type.spot.innerAngle",
+                    "constraints": {
+                      "max": 180,
+                      "step": 1,
+                      "default": "30"
+                    }
+                  },
+                  {
+                    "component": "core::LightSource",
+                    "widget": "RangeField",
+                    "label": "Outer Angle",
+                    "path": "type.spot.outerAngle",
+                    "constraints": {
+                      "max": 180,
+                      "step": 1,
+                      "default": "40"
+                    }
+                  }
+                ],
+                "columns": 1
+              },
+              {
+                "id": "shadow-mask",
+                "items": [
+                  {
+                    "component": "core::LightSource",
+                    "widget": "FileUploadField",
+                    "label": "Shadow Mask Texture",
+                    "path": "shadowMaskTexture.tex.texture.src",
+                    "props": {}
+                  }
+                ]
+              }
+            ],
+            "helpTooltip": {
+              "text": "A spotlight that can be used to illuminate a scene."
+            },
+            "version": 2
+          }
+        },
+        "535": {
+          "json": {
+            "isBasicViewEnabled": true,
+            "componentName": "",
+            "fields": [],
+            "assetId": "87c829b3-8e8d-4fcb-9f43-85d3aa9084f6",
+            "label": "Light Settings",
+            "sections": [
+              {
+                "id": "light-settings",
+                "items": [
+                  {
+                    "component": "core::LightSource",
+                    "widget": "ColorField",
+                    "label": "Color",
+                    "type": "Color3",
+                    "path": "color",
+                    "props": {
+                      "basic": true
+                    },
+                    "transform": {
+                      "in": {
+                        "steps": [
+                          {
+                            "op": "toHex"
+                          }
+                        ]
+                      },
+                      "out": {
+                        "steps": [
+                          {
+                            "op": "toColor3"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "component": "core::LightSource",
+                    "widget": "RangeField",
+                    "label": "Intensity",
+                    "path": "intensity",
+                    "constraints": {
+                      "max": 300000,
+                      "step": 1,
+                      "default": "16000"
+                    }
+                  },
+                  {
+                    "component": "core::LightSource",
+                    "widget": "RangeField",
+                    "label": "Inner Angle",
+                    "path": "type.spot.innerAngle",
+                    "constraints": {
+                      "max": 180,
+                      "step": 1,
+                      "default": "30"
+                    }
+                  },
+                  {
+                    "component": "core::LightSource",
+                    "widget": "RangeField",
+                    "label": "Outer Angle",
+                    "path": "type.spot.outerAngle",
+                    "constraints": {
+                      "max": 180,
+                      "step": 1,
+                      "default": "40"
+                    }
+                  }
+                ],
+                "columns": 1
+              },
+              {
+                "id": "shadow-mask",
+                "items": [
+                  {
+                    "component": "core::LightSource",
+                    "widget": "FileUploadField",
+                    "label": "Shadow Mask Texture",
+                    "path": "shadowMaskTexture.tex.texture.src",
+                    "props": {}
+                  }
+                ]
+              }
+            ],
+            "helpTooltip": {
+              "text": "A spotlight that can be used to illuminate a scene."
+            },
+            "version": 2
+          }
+        },
+        "537": {
+          "json": {
+            "isBasicViewEnabled": true,
+            "componentName": "",
+            "fields": [],
+            "assetId": "87c829b3-8e8d-4fcb-9f43-85d3aa9084f6",
+            "label": "Light Settings",
+            "sections": [
+              {
+                "id": "light-settings",
+                "items": [
+                  {
+                    "component": "core::LightSource",
+                    "widget": "ColorField",
+                    "label": "Color",
+                    "type": "Color3",
+                    "path": "color",
+                    "props": {
+                      "basic": true
+                    },
+                    "transform": {
+                      "in": {
+                        "steps": [
+                          {
+                            "op": "toHex"
+                          }
+                        ]
+                      },
+                      "out": {
+                        "steps": [
+                          {
+                            "op": "toColor3"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "component": "core::LightSource",
+                    "widget": "RangeField",
+                    "label": "Intensity",
+                    "path": "intensity",
+                    "constraints": {
+                      "max": 300000,
+                      "step": 1,
+                      "default": "16000"
+                    }
+                  },
+                  {
+                    "component": "core::LightSource",
+                    "widget": "RangeField",
+                    "label": "Inner Angle",
+                    "path": "type.spot.innerAngle",
+                    "constraints": {
+                      "max": 180,
+                      "step": 1,
+                      "default": "30"
+                    }
+                  },
+                  {
+                    "component": "core::LightSource",
+                    "widget": "RangeField",
+                    "label": "Outer Angle",
+                    "path": "type.spot.outerAngle",
+                    "constraints": {
+                      "max": 180,
+                      "step": 1,
+                      "default": "40"
+                    }
+                  }
+                ],
+                "columns": 1
+              },
+              {
+                "id": "shadow-mask",
+                "items": [
+                  {
+                    "component": "core::LightSource",
+                    "widget": "FileUploadField",
+                    "label": "Shadow Mask Texture",
+                    "path": "shadowMaskTexture.tex.texture.src",
+                    "props": {}
+                  }
+                ]
+              }
+            ],
+            "helpTooltip": {
+              "text": "A spotlight that can be used to illuminate a scene."
+            },
+            "version": 2
+          }
+        },
+        "539": {
+          "json": {
+            "isBasicViewEnabled": true,
+            "componentName": "",
+            "fields": [],
+            "assetId": "87c829b3-8e8d-4fcb-9f43-85d3aa9084f6",
+            "label": "Light Settings",
+            "sections": [
+              {
+                "id": "light-settings",
+                "items": [
+                  {
+                    "component": "core::LightSource",
+                    "widget": "ColorField",
+                    "label": "Color",
+                    "type": "Color3",
+                    "path": "color",
+                    "props": {
+                      "basic": true
+                    },
+                    "transform": {
+                      "in": {
+                        "steps": [
+                          {
+                            "op": "toHex"
+                          }
+                        ]
+                      },
+                      "out": {
+                        "steps": [
+                          {
+                            "op": "toColor3"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "component": "core::LightSource",
+                    "widget": "RangeField",
+                    "label": "Intensity",
+                    "path": "intensity",
+                    "constraints": {
+                      "max": 300000,
+                      "step": 1,
+                      "default": "16000"
+                    }
+                  },
+                  {
+                    "component": "core::LightSource",
+                    "widget": "RangeField",
+                    "label": "Inner Angle",
+                    "path": "type.spot.innerAngle",
+                    "constraints": {
+                      "max": 180,
+                      "step": 1,
+                      "default": "30"
+                    }
+                  },
+                  {
+                    "component": "core::LightSource",
+                    "widget": "RangeField",
+                    "label": "Outer Angle",
+                    "path": "type.spot.outerAngle",
+                    "constraints": {
+                      "max": 180,
+                      "step": 1,
+                      "default": "40"
+                    }
+                  }
+                ],
+                "columns": 1
+              },
+              {
+                "id": "shadow-mask",
+                "items": [
+                  {
+                    "component": "core::LightSource",
+                    "widget": "FileUploadField",
+                    "label": "Shadow Mask Texture",
+                    "path": "shadowMaskTexture.tex.texture.src",
+                    "props": {}
+                  }
+                ]
+              }
+            ],
+            "helpTooltip": {
+              "text": "A spotlight that can be used to illuminate a scene."
+            },
+            "version": 2
           }
         }
       }
@@ -2718,6 +3448,74 @@
               }
             ]
           }
+        },
+        "533": {
+          "json": {
+            "id": 8,
+            "value": [
+              {
+                "name": "Turn On",
+                "type": "lights_on",
+                "jsonPayload": "{}"
+              },
+              {
+                "name": "Turn Off",
+                "type": "lights_off",
+                "jsonPayload": "{}"
+              }
+            ]
+          }
+        },
+        "535": {
+          "json": {
+            "id": 9,
+            "value": [
+              {
+                "name": "Turn On",
+                "type": "lights_on",
+                "jsonPayload": "{}"
+              },
+              {
+                "name": "Turn Off",
+                "type": "lights_off",
+                "jsonPayload": "{}"
+              }
+            ]
+          }
+        },
+        "537": {
+          "json": {
+            "id": 10,
+            "value": [
+              {
+                "name": "Turn On",
+                "type": "lights_on",
+                "jsonPayload": "{}"
+              },
+              {
+                "name": "Turn Off",
+                "type": "lights_off",
+                "jsonPayload": "{}"
+              }
+            ]
+          }
+        },
+        "539": {
+          "json": {
+            "id": 11,
+            "value": [
+              {
+                "name": "Turn On",
+                "type": "lights_on",
+                "jsonPayload": "{}"
+              },
+              {
+                "name": "Turn Off",
+                "type": "lights_off",
+                "jsonPayload": "{}"
+              }
+            ]
+          }
         }
       }
     },
@@ -2741,7 +3539,7 @@
         "0": {
           "json": {
             "id": 0,
-            "value": 7
+            "value": 11
           }
         }
       }
@@ -3548,6 +4346,26 @@
         "530": {
           "json": {
             "src": "assets/models/avatar_placeholder.glb"
+          }
+        },
+        "533": {
+          "json": {
+            "src": "assets/asset-packs/spotlight/spotlight.glb"
+          }
+        },
+        "535": {
+          "json": {
+            "src": "assets/asset-packs/spotlight/spotlight.glb"
+          }
+        },
+        "537": {
+          "json": {
+            "src": "assets/asset-packs/spotlight/spotlight.glb"
+          }
+        },
+        "539": {
+          "json": {
+            "src": "assets/asset-packs/spotlight/spotlight.glb"
           }
         }
       }
