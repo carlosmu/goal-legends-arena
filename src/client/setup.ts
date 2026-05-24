@@ -76,7 +76,7 @@ export function initClient() {
   ]
   for (const { key, pos, scale } of dirs) {
     const e = engine.addEntity()
-    Transform.create(e, { position: pos, scale })
+    Transform.create(e, { position: pos, scale: Vector3.Zero() })
     MeshRenderer.setBox(e)
     Material.setPbrMaterial(e, { albedoColor: Color4.create(0.2, 0.85, 0, 0.6) })
     MeshCollider.setBox(e, ColliderLayer.CL_POINTER)
