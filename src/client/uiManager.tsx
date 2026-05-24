@@ -54,6 +54,7 @@ let lbShowUntilMs = 0
 let prevPhase = ''
 let pickerPage = 0
 let prevPickerOpen = false
+let splashDismissed = false
 
 const RootUi = () => {
   readPenaltySnapshot()
@@ -84,19 +85,21 @@ const RootUi = () => {
   const engineIsBlue = isPvE && s.pveHumanIsRed === 1
 
   /** Partida en curso (oculta welcome para nuevos hasta que termine). No incluye solo “esperando rival”. */
-  const showWelcome = s.hasActiveMatch === 0 && s.phase === GameState.LobbyIdle
+  const showWelcome = splashDismissed && s.hasActiveMatch === 0 && s.phase === GameState.LobbyIdle
   const showWaiting =
-    s.phase === GameState.WaitingOpponent && side && waitLeft > 0 && !(s.redAddr && s.blueAddr && s.mode !== 'pve')
+    splashDismissed && s.phase === GameState.WaitingOpponent && side && waitLeft > 0 && !(s.redAddr && s.blueAddr && s.mode !== 'pve')
   const showPick =
-    s.phase === GameState.SelectingDirections && side && (s.mode === 'pvp' || (s.mode === 'pve' && !!side))
-  const showResult = s.phase === GameState.ResolvingRound && !!s.resultLine
-  const showMatchEnd = s.phase === GameState.MatchEnd && !!s.winnerName
+    splashDismissed && s.phase === GameState.SelectingDirections && side && (s.mode === 'pvp' || (s.mode === 'pve' && !!side))
+  const showResult = splashDismissed && s.phase === GameState.ResolvingRound && !!s.resultLine
+  const showMatchEnd = splashDismissed && s.phase === GameState.MatchEnd && !!s.winnerName
   const showStreak =
+    splashDismissed &&
     s.phase === GameState.WinnerContinuePrompt &&
     !!me &&
     !!s.winnerStreakAddr &&
     me.toLowerCase() === s.winnerStreakAddr.toLowerCase()
   const showSpectatorChallenge =
+    splashDismissed &&
     s.spectatorChallengeActive === 1 &&
     !!me &&
     !!s.winnerStreakAddr &&
@@ -130,7 +133,7 @@ const RootUi = () => {
       }}
     >
       {/* ========== SCOREBOARD ========== */}
-      {s.hasActiveMatch === 1 && (
+      {splashDismissed && s.hasActiveMatch === 1 && (
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
@@ -282,7 +285,7 @@ const RootUi = () => {
       {/* ========== fin SCOREBOARD ========== */}
 
       {/* ========== UI: LEADERBOARD (centrado en pantalla) ========== */}
-      {showLeaderboard && <UiEntity
+      {splashDismissed && showLeaderboard && <UiEntity
         uiTransform={{
           positionType: 'absolute',
           position: { top: 0, left: 0, right: 0, bottom: 0 },
@@ -415,7 +418,7 @@ const RootUi = () => {
       {/* ========== fin UI LEADERBOARD ========== */}
 
       {/* ========== COUNTRY PICKER ========== */}
-      {showCountryPicker && (
+      {splashDismissed && showCountryPicker && (
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
@@ -845,7 +848,66 @@ const RootUi = () => {
         </UiEntity>
       )}
 
-      {!isMobile() && <UiEntity
+      {/* ========== SPLASH / WELCOME SCREEN ========== */}
+      {!splashDismissed && (
+        <UiEntity
+          uiTransform={{
+            positionType: 'absolute',
+            position: { top: 0, left: 0 },
+            width: '100%',
+            height: '100%',
+            zIndex: 998,
+          }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.95) }}
+        />
+      )}
+      {!splashDismissed && (
+        <UiEntity
+          uiTransform={{
+            positionType: 'absolute',
+            position: { top: 0, left: 0 },
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 999,
+          }}
+        >
+          <UiEntity
+            uiTransform={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Label
+              value="Welcome to:"
+              fontSize={fs(36)}
+              color={Color4.White()}
+              textAlign="middle-center"
+              uiTransform={{ margin: { bottom: -50 } }}
+            />
+            <UiEntity
+              uiTransform={{ width: 540, height: 540, margin: { bottom: -60 } }}
+              uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/logo.png' }, color: Color4.White() }}
+            />
+            <Button
+              value="START"
+              fontSize={fs(32)}
+              color={Color4.White()}
+              uiTransform={{ width: 220, height: 56 }}
+              uiBackground={{ color: Color4.create(0.1, 0.65, 0.2, 1) }}
+              onMouseDown={() => { splashDismissed = true }}
+            />
+          </UiEntity>
+        </UiEntity>
+      )}
+      {/* ========== fin SPLASH ========== */}
+
+      {splashDismissed && !isMobile() && <UiEntity
         uiTransform={{
           positionType: 'absolute',
           position: { bottom: 0, left: 0, right: 0 },
