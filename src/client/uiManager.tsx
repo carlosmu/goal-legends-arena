@@ -869,24 +869,24 @@ const RootUi = () => {
         >
           <Label
             value={`state: ${s.phase} | sync: ${isStateSyncronized() ? 'ok' : 'no'} | match: ${penaltyStateEntityReady() ? 'ok' : '—'} | mode: ${s.mode} | active: ${s.hasActiveMatch}`}
-            fontSize={fs(20)}
+            fontSize={fs(14)}
             color={Color4.create(0.75, 1, 0.8, 1)}
           />
           <Label
             value={`side: ${side ?? '(none)'} | red: ${s.redName || '—'} | blue: ${s.blueName || '—'}`}
-            fontSize={fs(20)}
+            fontSize={fs(14)}
             color={Color4.create(0.85, 0.9, 1, 1)}
             uiTransform={{ margin: { top: 4 } }}
           />
           <Label
             value={'Timeout in: ' + (typeof s.inactivityDeadlineMs === 'number' && s.inactivityDeadlineMs > 0 ? Math.max(0, Math.ceil((s.inactivityDeadlineMs - Date.now()) / 1000)) + 's' : 'off') + ` | server tick: ${s.serverTickCounter}`}
-            fontSize={fs(20)}
+            fontSize={fs(14)}
             color={Color4.create(1, 0.7, 0.7, 1)}
             uiTransform={{ margin: { top: 4 } }}
           />
           <Label
             value={`last server event: ${resolveEventAddrs(s.lastServerEvent, s.redAddr, s.redName, s.blueAddr, s.blueName) || '(none)'}`}
-            fontSize={fs(20)}
+            fontSize={fs(14)}
             color={Color4.create(1, 0.9, 0.6, 1)}
             uiTransform={{ margin: { top: 4 } }}
           />
