@@ -3,7 +3,6 @@ import { initServer } from './server/server'
 import { setupUi } from './client/uiManager'
 import { initClient } from './client/setup'
 import { initNPCSystem } from './client/npcManager'
-import { initPlayerCloneSystem } from './client/playerCloneManager'
 import { initGameplayCamera } from './client/gameplayCamera'
 
 /**
@@ -18,6 +17,5 @@ export function main() {
   setupUi()
   initClient()
   initNPCSystem()
-  initPlayerCloneSystem()
   initGameplayCamera()
 }
