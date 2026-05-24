@@ -3,6 +3,7 @@ import { initServer } from './server/server'
 import { setupUi } from './client/uiManager'
 import { initClient } from './client/setup'
 import { initNPCSystem } from './client/npcManager'
+import { initPlayerCloneSystem } from './client/playerCloneManager'
 
 /**
  * Debe ser síncrono: tras el primer await el runtime sella el motor y ya no se pueden
@@ -16,4 +17,5 @@ export function main() {
   setupUi()
   initClient()
   initNPCSystem()
+  initPlayerCloneSystem()
 }

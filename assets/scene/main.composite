@@ -677,6 +677,48 @@
             },
             "parent": 0
           }
+        },
+        "542": {
+          "json": {
+            "position": {
+              "x": 16.979999542236328,
+              "y": 0.2199999988079071,
+              "z": 17.920000076293945
+            },
+            "rotation": {
+              "x": 0,
+              "y": 1,
+              "z": 0,
+              "w": 0
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "parent": 0
+          }
+        },
+        "543": {
+          "json": {
+            "position": {
+              "x": 16,
+              "y": 0.2199999988079071,
+              "z": 11.025223731994629
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "parent": 0
+          }
         }
       }
     },
@@ -1042,6 +1084,16 @@
           "json": {
             "value": "Spot Lights"
           }
+        },
+        "542": {
+          "json": {
+            "value": "Kicker"
+          }
+        },
+        "543": {
+          "json": {
+            "value": "Goalkeeper"
+          }
         }
       }
     },
@@ -1309,7 +1361,7 @@
         "serializationType": "map"
       },
       "data": {
-        "533": {
+        "0": {
           "json": {
             "gizmo": 1
           }
@@ -1362,15 +1414,17 @@
                 "entity": 0,
                 "open": true,
                 "children": [
+                  517,
+                  531,
+                  541,
                   512,
                   514,
                   520,
                   521,
                   516,
-                  517,
-                  531,
                   532,
-                  541
+                  542,
+                  543
                 ]
               },
               {
@@ -1516,13 +1570,20 @@
               },
               {
                 "entity": 541,
-                "open": true,
                 "children": [
                   534,
                   536,
                   538,
                   540
                 ]
+              },
+              {
+                "entity": 542,
+                "children": []
+              },
+              {
+                "entity": 543,
+                "children": []
               }
             ]
           }
@@ -1628,6 +1689,12 @@
           "json": {}
         },
         "541": {
+          "json": {}
+        },
+        "542": {
+          "json": {}
+        },
+        "543": {
           "json": {}
         }
       }
@@ -4366,6 +4433,16 @@
         "539": {
           "json": {
             "src": "assets/asset-packs/spotlight/spotlight.glb"
+          }
+        },
+        "542": {
+          "json": {
+            "src": "assets/models/avatar_placeholder.glb"
+          }
+        },
+        "543": {
+          "json": {
+            "src": "assets/models/avatar_placeholder.glb"
           }
         }
       }
