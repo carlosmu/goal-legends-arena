@@ -3818,23 +3818,6 @@
                   }
                 ],
                 "basicViewId": "trigger-when-clicked"
-              },
-              {
-                "type": "on_input_action",
-                "conditions": [
-                  {
-                    "id": 7,
-                    "type": "when_state_is",
-                    "value": "Taken"
-                  }
-                ],
-                "operation": "and",
-                "actions": [
-                  {
-                    "id": 6,
-                    "name": "Show text"
-                  }
-                ]
               }
             ]
           }
@@ -3876,23 +3859,6 @@
                   }
                 ],
                 "basicViewId": "trigger-when-clicked"
-              },
-              {
-                "type": "on_input_action",
-                "conditions": [
-                  {
-                    "id": 3,
-                    "type": "when_state_is",
-                    "value": "Taken"
-                  }
-                ],
-                "operation": "and",
-                "actions": [
-                  {
-                    "id": 2,
-                    "name": "Show text"
-                  }
-                ]
               }
             ]
           }
@@ -3934,23 +3900,6 @@
                   }
                 ],
                 "basicViewId": "trigger-when-clicked"
-              },
-              {
-                "type": "on_input_action",
-                "conditions": [
-                  {
-                    "id": 5,
-                    "type": "when_state_is",
-                    "value": "Taken"
-                  }
-                ],
-                "operation": "and",
-                "actions": [
-                  {
-                    "id": 4,
-                    "name": "Show text"
-                  }
-                ]
               }
             ]
           }
