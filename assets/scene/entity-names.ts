@@ -7,6 +7,7 @@
 export enum EntityNames {
   Admin_Tools = "Admin Tools",
   Blue_Spot = "Blue_Spot",
+  Cinematic_Camera_Pivot = "Cinematic_Camera_Pivot",
   Goalkeeper = "Goalkeeper",
   Kicker = "Kicker",
   NPC_Blue_1 = "NPC_Blue_1",
@@ -20,7 +21,6 @@ export enum EntityNames {
   NPC_Red_4 = "NPC_Red_4",
   NPC_Red_5 = "NPC_Red_5",
   NPCs = "NPCs",
-  POV = "POV",
   Red_Spot = "Red_Spot",
   Sit_Spot = "Sit Spot",
   Sit_Spots = "Sit_Spots",
