@@ -1,4 +1,4 @@
-import { engine, Transform, AvatarShape, Entity, PlayerIdentityData, AvatarEquippedData } from '@dcl/sdk/ecs'
+import { engine, Transform, AvatarShape, Entity, PlayerIdentityData, AvatarEquippedData, AvatarBase } from '@dcl/sdk/ecs'
 import { Color3 } from '@dcl/sdk/math'
 import { clientSnapshot } from './gameStore'
 
@@ -44,24 +44,27 @@ let gkHasWearables     = false
 
 // ── Avatar helpers ─────────────────────────────────────────────────────────────
 
-function findEquippedData(addr: string) {
+function findPlayerEntity(addr: string): Entity | null {
   const lower = addr.toLowerCase()
-  for (const [_e, identity, equipped] of engine.getEntitiesWith(PlayerIdentityData, AvatarEquippedData)) {
-    if (identity.address.toLowerCase() === lower) return equipped
+  for (const [e, identity] of engine.getEntitiesWith(PlayerIdentityData)) {
+    if (identity.address.toLowerCase() === lower) return e
   }
   return null
 }
 
 function applyPlayerAvatar(entity: Entity, addr: string): boolean {
-  const eq = findEquippedData(addr)
+  const player = findPlayerEntity(addr)
+  const eq   = player && AvatarEquippedData.has(player) ? AvatarEquippedData.get(player) : null
+  const base = player && AvatarBase.has(player)         ? AvatarBase.get(player)         : null
   const wearables = eq?.wearableUrns?.length ? [...eq.wearableUrns] : []
   AvatarShape.createOrReplace(entity, {
     id:                         addr.toLowerCase(),
     name:                       '',
-    bodyShape:                  BODY_MALE,
+    bodyShape:                  base?.bodyShapeUrn || BODY_MALE,
     wearables,
-    skinColor:                  Color3.White(),
-    hairColor:                  Color3.Black(),
+    skinColor:                  base?.skinColor ?? Color3.White(),
+    hairColor:                  base?.hairColor ?? Color3.Black(),
+    eyeColor:                   base?.eyesColor ?? Color3.create(0.4, 0.6, 0.8),
     emotes:                     [],
     expressionTriggerId:        '',
     expressionTriggerTimestamp: 0,
