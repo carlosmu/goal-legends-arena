@@ -1,4 +1,4 @@
-import { engine, Transform, Entity, PlayerIdentityData, GltfContainer, Animator } from '@dcl/sdk/ecs'
+import { engine, Transform, Entity, PlayerIdentityData, GltfContainer, Animator, InputModifier } from '@dcl/sdk/ecs'
 import { Vector3 } from '@dcl/sdk/math'
 import { movePlayerTo, triggerSceneEmote } from '~system/RestrictedActions'
 import { clientSnapshot } from './gameStore'
@@ -83,6 +83,18 @@ function hideTrainingBot() {
   Transform.getMutable(trainingBot).scale = Vector3.Zero()
 }
 
+function lockLocomotion() {
+  InputModifier.createOrReplace(engine.PlayerEntity, {
+    mode: InputModifier.Mode.Standard({ disableAll: true }),
+  })
+}
+
+function unlockLocomotion() {
+  InputModifier.createOrReplace(engine.PlayerEntity, {
+    mode: InputModifier.Mode.Standard({ disableAll: false }),
+  })
+}
+
 function triggerLocalEmote(phase: string) {
   const entry = EMOTES[phase as keyof typeof EMOTES]
   if (!entry) return
@@ -107,7 +119,8 @@ function repositionPlayers() {
   const kickerAddr = (kickerIsRed ? s.redAddr : s.blueAddr).toLowerCase()
   const localIsKicker = localAddr === kickerAddr
 
-  // ── Move local player ──────────────────────────────────────────────────────
+  // ── Move local player and freeze locomotion ────────────────────────────────
+  lockLocomotion()
   if (localIsKicker) {
     void movePlayerTo({ newRelativePosition: KICKER_POS, cameraTarget: GK_POS })
   } else {
@@ -143,6 +156,7 @@ export function initPlayerCloneSystem(): void {
         repositionPlayers()
       } else {
         hideTrainingBot()
+        unlockLocomotion()
         prevPhase = ''
       }
     }
