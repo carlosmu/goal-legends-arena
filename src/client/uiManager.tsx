@@ -547,13 +547,13 @@ const RootUi = () => {
           uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
           <Label
-            value="Welcome to Goal Legends Arena. Choose a Spot to Begin"
+            value="Choose a Spot to start playing!"
             fontSize={fs(35)}
             color={Color4.White()}
             textAlign="middle-center"
           />
           <Label
-            value="Walk to the Red or Blue spot, then click or press E (same as Sit Here)."
+            value="Or simply enjoy the show"
             fontSize={fs(30)}
             color={Color4.create(0.88, 0.9, 0.95, 1)}
             textAlign="middle-center"
