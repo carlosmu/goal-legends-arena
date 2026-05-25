@@ -702,20 +702,20 @@
         "542": {
           "json": {
             "position": {
-              "x": 16.979999542236328,
+              "x": 16,
               "y": 0.2199999988079071,
-              "z": 17.920000076293945
-            },
-            "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
+              "z": 17.170000076293945
             },
             "rotation": {
               "x": 0,
               "y": 1,
               "z": 0,
               "w": 0
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
             },
             "parent": 0
           }
@@ -1145,29 +1145,13 @@
         "protocolBuffer": "PBPointerEvents"
       },
       "data": {
-        "518": {
-          "json": {
-            "pointerEvents": [
-              {
-                "eventType": 1,
-                "eventInfo": {
-                  "button": 1,
-                  "hoverText": "Sit Here",
-                  "maxDistance": 5,
-                  "showFeedback": true,
-                  "showHighlight": true
-                }
-              }
-            ]
-          }
-        },
         "520": {
           "json": {
             "pointerEvents": [
               {
                 "eventType": 1,
                 "eventInfo": {
-                  "button": 1,
+                  "button": 0,
                   "hoverText": "Sit Here",
                   "maxDistance": 5,
                   "showFeedback": true,
@@ -1183,7 +1167,7 @@
               {
                 "eventType": 1,
                 "eventInfo": {
-                  "button": 1,
+                  "button": 0,
                   "hoverText": "Sit Here",
                   "maxDistance": 5,
                   "showFeedback": true,
@@ -1423,7 +1407,7 @@
         "serializationType": "map"
       },
       "data": {
-        "513": {
+        "542": {
           "json": {
             "gizmo": 1
           }
@@ -3911,24 +3895,6 @@
                     "name": "Mark as free"
                   }
                 ]
-              },
-              {
-                "type": "on_input_action",
-                "conditions": [
-                  {
-                    "id": 3,
-                    "type": "when_state_is",
-                    "value": "Free"
-                  }
-                ],
-                "operation": "and",
-                "actions": [
-                  {
-                    "id": 2,
-                    "name": "Sit Here"
-                  }
-                ],
-                "basicViewId": "trigger-when-clicked"
               }
             ]
           }
@@ -3952,24 +3918,6 @@
                     "name": "Mark as free"
                   }
                 ]
-              },
-              {
-                "type": "on_input_action",
-                "conditions": [
-                  {
-                    "id": 5,
-                    "type": "when_state_is",
-                    "value": "Free"
-                  }
-                ],
-                "operation": "and",
-                "actions": [
-                  {
-                    "id": 4,
-                    "name": "Sit Here"
-                  }
-                ],
-                "basicViewId": "trigger-when-clicked"
               }
             ]
           }

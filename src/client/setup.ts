@@ -7,17 +7,14 @@ import {
   Name,
   pointerEventsSystem,
   InputAction,
-  PointerEventType,
-  inputSystem,
   ColliderLayer,
   Entity
 } from '@dcl/sdk/ecs'
 import { Vector3, Color4 } from '@dcl/sdk/math'
 import { isStateSyncronized } from '@dcl/sdk/network'
 import { movePlayerTo } from '~system/RestrictedActions'
-import { getPlayer } from '@dcl/sdk/src/players'
 import { room } from '../shared/messages'
-import { AIM_COLLIDERS, POINTER_EVENT_MAX_DISTANCE, SPOT_PROXIMITY_RADIUS } from '../shared/constants'
+import { AIM_COLLIDERS, POINTER_EVENT_MAX_DISTANCE } from '../shared/constants'
 import { getLeaderboardRows } from './leaderboardManager'
 import { prefetchLeaderboardFaces } from './leaderboardProfileCache'
 import { readPenaltySnapshot, penaltyStateEntityReady } from './gameStore'
@@ -34,19 +31,16 @@ function tryOccupySpot(team: 'red' | 'blue') {
 
 function registerSpotPointerHandlers(entity: Entity | undefined, team: 'red' | 'blue', hover: string) {
   if (!entity) return
-  const fire = () => tryOccupySpot(team)
-  const spotOpts = {
-    button: InputAction.IA_POINTER,
-    hoverText: hover,
-    maxDistance: POINTER_EVENT_MAX_DISTANCE
-  } as const
-  const spotOptsE = {
-    button: InputAction.IA_PRIMARY,
-    hoverText: hover,
-    maxDistance: POINTER_EVENT_MAX_DISTANCE
-  } as const
-  pointerEventsSystem.onPointerDown({ entity, opts: spotOpts }, fire)
-  pointerEventsSystem.onPointerDown({ entity, opts: spotOptsE }, fire)
+  pointerEventsSystem.onPointerDown(
+    { entity, opts: { button: InputAction.IA_POINTER, hoverText: hover, maxDistance: POINTER_EVENT_MAX_DISTANCE } },
+    () => {
+      tryOccupySpot(team)
+      if (Transform.has(entity)) {
+        const pos = Transform.get(entity).position
+        void movePlayerTo({ newRelativePosition: pos })
+      }
+    }
+  )
 }
 
 function findEntityByName(target: string): Entity | undefined {
@@ -67,14 +61,12 @@ export function initClient() {
   registerSpotPointerHandlers(blue, 'blue', '')
   registerSpotPointerHandlers(red, 'red', '')
 
-  const spotClaim = { insideBlue: false, insideRed: false }
-
   const dirs: Array<{ key: 'L' | 'C' | 'R'; pos: Vector3; scale: Vector3 }> = [
     { key: 'L', pos: AIM_COLLIDERS.L.pos, scale: AIM_COLLIDERS.L.scale },
     { key: 'C', pos: AIM_COLLIDERS.C.pos, scale: AIM_COLLIDERS.C.scale },
     { key: 'R', pos: AIM_COLLIDERS.R.pos, scale: AIM_COLLIDERS.R.scale }
   ]
-  for (const { key, pos, scale } of dirs) {
+  for (const { key, pos } of dirs) {
     const e = engine.addEntity()
     Transform.create(e, { position: pos, scale: Vector3.Zero() })
     MeshRenderer.setBox(e)
@@ -108,31 +100,6 @@ export function initClient() {
     if (lj !== lastLeaderboardJson) {
       lastLeaderboardJson = lj
       prefetchLeaderboardFaces(getLeaderboardRows(lj, 5).map((r) => r.addr))
-    }
-
-    if (isStateSyncronized() && getPlayer()?.userId && Transform.has(engine.PlayerEntity)) {
-      const p = Transform.get(engine.PlayerEntity).position
-      const near = (ent: Entity | undefined) => {
-        if (!ent || !Transform.has(ent)) return false
-        const t = Transform.get(ent).position
-        return Vector3.distance(p, t) < SPOT_PROXIMITY_RADIUS
-      }
-      const nb = near(blue)
-      if (nb && !spotClaim.insideBlue) tryOccupySpot('blue')
-      spotClaim.insideBlue = nb
-      const nr = near(red)
-      if (nr && !spotClaim.insideRed) tryOccupySpot('red')
-      spotClaim.insideRed = nr
-
-      if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN)) {
-        if (nb && !nr) tryOccupySpot('blue')
-        else if (nr && !nb) tryOccupySpot('red')
-        else if (nb && nr && blue && red && Transform.has(blue) && Transform.has(red)) {
-          const db = Vector3.distance(p, Transform.get(blue).position)
-          const dr = Vector3.distance(p, Transform.get(red).position)
-          tryOccupySpot(db <= dr ? 'blue' : 'red')
-        }
-      }
     }
 
     tickAudioManager(s)
