@@ -8,6 +8,7 @@ export enum EntityNames {
   Admin_Tools = "Admin Tools",
   Blue_Spot = "Blue_Spot",
   Cinematic_Camera_Pivot = "Cinematic_Camera_Pivot",
+  Goal_Save_Collider = "Goal_Save_Collider",
   Goalkeeper = "Goalkeeper",
   Kicker = "Kicker",
   NPC_Blue_1 = "NPC_Blue_1",

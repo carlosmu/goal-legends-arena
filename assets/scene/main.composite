@@ -111,6 +111,27 @@
             "parent": 0
           }
         },
+        "513": {
+          "json": {
+            "position": {
+              "x": 16,
+              "y": 0,
+              "z": 10.071990966796875
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 4.5,
+              "y": 3.0999999046325684,
+              "z": 1
+            },
+            "parent": 0
+          }
+        },
         "514": {
           "json": {
             "position": {
@@ -704,7 +725,7 @@
             "position": {
               "x": 16,
               "y": 0.2199999988079071,
-              "z": 11.025223731994629
+              "z": 10.525223731994629
             },
             "scale": {
               "x": 1,
@@ -739,6 +760,12 @@
         "serializationType": "map"
       },
       "data": {
+        "513": {
+          "json": {
+            "networkId": 0,
+            "entityId": 8007
+          }
+        },
         "516": {
           "json": {
             "networkId": 0,
@@ -810,6 +837,13 @@
             "src": "assets/models/futbol_arena.glb",
             "visibleMeshesCollisionMask": 0,
             "invisibleMeshesCollisionMask": 3
+          }
+        },
+        "513": {
+          "json": {
+            "src": "assets/asset-packs/invisible_wall/invisible_box.glb",
+            "visibleMeshesCollisionMask": 2,
+            "invisibleMeshesCollisionMask": 0
           }
         }
       }
@@ -948,6 +982,11 @@
         "512": {
           "json": {
             "value": "futbol_arena.glb"
+          }
+        },
+        "513": {
+          "json": {
+            "value": "Goal_Save_Collider"
           }
         },
         "514": {
@@ -1173,6 +1212,13 @@
         "serializationType": "map"
       },
       "data": {
+        "513": {
+          "json": {
+            "componentIds": [
+              1041
+            ]
+          }
+        },
         "516": {
           "json": {
             "componentIds": [
@@ -1224,6 +1270,22 @@
             "src": "assets/video/goal_legends.mp4",
             "playing": true,
             "volume": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "core::VisibilityComponent",
+      "jsonSchema": {
+        "type": "object",
+        "properties": {},
+        "serializationType": "protocol-buffer",
+        "protocolBuffer": "PBVisibilityComponent"
+      },
+      "data": {
+        "513": {
+          "json": {
+            "visible": false
           }
         }
       }
@@ -1361,9 +1423,9 @@
         "serializationType": "map"
       },
       "data": {
-        "512": {
+        "513": {
           "json": {
-            "gizmo": 0
+            "gizmo": 1
           }
         }
       }
@@ -1424,7 +1486,8 @@
                   516,
                   532,
                   542,
-                  543
+                  543,
+                  513
                 ]
               },
               {
@@ -1584,6 +1647,10 @@
               {
                 "entity": 543,
                 "children": []
+              },
+              {
+                "entity": 513,
+                "children": []
               }
             ]
           }
@@ -1608,6 +1675,9 @@
       },
       "data": {
         "512": {
+          "json": {}
+        },
+        "513": {
           "json": {}
         },
         "514": {
