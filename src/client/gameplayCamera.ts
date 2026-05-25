@@ -21,7 +21,7 @@ function createCamera(pivot: Entity): Entity {
 
   // 6 m on local +X from pivot; lookAtEntity keeps it aimed at the pivot
   Transform.create(e, {
-    position: { x: 6, y: 0, z: 0 },
+    position: { x: 6, y: 2, z: 0 },
     rotation: { x: 0, y: 0, z: 0, w: 1 },
     parent:   pivot,
   })
