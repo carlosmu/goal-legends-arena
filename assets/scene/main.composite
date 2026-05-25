@@ -118,16 +118,16 @@
               "y": 0,
               "z": 10.071990966796875
             },
+            "scale": {
+              "x": 4.5,
+              "y": 3.0999999046325684,
+              "z": 1
+            },
             "rotation": {
               "x": 0,
               "y": 0,
               "z": 0,
               "w": 1
-            },
-            "scale": {
-              "x": 4.5,
-              "y": 3.0999999046325684,
-              "z": 1
             },
             "parent": 0
           }
@@ -240,9 +240,9 @@
         "520": {
           "json": {
             "position": {
-              "x": 18.290000915527344,
-              "y": 2.275136947631836,
-              "z": 23.421567916870117
+              "x": 18,
+              "y": 1.5199999809265137,
+              "z": 22.22622299194336
             },
             "scale": {
               "x": 1,
@@ -261,9 +261,9 @@
         "521": {
           "json": {
             "position": {
-              "x": 13.790000915527344,
-              "y": 2.3813958168029785,
-              "z": 23.421567916870117
+              "x": 14,
+              "y": 1.5399999618530273,
+              "z": 22.22622299194336
             },
             "scale": {
               "x": 1,
@@ -706,16 +706,16 @@
               "y": 0.2199999988079071,
               "z": 17.170000076293945
             },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
             "rotation": {
               "x": 0,
               "y": 1,
               "z": 0,
               "w": 0
-            },
-            "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
             },
             "parent": 0
           }
@@ -811,11 +811,11 @@
           "json": {
             "states": [
               {
-                "clip": "Flag_Wave.026",
-                "playing": false,
+                "clip": "bandera pais.002",
+                "playing": true,
                 "weight": 1,
                 "speed": 1,
-                "loop": false,
+                "loop": true,
                 "shouldReset": false
               }
             ]
@@ -844,6 +844,18 @@
             "src": "assets/asset-packs/invisible_wall/invisible_box.glb",
             "visibleMeshesCollisionMask": 2,
             "invisibleMeshesCollisionMask": 0
+          }
+        },
+        "520": {
+          "json": {
+            "src": "assets/models/blue_spot.glb"
+          }
+        },
+        "521": {
+          "json": {
+            "src": "assets/models/red_spot.glb",
+            "visibleMeshesCollisionMask": 0,
+            "invisibleMeshesCollisionMask": 3
           }
         }
       }
@@ -1220,14 +1232,16 @@
         "520": {
           "json": {
             "componentIds": [
-              2709697014
+              2709697014,
+              1041
             ]
           }
         },
         "521": {
           "json": {
             "componentIds": [
-              2709697014
+              2709697014,
+              1041
             ]
           }
         },
@@ -1407,9 +1421,9 @@
         "serializationType": "map"
       },
       "data": {
-        "542": {
+        "512": {
           "json": {
-            "gizmo": 1
+            "gizmo": 0
           }
         }
       }
