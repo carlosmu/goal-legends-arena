@@ -50,11 +50,22 @@ function vw(size: number): `${number}vw` {
 
 const LEADERBOARD_TOP_N = 10
 
+const PICK_PANEL_WIDTH = isMobile() ? '40vw' : '25vw'
+const PICK_BTN_WIDTH = 130
+const PICK_BTN_HEIGHT = 100
+const PICK_BTN_GAP = 8
+const PICK_BTN_ALPHA = 0.05
+const PICK_BTN_ALPHA_HOVER = 0.3
+const PICK_BTN_MARGIN_BOTTOM = 20
+
 let lbShowUntilMs = 0
 let prevPhase = ''
 let pickerPage = 0
 let prevPickerOpen = false
 let splashDismissed = false
+let hoverPickL = false
+let hoverPickC = false
+let hoverPickR = false
 
 const RootUi = () => {
   readPenaltySnapshot()
@@ -136,11 +147,11 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
-            position: { top: 0 },
+            position: { top: 36},
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: 18,
+            padding: 10,
             zIndex: 55
           }}
           uiBackground={{ color: Color4.create(0, 0, 0, 0.6) }}
@@ -269,19 +280,43 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               uiTransform={{ width: 170, margin: { left: 8 } }}
             />
           </UiEntity>
-          {side && (
-            <Button
-              value="Leave Match"
-              fontSize={fs(20)}
-              color={Color4.White()}
-              uiTransform={{ width: 160, height: 36, margin: { top: 30 } }}
-              uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
-              onMouseDown={() => room.send('leaveMatch', {})}
-            />
-          )}
         </UiEntity>
       )}
       {/* ========== fin SCOREBOARD ========== */}
+
+      {/* ========== MATCH ACTION BAR ========== */}
+      {splashDismissed && s.hasActiveMatch === 1 && side && (
+        <UiEntity
+          uiTransform={{
+            positionType: 'absolute',
+            position: { top: 0 },
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 55,
+          }}
+        >
+          <Button
+            value="Choose your Flag"
+            fontSize={fs(20)}
+            color={Color4.White()}
+            uiTransform={{ width: 200, height: 36, margin: { right: 12 } }}
+            uiBackground={{ color: Color4.create(0.2, 0.35, 0.6, 1) }}
+            onMouseDown={() => openPicker()}
+          />
+          <Button
+            value="Leave Match"
+            fontSize={fs(20)}
+            color={Color4.White()}
+            uiTransform={{ width: 160, height: 36 }}
+            uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
+            onMouseDown={() => room.send('leaveMatch', {})}
+          />
+        </UiEntity>
+      )}
+      {/* ========== fin MATCH ACTION BAR ========== */}
 
       {/* ========== UI: LEADERBOARD (centrado en pantalla) ========== */}
       {splashDismissed && showLeaderboard && <UiEntity
@@ -572,7 +607,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           }}
           uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
-          <Label value="Waiting for the rival" fontSize={fs(35)} color={Color4.White()} textAlign="middle-center" />
+          <Label value="Waiting for opponent" fontSize={fs(35)} color={Color4.White()} textAlign="middle-center" />
           <Label
             value={`${waitLeft}s`}
             fontSize={fs(30)}
@@ -590,60 +625,111 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         </UiEntity>
       )}
 
+      {/* DIVE / SHOOT panels: centrado en pantalla */}
       {showPick && (
         <UiEntity
           uiTransform={{
-            margin: { top: '15vh' },
-            padding: 20,
+            positionType: 'absolute',
+            position: { top: 0, left: 0, right: 0, bottom: 0 },
+            width: '100%',
+            height: '100%',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            maxWidth: 760
+            justifyContent: 'center',
+            pointerFilter: 'none',
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
-          {kicker && (
-            <Label
-              value="Choose where to shoot"
-              fontSize={fs(30)}
-              color={Color4.White()}
-              textAlign="middle-center"
-            />
-          )}
+          {/* DIVE: mitad superior de UI_choose.png */}
           {!kicker && (
-            <Label
-              value="Choose where to dive"
-              fontSize={fs(30)}
-              color={Color4.White()}
-              textAlign="middle-center"
-            />
+            <UiEntity
+              uiTransform={{
+                width: PICK_PANEL_WIDTH,
+                height: 180,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+              }}
+              uiBackground={{
+                textureMode: 'stretch',
+                texture: { src: 'assets/images/UI_choose.png' },
+                uvs: [0, 0.5, 0, 1, 1, 1, 1, 0.5]
+              }}
+            >
+              <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { bottom: PICK_BTN_MARGIN_BOTTOM } }}>
+                <Button
+                  value=""
+                  uiTransform={{ width: PICK_BTN_WIDTH, height: PICK_BTN_HEIGHT, margin: { right: PICK_BTN_GAP } }}
+                  uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickL ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
+                  onMouseDown={() => room.send('submitDirection', { dir: 'L' })}
+                  onMouseEnter={() => { hoverPickL = true }}
+                  onMouseLeave={() => { hoverPickL = false }}
+                />
+                <Button
+                  value=""
+                  uiTransform={{ width: PICK_BTN_WIDTH, height: PICK_BTN_HEIGHT, margin: { right: PICK_BTN_GAP } }}
+                  uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickC ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
+                  onMouseDown={() => room.send('submitDirection', { dir: 'C' })}
+                  onMouseEnter={() => { hoverPickC = true }}
+                  onMouseLeave={() => { hoverPickC = false }}
+                />
+                <Button
+                  value=""
+                  uiTransform={{ width: PICK_BTN_WIDTH, height: PICK_BTN_HEIGHT }}
+                  uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickR ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
+                  onMouseDown={() => room.send('submitDirection', { dir: 'R' })}
+                  onMouseEnter={() => { hoverPickR = true }}
+                  onMouseLeave={() => { hoverPickR = false }}
+                />
+              </UiEntity>
+            </UiEntity>
           )}
-          <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 16 } }}>
-            <Button
-              value="Left"
-              fontSize={fs(30)}
-              color={Color4.White()}
-              uiTransform={{ width: 120, height: 40, margin: { right: 8 } }}
-              uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, 1) }}
-              onMouseDown={() => room.send('submitDirection', { dir: 'L' })}
-            />
-            <Button
-              value="Center"
-              fontSize={fs(30)}
-              color={Color4.White()}
-              uiTransform={{ width: 120, height: 40, margin: { right: 8 } }}
-              uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, 1) }}
-              onMouseDown={() => room.send('submitDirection', { dir: 'C' })}
-            />
-            <Button
-              value="Right"
-              fontSize={fs(30)}
-              color={Color4.White()}
-              uiTransform={{ width: 120, height: 40 }}
-              uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, 1) }}
-              onMouseDown={() => room.send('submitDirection', { dir: 'R' })}
-            />
-          </UiEntity>
+          {/* SHOOT: mitad inferior de UI_choose.png */}
+          {kicker && (
+            <UiEntity
+              uiTransform={{
+                width: PICK_PANEL_WIDTH,
+                height: 180,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+              }}
+              uiBackground={{
+                textureMode: 'stretch',
+                texture: { src: 'assets/images/UI_choose.png' },
+                uvs: [0, 0, 0, 0.5, 1, 0.5, 1, 0]
+              }}
+            >
+              <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { bottom: PICK_BTN_MARGIN_BOTTOM } }}>
+                <Button
+                  value=""
+                  uiTransform={{ width: PICK_BTN_WIDTH, height: PICK_BTN_HEIGHT, margin: { right: PICK_BTN_GAP } }}
+                  uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickL ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
+                  onMouseDown={() => room.send('submitDirection', { dir: 'L' })}
+                  onMouseEnter={() => { hoverPickL = true }}
+                  onMouseLeave={() => { hoverPickL = false }}
+                />
+                <Button
+                  value=""
+                  uiTransform={{ width: PICK_BTN_WIDTH, height: PICK_BTN_HEIGHT, margin: { right: PICK_BTN_GAP } }}
+                  uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickC ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
+                  onMouseDown={() => room.send('submitDirection', { dir: 'C' })}
+                  onMouseEnter={() => { hoverPickC = true }}
+                  onMouseLeave={() => { hoverPickC = false }}
+                />
+                <Button
+                  value=""
+                  uiTransform={{ width: PICK_BTN_WIDTH, height: PICK_BTN_HEIGHT }}
+                  uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickR ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
+                  onMouseDown={() => room.send('submitDirection', { dir: 'R' })}
+                  onMouseEnter={() => { hoverPickR = true }}
+                  onMouseLeave={() => { hoverPickR = false }}
+                />
+              </UiEntity>
+            </UiEntity>
+          )}
         </UiEntity>
       )}
 
@@ -676,20 +762,6 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               fontSize={fs(60)}
               color={s.resultLine.startsWith('GOAL') ? Color4.create(1, 0.9, 0.1, 1) : Color4.create(0.4, 0.8, 1, 1)}
               textAlign="middle-center"
-            />
-            <Label
-              value={s.resultLine.split('\n')[1] || ''}
-              fontSize={fs(30)}
-              color={Color4.White()}
-              textAlign="middle-center"
-              uiTransform={{ margin: { top: 10 } }}
-            />
-            <Label
-              value={s.resultLine.split('\n')[2] || ''}
-              fontSize={fs(30)}
-              color={Color4.White()}
-              textAlign="middle-center"
-              uiTransform={{ margin: { top: 4 } }}
             />
           </UiEntity>
         </UiEntity>
