@@ -581,8 +581,8 @@ const RootUi = () => {
             uiTransform={{ margin: { top: 10 } }}
           />
           <Button
-            value="Training Mode (PvE)"
-            fontSize={fs(30)}
+            value="Skip to Training Mode"
+            fontSize={fs(20)}
             color={Color4.White()}
             uiTransform={{ width: 220, height: 44, margin: { top: 18 } }}
             uiBackground={{ color: Color4.create(0.2, 0.45, 0.25, 1) }}
