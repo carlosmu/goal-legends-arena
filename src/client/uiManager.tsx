@@ -70,8 +70,7 @@ const RootUi = () => {
     waitLeft = Math.max(0, Math.ceil((s.waitEndMs - Date.now()) / 1000))
   }
 
-  const roundLabel = s.suddenDeath ? `Sudden death — shot ${s.shotIndex + 1}` : `Shoot ${Math.min(s.shotIndex + 1, 10)} / 10`
-  const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
+const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
 
   if (prevPhase === GameState.MatchEnd && s.phase !== GameState.MatchEnd) {
     lbShowUntilMs = Date.now() + 5000
@@ -603,10 +602,9 @@ const RootUi = () => {
           }}
           uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
-          <Label value={roundLabel} fontSize={fs(30)} color={Color4.create(0.9, 0.95, 1, 1)} uiTransform={{ margin: { bottom: 10 } }} />
           {kicker && (
             <Label
-              value="You are the Kicker — choose where to shoot (Left / Center / Right)"
+              value="Choose where to shoot"
               fontSize={fs(30)}
               color={Color4.White()}
               textAlign="middle-center"
@@ -614,18 +612,12 @@ const RootUi = () => {
           )}
           {!kicker && (
             <Label
-              value="You are the Goalkeeper — choose where to dive (Left / Center / Right)"
+              value="Choose where to dive"
               fontSize={fs(30)}
               color={Color4.White()}
               textAlign="middle-center"
             />
           )}
-          <Label
-            value="Use the green boxes near the goal or the buttons below."
-            fontSize={fs(20)}
-            color={Color4.create(0.8, 0.85, 0.95, 1)}
-            uiTransform={{ margin: { top: 12 } }}
-          />
           <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 16 } }}>
             <Button
               value="Left"
