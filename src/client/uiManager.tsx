@@ -66,6 +66,19 @@ let splashDismissed = false
 let hoverPickL = false
 let hoverPickC = false
 let hoverPickR = false
+/** Offset entre reloj servidor y cliente, cacheado al primer snapshot válido (solo para debug). */
+let serverClockOffset: number | null = null
+/** Timestamp local del último click a un spot. Garantiza que el UI de "Waiting" aparezca incluso si
+ * el servidor salta WaitingOpponent (e.g. cuando ya había alguien esperando y el match arranca al instante). */
+let lastSpotClickAt = 0
+const LOCAL_WAIT_MIN_MS = 3000
+/** Ancla local del countdown cosmético de waiting. Arranca cuando la UI se vuelve visible y baja 30→0. */
+let waitDisplayAnchorMs = 0
+const WAIT_DISPLAY_TOTAL_S = 30
+
+export function markSpotClickedLocally(): void {
+  lastSpotClickAt = Date.now()
+}
 
 const RootUi = () => {
   readPenaltySnapshot()
@@ -75,15 +88,11 @@ const RootUi = () => {
   const side = mySide(s, me)
   const kicker = isKickerView(s, side)
 
-  // Calcular contra el reloj del servidor (evita clock skew entre máquinas).
-  // serverApproxNow = clientNow + (serverNow - clientNowWhenSnapshotArrived).
-  // Simplificación: usamos directamente s.serverNowMs como anchor del último tick.
-  const serverOffset = s.serverNowMs > 0 ? s.serverNowMs - Date.now() : 0
-  const serverApproxNow = Date.now() + serverOffset
-  let waitLeft = 0
-  if (s.waitEndMs > 0) {
-    waitLeft = Math.max(0, Math.ceil((s.waitEndMs - serverApproxNow) / 1000))
+  // Para el debug "Timeout in" (inactivityDeadlineMs) usamos offset cacheado.
+  if (serverClockOffset === null && s.serverNowMs > 0) {
+    serverClockOffset = s.serverNowMs - Date.now()
   }
+  const serverApproxNow = Date.now() + (serverClockOffset ?? 0)
 
 const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
 
@@ -100,8 +109,23 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
 
   /** Partida en curso (oculta welcome para nuevos hasta que termine). No incluye solo “esperando rival”. */
   const showWelcome = splashDismissed && s.hasActiveMatch === 0 && s.phase === GameState.LobbyIdle
+  // Limpiar la bandera local cuando la partida ya está corriendo (no estamos esperando más).
+  if (lastSpotClickAt > 0 && s.phase !== GameState.WaitingOpponent && s.phase !== GameState.LobbyIdle) {
+    lastSpotClickAt = 0
+  }
+  const localWaitVisible = lastSpotClickAt > 0 && (Date.now() - lastSpotClickAt) < LOCAL_WAIT_MIN_MS
   const showWaiting =
-    splashDismissed && s.phase === GameState.WaitingOpponent && side && waitLeft > 0 && !(s.redAddr && s.blueAddr && s.mode !== 'pve')
+    splashDismissed &&
+    (localWaitVisible || (s.phase === GameState.WaitingOpponent && !(s.redAddr && s.blueAddr && s.mode !== 'pve')))
+  // Ancla el countdown cosmético: arranca en 30 cuando la UI pasa de oculta a visible.
+  if (showWaiting) {
+    if (waitDisplayAnchorMs === 0) waitDisplayAnchorMs = Date.now()
+  } else {
+    waitDisplayAnchorMs = 0
+  }
+  const waitDisplayLeft = waitDisplayAnchorMs > 0
+    ? Math.max(0, WAIT_DISPLAY_TOTAL_S - Math.floor((Date.now() - waitDisplayAnchorMs) / 1000))
+    : WAIT_DISPLAY_TOTAL_S
   const showPick =
     splashDismissed && s.phase === GameState.SelectingDirections && side && (s.mode === 'pvp' || (s.mode === 'pve' && !!side))
   const showResult = splashDismissed && s.phase === GameState.ResolvingRound && !!s.resultLine
@@ -613,7 +637,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         >
           <Label value="Waiting for opponent" fontSize={fs(35)} color={Color4.White()} textAlign="middle-center" />
           <Label
-            value={`${waitLeft}s`}
+            value={`${waitDisplayLeft}s`}
             fontSize={fs(30)}
             color={Color4.create(1, 0.85, 0.2, 1)}
             uiTransform={{ margin: { top: 10 } }}

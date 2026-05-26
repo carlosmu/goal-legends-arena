@@ -21,12 +21,14 @@ import { readPenaltySnapshot, penaltyStateEntityReady } from './gameStore'
 import { initAudioManager, tickAudioManager } from './audioManager'
 import { initAnimationManager, tickAnimationManager } from './animationManager'
 import { tickFireworkManager } from './fireworkManager'
+import { markSpotClickedLocally } from './uiManager'
 
 let syncedPinged = false
 let loggedSyncReady = false
 
 function tryOccupySpot(team: 'red' | 'blue') {
   if (!isStateSyncronized()) return
+  markSpotClickedLocally()
   room.send('occupySpot', { team })
 }
 
