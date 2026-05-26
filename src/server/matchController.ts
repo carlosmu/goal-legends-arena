@@ -693,6 +693,24 @@ export function registerServerMessages() {
     endMatchNoWinner(`@${leaverName} abandoned the match`)
   })
 
+  // Cancel puro durante WaitingOpponent: limpia el spot del jugador, vuelve al lobby
+  // y lo teleporta. Sin "abandoned", sin leaderboard, sin puntos al otro.
+  room.onMessage('cancelWaiting', (_data, ctx) => {
+    const m = mut()
+    const addrRaw = ctx?.from ?? ''
+    m.lastServerEvent = `cancelWaiting from=${addrRaw}`
+    if (!ctx || !addrRaw) return
+    if (m.phase !== GameState.WaitingOpponent) return
+    const addr = addrRaw.toLowerCase()
+    const isRed = m.redAddr?.toLowerCase() === addr
+    const isBlue = m.blueAddr?.toLowerCase() === addr
+    if (!isRed && !isBlue) return
+    goLobbyIdle()
+    const expulsion = getRandomExpulsionLocation()
+    sendTeleport(addrRaw, expulsion.pos, expulsion.cam)
+    bumpEpoch()
+  })
+
   room.onMessage('startPvE', (_data, ctx) => {
     const m = mut()
     const addrRaw = ctx?.from ?? ''

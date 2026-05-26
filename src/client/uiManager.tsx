@@ -642,14 +642,32 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             color={Color4.create(1, 0.85, 0.2, 1)}
             uiTransform={{ margin: { top: 10 } }}
           />
-          <Button
-            value="Skip to Training Mode"
-            fontSize={fs(20)}
-            color={Color4.White()}
-            uiTransform={{ width: 220, height: 44, margin: { top: 18 } }}
-            uiBackground={{ color: Color4.create(0.2, 0.45, 0.25, 1) }}
-            onMouseDown={() => room.send('startPvE', {})}
-          />
+          <UiEntity
+            uiTransform={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: { top: 18 }
+            }}
+          >
+            <Button
+              value="Player vs Engine"
+              fontSize={fs(20)}
+              color={Color4.White()}
+              uiTransform={{ width: 220, height: 44, margin: { right: 12 } }}
+              uiBackground={{ color: Color4.create(0.2, 0.45, 0.25, 1) }}
+              onMouseDown={() => room.send('startPvE', {})}
+            />
+            <Button
+              value="Cancel"
+              fontSize={fs(20)}
+              color={Color4.White()}
+              uiTransform={{ width: 160, height: 44 }}
+              uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
+              onMouseDown={() => room.send('cancelWaiting', {})}
+            />
+          </UiEntity>
         </UiEntity>
       )}
 
