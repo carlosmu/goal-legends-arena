@@ -319,10 +319,9 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
-            position: { top: 0 },
-            width: '100%',
+            position: { top: 0, left: '70vw' },
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 55,
@@ -332,7 +331,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             value="Choose your Flag"
             fontSize={fs(20)}
             color={Color4.White()}
-            uiTransform={{ width: 200, height: 36, margin: { right: 12 } }}
+            uiTransform={{ width: 200, height: 60, margin: { right: 12 } }}
             uiBackground={{ color: Color4.create(0.2, 0.35, 0.6, 1) }}
             onMouseDown={() => openPicker()}
           />
@@ -340,7 +339,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             value="Leave Match"
             fontSize={fs(20)}
             color={Color4.White()}
-            uiTransform={{ width: 160, height: 36 }}
+            uiTransform={{ width: 160, height: 60 }}
             uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
             onMouseDown={() => room.send('leaveMatch', {})}
           />
