@@ -111,10 +111,12 @@ function triggerLocalEmote(phase: string) {
 
 function repositionPlayers() {
   const s           = clientSnapshot
-  const isPvE       = s.mode === 'pve'
   const kickerIsRed = s.kickerIsRed === 1
-  const humanIsRed  = s.pveHumanIsRed === 1
   const localAddr   = localPlayerAddr()
+
+  const localIsRed = localAddr === s.redAddr.toLowerCase()
+  const localIsBlue = localAddr === s.blueAddr.toLowerCase()
+  if (!localIsRed && !localIsBlue) return
 
   const kickerAddr = (kickerIsRed ? s.redAddr : s.blueAddr).toLowerCase()
   const localIsKicker = localAddr === kickerAddr
@@ -126,18 +128,25 @@ function repositionPlayers() {
   } else {
     void movePlayerTo({ newRelativePosition: GK_POS, cameraTarget: KICKER_POS })
   }
+}
 
-  // ── Training bot for PvE AI opponent ──────────────────────────────────────
-  if (isPvE) {
-    const kickerIsAI = kickerIsRed !== humanIsRed
-    trainingBotIsKicker = kickerIsAI
-    if (kickerIsAI) {
-      showTrainingBot(KICKER_POS, KICKER_ROT)
-    } else {
-      showTrainingBot(GK_POS, GK_ROT)
-    }
-  } else {
+function manageTrainingBot() {
+  const s           = clientSnapshot
+  const isPvE       = s.mode === 'pve'
+  const kickerIsRed = s.kickerIsRed === 1
+  const humanIsRed  = s.pveHumanIsRed === 1
+
+  if (!isPvE) {
     hideTrainingBot()
+    return
+  }
+
+  const kickerIsAI = kickerIsRed !== humanIsRed
+  trainingBotIsKicker = kickerIsAI
+  if (kickerIsAI) {
+    showTrainingBot(KICKER_POS, KICKER_ROT)
+  } else {
+    showTrainingBot(GK_POS, GK_ROT)
   }
 }
 
@@ -145,15 +154,19 @@ function repositionPlayers() {
 
 export function initPlayerCloneSystem(): void {
   engine.addSystem((_dt: number) => {
-    const s      = clientSnapshot
-    const active = s.hasActiveMatch
-    const phase  = s.phase
+    const s       = clientSnapshot
+    const active  = s.hasActiveMatch
+    const phase   = s.phase
+    const localAddr = localPlayerAddr()
+    const localIsRed = localAddr === s.redAddr.toLowerCase()
+    const localIsBlue = localAddr === s.blueAddr.toLowerCase()
 
     const roleKey = `${active}-${s.kickerIsRed}`
     if (roleKey !== prevRoleKey) {
       prevRoleKey = roleKey
       if (active === 1) {
         repositionPlayers()
+        manageTrainingBot()
       } else {
         hideTrainingBot()
         unlockLocomotion()
@@ -163,7 +176,9 @@ export function initPlayerCloneSystem(): void {
 
     if (active === 1 && phase !== prevPhase) {
       prevPhase = phase
-      triggerLocalEmote(phase)
+      if (localIsRed || localIsBlue) {
+        triggerLocalEmote(phase)
+      }
       playTrainingBotAnim(phase)
     }
   })
