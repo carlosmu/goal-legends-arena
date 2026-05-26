@@ -116,7 +116,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const localWaitVisible = lastSpotClickAt > 0 && (Date.now() - lastSpotClickAt) < LOCAL_WAIT_MIN_MS
   const showWaiting =
     splashDismissed &&
-    (localWaitVisible || (s.phase === GameState.WaitingOpponent && !(s.redAddr && s.blueAddr && s.mode !== 'pve')))
+    (localWaitVisible || (side && s.phase === GameState.WaitingOpponent && !(s.redAddr && s.blueAddr && s.mode !== 'pve')))
   // Ancla el countdown cosmético: arranca en 30 cuando la UI pasa de oculta a visible.
   if (showWaiting) {
     if (waitDisplayAnchorMs === 0) waitDisplayAnchorMs = Date.now()
@@ -175,14 +175,14 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
-            position: { top: 36},
+            position: { top: 0 },
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: 10,
+            padding: 5,
             zIndex: 55
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.6) }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.8) }}
         >
           {/* Row 1: flag-pic-score-pic-flag */}
           <UiEntity
@@ -288,25 +288,27 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             uiTransform={{
               display: 'flex',
               flexDirection: 'row',
-              justifyContent: 'center',
               alignItems: 'center',
-              margin: { top: 4 }
+              width: '100%',
             }}
           >
-            <Label
-              value={s.blueName || 'Blue'}
-              fontSize={fs(30)}
-              color={Color4.White()}
-              textAlign="middle-right"
-              uiTransform={{ width: 170, margin: { right: 8 } }}
-            />
-            <Label
-              value={s.redName || 'Red'}
-              fontSize={fs(30)}
-              color={Color4.White()}
-              textAlign="middle-left"
-              uiTransform={{ width: 170, margin: { left: 8 } }}
-            />
+            <UiEntity uiTransform={{ flexGrow: 1, display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+              <Label
+                value={s.blueName || 'Blue'}
+                fontSize={fs(20)}
+                color={Color4.White()}
+                textAlign="middle-right"
+              />
+            </UiEntity>
+            <UiEntity uiTransform={{ width: '10vw' }} />
+            <UiEntity uiTransform={{ flexGrow: 1, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
+              <Label
+                value={s.redName || 'Red'}
+                fontSize={fs(20)}
+                color={Color4.White()}
+                textAlign="middle-left"
+              />
+            </UiEntity>
           </UiEntity>
         </UiEntity>
       )}
