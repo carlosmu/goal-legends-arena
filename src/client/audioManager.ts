@@ -1,4 +1,5 @@
-import { engine, executeTask, AudioSource, Transform } from '@dcl/sdk/ecs'
+import { engine, AudioSource, Transform } from '@dcl/sdk/ecs'
+import * as utils from '@dcl-sdk/utils'
 import { Vector3 } from '@dcl/sdk/math'
 import { AUDIO } from '../shared/constants'
 import { GameState } from '../shared/gameState'
@@ -45,13 +46,12 @@ export function initAudioManager() {
   registerCrowdFollowPlayer()
 
   // Algunos runtimes arrancan mejor el loop si se re-dispara tras un tick.
-  executeTask(async () => {
-    await new Promise<void>((r) => setTimeout(r, 300))
+  utils.timers.setTimeout(() => {
     if (!crowdEntity || !AudioSource.has(crowdEntity)) return
     const a = AudioSource.getMutable(crowdEntity)
     a.playing = false
     a.playing = true
-  })
+  }, 300)
 
   sfxEntity = engine.addEntity()
   Transform.create(sfxEntity, { position: Vector3.create(16, 2, 16) })
@@ -75,12 +75,11 @@ export function tickAudioManager(s: ClientSnapshot) {
   const ph = s.phase
   if (prevPhase !== GameState.ResolvingRound && ph === GameState.ResolvingRound) {
     playOneShot(AUDIO.whistle)
-    executeTask(async () => {
-      await new Promise<void>((r) => setTimeout(r, 650))
+    utils.timers.setTimeout(() => {
       const cur = readPenaltySnapshot()
       if (cur.lastRoundWasGoal === 1) playOneShot(AUDIO.point)
       else playOneShot(AUDIO.fail)
-    })
+    }, 650)
   }
   if (prevPhase !== GameState.MatchEnd && ph === GameState.MatchEnd) {
     playOneShot(s.winnerSide ? AUDIO.winner : AUDIO.abandoned)

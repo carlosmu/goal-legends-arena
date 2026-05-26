@@ -11,6 +11,9 @@
     "upgrade-sdk:auth-server": "npm install --save-dev @dcl/sdk@auth-server @dcl/js-runtime@auth-server",
     "server-logs": "sdk-commands sdk-server-logs"
   },
+  "dependencies": {
+    "@dcl-sdk/utils": "^1.4.0"
+  },
   "devDependencies": {
     "@dcl/js-runtime": "7.23.2-25521226778.commit-1828100",
     "@dcl/sdk": "7.23.2-25521226778.commit-1828100"
