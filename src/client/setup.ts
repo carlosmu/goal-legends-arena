@@ -20,6 +20,7 @@ import { prefetchLeaderboardFaces } from './leaderboardProfileCache'
 import { readPenaltySnapshot, penaltyStateEntityReady } from './gameStore'
 import { initAudioManager, tickAudioManager } from './audioManager'
 import { initAnimationManager, tickAnimationManager } from './animationManager'
+import { tickFireworkManager } from './fireworkManager'
 
 let syncedPinged = false
 let loggedSyncReady = false
@@ -104,6 +105,7 @@ export function initClient() {
 
     tickAudioManager(s)
     tickAnimationManager(s.phase)
+    tickFireworkManager(s.phase)
     if (!syncedPinged && isStateSyncronized()) {
       syncedPinged = true
       room.send('clientReadyPing', {})
