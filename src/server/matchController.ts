@@ -196,6 +196,7 @@ export function createStateEntity(): Entity {
     blueCountry: '',
     pveHumanIsRed: 1,
     serverTickCounter: 0,
+    serverNowMs: nowMs(),
     lastServerEvent: 'server-boot'
   })
   syncEntity(stateEntity, [PenaltyMatchState.componentId], SYNC_STATE_ENTITY_ENUM)
@@ -483,6 +484,7 @@ export function serverTick() {
   const m = mut()
   const t = nowMs()
   m.serverTickCounter = (m.serverTickCounter || 0) + 1
+  m.serverNowMs = t
 
   if (m.phase === GameState.WaitingOpponent && m.waitEndMs > 0 && t >= m.waitEndMs) {
     const hasRed = !!m.redAddr
@@ -616,7 +618,7 @@ export function registerServerMessages() {
     if (bothHumans) {
       startPvPFromWaiting()
       m.waitEndMs = 0
-    } else if ((hasR || hasB) && m.phase !== GameState.WaitingOpponent) {
+    } else if (hasR || hasB) {
       m.phase = GameState.WaitingOpponent
       m.waitEndMs = nowMs() + WAIT_OPPONENT_MS
     }

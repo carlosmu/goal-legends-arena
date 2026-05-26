@@ -67,6 +67,8 @@ export const PenaltyMatchState = engine.defineComponent('gla:penalty-match-state
   pveHumanIsRed: Schemas.Int,
   /** Debug: incrementa en cada `serverTick`; si en cliente sube → servidor vivo. */
   serverTickCounter: Schemas.Int,
+  /** Reloj del servidor al momento del último tick, para que clientes corrijan clock skew. */
+  serverNowMs: Schemas.Number,
   /** Debug: último evento recibido por el servidor (mensaje + ctx.from). */
   lastServerEvent: Schemas.String
 })

@@ -75,10 +75,14 @@ const RootUi = () => {
   const side = mySide(s, me)
   const kicker = isKickerView(s, side)
 
-  // Calculate remaining time directly from server timestamp, rounding UP to prevent flicker
+  // Calcular contra el reloj del servidor (evita clock skew entre máquinas).
+  // serverApproxNow = clientNow + (serverNow - clientNowWhenSnapshotArrived).
+  // Simplificación: usamos directamente s.serverNowMs como anchor del último tick.
+  const serverOffset = s.serverNowMs > 0 ? s.serverNowMs - Date.now() : 0
+  const serverApproxNow = Date.now() + serverOffset
   let waitLeft = 0
   if (s.waitEndMs > 0) {
-    waitLeft = Math.max(0, Math.ceil((s.waitEndMs - Date.now()) / 1000))
+    waitLeft = Math.max(0, Math.ceil((s.waitEndMs - serverApproxNow) / 1000))
   }
 
 const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
@@ -1005,7 +1009,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             uiTransform={{ margin: { top: 4 } }}
           />
           <Label
-            value={'Timeout in: ' + (typeof s.inactivityDeadlineMs === 'number' && s.inactivityDeadlineMs > 0 ? Math.max(0, Math.ceil((s.inactivityDeadlineMs - Date.now()) / 1000)) + 's' : 'off') + ` | server tick: ${s.serverTickCounter}`}
+            value={'Timeout in: ' + (typeof s.inactivityDeadlineMs === 'number' && s.inactivityDeadlineMs > 0 ? Math.max(0, Math.ceil((s.inactivityDeadlineMs - serverApproxNow) / 1000)) + 's' : 'off') + ` | server tick: ${s.serverTickCounter}`}
             fontSize={fs(14)}
             color={Color4.create(1, 0.7, 0.7, 1)}
             uiTransform={{ margin: { top: 4 } }}
