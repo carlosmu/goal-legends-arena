@@ -369,11 +369,11 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: isMobile() ? 58 : 38,
+            padding: isMobile() ? 42 : 38,
             minWidth: '25%',
             minHeight: '25%'
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
+          uiBackground={{ color: Color4.create(0.08, 0.38, 0.14, 0.70) }}
         >
           <Label value="Leaderboard" fontSize={fs(30)} color={Color4.White()} textAlign="middle-center" uiTransform={{ width: '100%', margin: { bottom: 8 } }} />
           {lbRows.length === 0 ? (
@@ -605,23 +605,21 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             flexDirection: 'column',
             alignItems: 'center',
             margin: { top: '10vh' },
-            padding: { top: 22, bottom: 22, left: 32, right: 32 },
-            maxWidth: 720
+            padding: { top: 26, bottom: 26, left: 34, right: 34 },
+            // maxWidth: 7201
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
+          uiBackground={{ color: Color4.create(0.08, 0.38, 0.14, 0.70) }}
         >
-          <Label
-            value="Choose a Spot to start playing!"
-            fontSize={fs(35)}
-            color={Color4.White()}
-            textAlign="middle-center"
-          />
-          <Label
-            value="Or simply enjoy the show"
-            fontSize={fs(30)}
-            color={Color4.create(0.88, 0.9, 0.95, 1)}
-            textAlign="middle-center"
-            uiTransform={{ margin: { top: 14 } }}
+          <UiEntity
+            uiTransform={{ width: isMobile() ? 800 : 480, height: isMobile() ? 200 : 120 }}
+            uiBackground={{
+              textureMode: 'stretch',
+              texture: { src: 'assets/images/UI_buttons.png' },
+              // 4x4 sheet; using A1-B1-C1-D1 (row 1 full width)
+              // u: 0.00 -> 1.00, v: 0.75 -> 1.00
+              uvs: [0, 0.75, 0, 1, 1, 1, 1, 0.75],
+              color: Color4.White()
+            }}
           />
         </UiEntity>
       )}
