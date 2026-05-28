@@ -14,7 +14,7 @@ import {
   isPickerOpen,
   openPicker,
   selectCountry,
-  flagSrc
+  flagBackground
 } from './countryStore'
 
 /**
@@ -210,7 +210,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               <Button
                 value=""
                 uiTransform={{ width: 96, height: 72, margin: { right: 6 } }}
-                uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.blueCountry) }, color: Color4.White() }}
+                uiBackground={flagBackground(s.blueCountry)}
                 onMouseDown={() => { if (side === 'blue') openPicker() }}
               />
             ) : (
@@ -274,7 +274,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               <Button
                 value=""
                 uiTransform={{ width: 96, height: 72, margin: { left: 6 } }}
-                uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(s.redCountry) }, color: Color4.White() }}
+                uiBackground={flagBackground(s.redCountry)}
                 onMouseDown={() => { if (side === 'red') openPicker() }}
               />
             ) : (
@@ -454,7 +454,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                     uiTransform={{ width: vw(3), height: vw(2), margin: { right: 5 } }}
                     uiBackground={
                       row.country
-                        ? { textureMode: 'stretch', texture: { src: flagSrc(row.country) }, color: Color4.White() }
+                        ? flagBackground(row.country)
                         : { color: Color4.create(0, 0, 0, 0) }
                     }
                   />
@@ -547,7 +547,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   <Button
                     value=""
                     uiTransform={{ width: 168, height: 126 }}
-                    uiBackground={{ textureMode: 'stretch', texture: { src: flagSrc(c.iso) }, color: Color4.White() }}
+                    uiBackground={flagBackground(c.iso)}
                     onMouseDown={() => selectCountry(c.iso)}
                   />
                   <Label
@@ -862,11 +862,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               {(s.winnerSide === 'red' ? s.redCountry : s.blueCountry) ? (
                 <UiEntity
                   uiTransform={{ width: 96, height: 72, margin: { top: 16 } }}
-                  uiBackground={{
-                    textureMode: 'stretch',
-                    texture: { src: flagSrc(s.winnerSide === 'red' ? s.redCountry : s.blueCountry) },
-                    color: Color4.White()
-                  }}
+                  uiBackground={flagBackground(s.winnerSide === 'red' ? s.redCountry : s.blueCountry)}
                 />
               ) : (
                 <UiEntity uiTransform={{ width: 1, height: 1 }} />
