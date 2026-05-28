@@ -282,11 +282,11 @@ function startPvEFromWaiting(humanIsRed: boolean) {
   const humanName = displayNameFor(humanAddr)
   if (humanIsRed) {
     m.redName = humanName
-    m.blueName = 'Training Mode'
+    m.blueName = 'Engine'
     m.blueAddr = ''
   } else {
     m.blueName = humanName
-    m.redName = 'Training Mode'
+    m.redName = 'Engine'
     m.redAddr = ''
   }
   m.winnerStreakDeadlineMs = 0

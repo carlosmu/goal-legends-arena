@@ -50,6 +50,13 @@ function vw(size: number): `${number}vw` {
   return (isMobile() ? `${size * 1.5}vw` : `${size}vw`) as `${number}vw`
 }
 
+/** Nombre visible en UI; normaliza legacy "Training Mode" y fuerza "Engine" en PvE. */
+function scoreboardSideName(name: string, fallback: string, isEngineSide: boolean): string {
+  if (isEngineSide) return 'Engine'
+  if (name === 'Training Mode' || name === 'Training AI') return 'Engine'
+  return (name && name.trim()) || fallback
+}
+
 const LEADERBOARD_TOP_N = 10
 
 // UI_choose.png is 1024x1024; each DIVE/SHOOT slice is half height => aspect 2:1 (w:h)
@@ -312,7 +319,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           >
             <UiEntity uiTransform={{ flexGrow: 1, display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
               <Label
-                value={s.blueName || 'Blue'}
+                value={scoreboardSideName(s.blueName, 'Blue', engineIsBlue)}
                 fontSize={fs(20)}
                 color={Color4.White()}
                 textAlign="middle-right"
@@ -321,7 +328,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             <UiEntity uiTransform={{ width: '10vw' }} />
             <UiEntity uiTransform={{ flexGrow: 1, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
               <Label
-                value={s.redName || 'Red'}
+                value={scoreboardSideName(s.redName, 'Red', engineIsRed)}
                 fontSize={fs(20)}
                 color={Color4.White()}
                 textAlign="middle-left"
@@ -868,7 +875,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 }
               />
               <Label
-                value={`Winner: @${s.winnerName}`}
+                value={`Winner: @${scoreboardSideName(s.winnerName, '', winnerEngineSide)}`}
                 fontSize={fs(50)}
                 color={Color4.create(1, 0.92, 0.35, 1)}
                 textAlign="middle-center"
