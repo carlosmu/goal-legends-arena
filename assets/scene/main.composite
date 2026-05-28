@@ -958,6 +958,27 @@
               "y": 0,
               "z": 24
             },
+            "scale": {
+              "x": 32,
+              "y": 0,
+              "z": 48
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "parent": 0
+          }
+        },
+        "554": {
+          "json": {
+            "position": {
+              "x": 16,
+              "y": 0,
+              "z": 16
+            },
             "rotation": {
               "x": 0,
               "y": 0,
@@ -965,9 +986,9 @@
               "w": 1
             },
             "scale": {
-              "x": 32,
-              "y": 0,
-              "z": 48
+              "x": 1,
+              "y": 1,
+              "z": 1
             },
             "parent": 0
           }
@@ -1057,6 +1078,28 @@
               }
             ]
           }
+        },
+        "554": {
+          "json": {
+            "states": [
+              {
+                "clip": "Flag_Wave.026",
+                "playing": true,
+                "weight": 1,
+                "speed": 1,
+                "loop": true,
+                "shouldReset": false
+              },
+              {
+                "clip": "Flag_Wave.001",
+                "playing": false,
+                "weight": 1,
+                "speed": 1,
+                "loop": false,
+                "shouldReset": false
+              }
+            ]
+          }
         }
       }
     },
@@ -1107,6 +1150,13 @@
             "src": "assets/asset-packs/invisible_wall/invisible_box.glb",
             "visibleMeshesCollisionMask": 2,
             "invisibleMeshesCollisionMask": 0
+          }
+        },
+        "554": {
+          "json": {
+            "src": "assets/models/stadium_flags.glb",
+            "visibleMeshesCollisionMask": 0,
+            "invisibleMeshesCollisionMask": 3
           }
         }
       }
@@ -1451,6 +1501,11 @@
           "json": {
             "value": "Invisible Wall"
           }
+        },
+        "554": {
+          "json": {
+            "value": "stadium_flags.glb"
+          }
         }
       }
     },
@@ -1739,9 +1794,9 @@
         "serializationType": "map"
       },
       "data": {
-        "553": {
+        "554": {
           "json": {
-            "gizmo": 1
+            "gizmo": 0
           }
         }
       }
@@ -1806,7 +1861,8 @@
                   513,
                   515,
                   552,
-                  553
+                  553,
+                  554
                 ]
               },
               {
@@ -2024,6 +2080,10 @@
               {
                 "entity": 553,
                 "children": []
+              },
+              {
+                "entity": 554,
+                "children": []
               }
             ]
           }
@@ -2171,6 +2231,9 @@
           "json": {}
         },
         "553": {
+          "json": {}
+        },
+        "554": {
           "json": {}
         }
       }

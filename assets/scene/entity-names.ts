@@ -47,4 +47,5 @@ export enum EntityNames {
   Video_Screen = "Video Screen",
   ball_glb = "ball.glb",
   futbol_arena_glb = "futbol_arena.glb",
+  stadium_flags_glb = "stadium_flags.glb",
 } 
