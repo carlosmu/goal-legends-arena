@@ -1006,11 +1006,17 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/logo.png' }, color: Color4.White() }}
             />
             <Button
-              value="START"
-              fontSize={fs(32)}
-              color={Color4.White()}
-              uiTransform={{ width: 220, height: 56 }}
-              uiBackground={{ color: Color4.create(0.1, 0.65, 0.2, 1) }}
+              value=""
+              // A2-B2 ocupa 2 celdas x 1 celda en una grilla 4x4 => ratio 2:1
+              uiTransform={{ width: 320, height: 160 }}
+              uiBackground={{
+                textureMode: 'stretch',
+                texture: { src: 'assets/images/UI_buttons.png' },
+                // 4x4 sheet; using A2-B2 (cols A+B, row 2)
+                // u: 0.00 -> 0.50, v: 0.50 -> 0.75
+                uvs: [0, 0.5, 0, 0.75, 0.5, 0.75, 0.5, 0.5],
+                color: Color4.White()
+              }}
               onMouseDown={() => { splashDismissed = true }}
             />
           </UiEntity>
