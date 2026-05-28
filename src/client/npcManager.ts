@@ -1,5 +1,10 @@
 import { engine, Transform, AvatarShape, Name, Entity } from '@dcl/sdk/ecs'
+
+function isLiveEntity(entity: Entity): boolean {
+  return Transform.has(entity)
+}
 import { Color3 } from '@dcl/sdk/math'
+import { npcLoadReady, NPC_SPAWN_BATCH, NPC_SPAWN_INTERVAL_SEC } from './sceneLoadManager'
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
@@ -25,7 +30,6 @@ const HAIR_COLORS: Color3[] = [
 ]
 
 const EMOTES = ['clap', 'tik', 'handsair', 'fistpump', 'wave']
-// const EMOTES = ['disco', 'tektonik', 'tik', 'robot', 'hammer', 'idle']
 
 const URN = 'urn:decentraland:off-chain:base-avatars:'
 
@@ -52,23 +56,17 @@ const HAIR = [
 ]
 
 const UPPER_BODY = [
-  // sporty / football
-  URN + 'soccer_shirt',           // M  - jersey de fútbol
-  URN + 'sport_jacket',           // M  - campera deportiva
-  URN + 'f_sport_purple_tshirt',  // F  - remera deporte violeta
-  // azul
-  URN + 'blue_tshirt',            // M
-  URN + 'simple_blue_tshirt',     // F
-  URN + 'polobluetshirt',         // unisex
-  URN + 'f_blue_jacket',          // F  - campera azul
-  // rojo
-  URN + 'red_tshirt',             // M
-  URN + 'f_red_simple_tshirt',    // F
-  // naranja
-  URN + 'orangebasictshirt',      // unisex
-  // multicolor
-  URN + 'polocoloredtshirt',      // unisex
-  // neutros
+  URN + 'soccer_shirt',
+  URN + 'sport_jacket',
+  URN + 'f_sport_purple_tshirt',
+  URN + 'blue_tshirt',
+  URN + 'simple_blue_tshirt',
+  URN + 'polobluetshirt',
+  URN + 'f_blue_jacket',
+  URN + 'red_tshirt',
+  URN + 'f_red_simple_tshirt',
+  URN + 'orangebasictshirt',
+  URN + 'polocoloredtshirt',
   URN + 'safari_shirt',
   URN + 'm_sweater_02',
   URN + 'm_sweater',
@@ -113,7 +111,7 @@ type Vec3 = { x: number; y: number; z: number }
 type Quat = { x: number; y: number; z: number; w: number }
 type NPCEntry = { entity: Entity; emote: string }
 
-const EMOTE_LOOP_INTERVAL = 4 // seconds — adjust to match longest emote duration
+const EMOTE_LOOP_INTERVAL = 4
 
 function spawnNPC(index: number, pos: Vec3, rot: Quat): NPCEntry {
   const isMale = Math.random() < 0.5
@@ -152,19 +150,49 @@ function findNPCSpawnPoints(): Array<{ pos: Vec3; rot: Quat }> {
   return spawns
 }
 
-let _counter = 0
-let _done    = false
+let _spawnQueue: Array<{ pos: Vec3; rot: Quat }> = []
+let _spawnIndex = 0
+let _spawnTimer = 0
+let _spawnQueueBuilt = false
 let _npcs: NPCEntry[] = []
 let _loopTimer = 0
+let _systemRegistered = false
 
-export function initNPCSystem(): void {
-  engine.addSystem((dt: number) => {
-    if (!_done) {
-      if (++_counter < 100) return
-      _done  = true
-      const spawns = findNPCSpawnPoints()
-      _npcs  = spawns.map((s, i) => spawnNPC(i, s.pos, s.rot))
-      console.log(`[NPC] Spawned ${_npcs.length} avatars`)
+export function resetNpcManager(): void {
+  for (const { entity } of _npcs) {
+    if (isLiveEntity(entity)) engine.removeEntity(entity)
+  }
+  _npcs = []
+  _spawnQueue = []
+  _spawnIndex = 0
+  _spawnTimer = 0
+  _spawnQueueBuilt = false
+  _loopTimer = 0
+}
+
+function npcSystem(dt: number): void {
+    if (!_spawnQueueBuilt) {
+      if (!npcLoadReady()) return
+      _spawnQueue = findNPCSpawnPoints()
+      _spawnQueueBuilt = true
+      _spawnIndex = 0
+      console.log(`[NPC] Found ${_spawnQueue.length} spawn points`)
+      if (_spawnQueue.length === 0) return
+    }
+
+    if (_spawnIndex < _spawnQueue.length) {
+      _spawnTimer += dt
+      if (_spawnTimer < NPC_SPAWN_INTERVAL_SEC) return
+      _spawnTimer = 0
+      const end = Math.min(_spawnIndex + NPC_SPAWN_BATCH, _spawnQueue.length)
+      for (let i = _spawnIndex; i < end; i++) {
+        const s = _spawnQueue[i]
+        _npcs.push(spawnNPC(i, s.pos, s.rot))
+      }
+      _spawnIndex = end
+      if (_spawnIndex >= _spawnQueue.length) {
+        console.log(`[NPC] Spawned ${_npcs.length} avatars (staggered)`)
+      }
       return
     }
 
@@ -174,9 +202,16 @@ export function initNPCSystem(): void {
     _loopTimer = 0
 
     for (const { entity, emote } of _npcs) {
+      if (!AvatarShape.has(entity)) continue
       const shape = AvatarShape.getMutable(entity)
       shape.expressionTriggerId       = emote
       shape.expressionTriggerTimestamp = Date.now()
     }
-  })
+}
+
+export function initNPCSystem(): void {
+  resetNpcManager()
+  if (_systemRegistered) return
+  _systemRegistered = true
+  engine.addSystem(npcSystem)
 }

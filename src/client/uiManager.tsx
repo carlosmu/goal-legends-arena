@@ -90,6 +90,15 @@ export function markSpotClickedLocally(): void {
   lastSpotClickAt = Date.now()
 }
 
+export function dismissSplash(): void {
+  splashDismissed = true
+}
+
+export function resetSplashUi(): void {
+  splashDismissed = false
+  hoverSplashStart = false
+}
+
 const RootUi = () => {
   readPenaltySnapshot()
   const s = clientSnapshot
@@ -998,24 +1007,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             position: { top: 0, left: 0 },
             width: '100%',
             height: '100%',
-            zIndex: 998,
-          }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.95) }}
-        />
-      )}
-      {!splashDismissed && (
-        <UiEntity
-          uiTransform={{
-            positionType: 'absolute',
-            position: { top: 0, left: 0 },
-            width: '100%',
-            height: '100%',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 999,
           }}
+          uiBackground={{ color: Color4.create(0, 0, 0, 0.95) }}
         >
           <UiEntity
             uiTransform={{
@@ -1023,6 +1021,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
+              pointerFilter: 'none',
             }}
           >
             <Label
@@ -1030,47 +1029,46 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               fontSize={fs(36)}
               color={Color4.White()}
               textAlign="middle-center"
-              uiTransform={{ margin: { bottom: -50 } }}
+              uiTransform={{ margin: { bottom: 12 }, pointerFilter: 'none' }}
             />
             <UiEntity
-              uiTransform={{ width: 540, height: 540, margin: { bottom: -60 } }}
+              uiTransform={{ width: 540, height: 540, margin: { bottom: 24 }, pointerFilter: 'none' }}
               uiBackground={logoBackground()}
             />
-            <UiEntity
-              uiTransform={{
-                width: isMobile() ? 320 : 240,
-                height: isMobile() ? 160 : 120,
-                positionType: 'relative'
+          </UiEntity>
+          <UiEntity
+            uiTransform={{
+              width: isMobile() ? 320 : 240,
+              height: isMobile() ? 160 : 120,
+              positionType: 'relative',
+              zIndex: 1,
+            }}
+          >
+            <Button
+              value=""
+              uiTransform={{ width: '100%', height: '100%' }}
+              uiBackground={{
+                textureMode: 'stretch',
+                texture: { src: 'assets/images/UI_buttons.png' },
+                uvs: [0, 0.5, 0, 0.75, 0.5, 0.75, 0.5, 0.5],
+                color: Color4.White()
               }}
-            >
-              <Button
-                value=""
-                uiTransform={{ width: '100%', height: '100%' }}
-                uiBackground={{
-                  textureMode: 'stretch',
-                  texture: { src: 'assets/images/UI_buttons.png' },
-                  // 4x4 sheet; using A2-B2 (cols A+B, row 2)
-                  // u: 0.00 -> 0.50, v: 0.50 -> 0.75
-                  uvs: [0, 0.5, 0, 0.75, 0.5, 0.75, 0.5, 0.5],
-                  color: Color4.White()
+              onMouseDown={() => { dismissSplash() }}
+              onMouseEnter={() => { if (!isMobile()) hoverSplashStart = true }}
+              onMouseLeave={() => { if (!isMobile()) hoverSplashStart = false }}
+            />
+            {hoverSplashStart && !isMobile() && (
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { bottom: 0, left: '10%' },
+                  width: '80%',
+                  height: 5,
+                  pointerFilter: 'none'
                 }}
-                onMouseDown={() => { splashDismissed = true }}
-                onMouseEnter={() => { if (!isMobile()) hoverSplashStart = true }}
-                onMouseLeave={() => { if (!isMobile()) hoverSplashStart = false }}
+                uiBackground={{ color: Color4.White() }}
               />
-              {hoverSplashStart && !isMobile() && (
-                <UiEntity
-                  uiTransform={{
-                    positionType: 'absolute',
-                    position: { bottom: 0, left: '10%' },
-                    width: '80%',
-                    height: 5,
-                    pointerFilter: 'none'
-                  }}
-                  uiBackground={{ color: Color4.White() }}
-                />
-              )}
-            </UiEntity>
+            )}
           </UiEntity>
         </UiEntity>
       )}

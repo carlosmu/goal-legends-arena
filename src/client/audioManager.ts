@@ -33,8 +33,20 @@ function registerCrowdFollowPlayer() {
   })
 }
 
+export function resetAudioManager(): void {
+  if (crowdEntity !== null && Transform.has(crowdEntity)) {
+    engine.removeEntity(crowdEntity)
+  }
+  crowdEntity = null
+  if (sfxEntity !== null && Transform.has(sfxEntity)) {
+    engine.removeEntity(sfxEntity)
+  }
+  sfxEntity = null
+  prevPhase = ''
+}
+
 export function initAudioManager() {
-  if (crowdEntity !== null) return
+  if (crowdEntity !== null && AudioSource.has(crowdEntity)) return
   crowdEntity = engine.addEntity()
   Transform.create(crowdEntity, { position: Vector3.create(16, 2, 16) })
   AudioSource.create(crowdEntity, {

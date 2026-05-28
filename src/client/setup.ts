@@ -18,7 +18,7 @@ import { AIM_COLLIDERS, POINTER_EVENT_MAX_DISTANCE } from '../shared/constants'
 import { getLeaderboardRows } from './leaderboardManager'
 import { prefetchLeaderboardFaces } from './leaderboardProfileCache'
 import { readPenaltySnapshot, penaltyStateEntityReady } from './gameStore'
-import { initAudioManager, tickAudioManager } from './audioManager'
+import { tickAudioManager } from './audioManager'
 import { initAnimationManager, tickAnimationManager } from './animationManager'
 import { tickFireworkManager } from './fireworkManager'
 import { markSpotClickedLocally } from './uiManager'
@@ -56,7 +56,6 @@ function findEntityByName(target: string): Entity | undefined {
 let lastLeaderboardJson = ''
 
 export function initClient() {
-  initAudioManager()
   initAnimationManager()
 
   const blue = findEntityByName('Blue_Spot')

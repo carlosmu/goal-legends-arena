@@ -5,6 +5,8 @@ import { initClient } from './client/setup'
 import { initNPCSystem } from './client/npcManager'
 import { initPlayerCloneSystem } from './client/playerCloneManager'
 import { initGameplayCamera } from './client/gameplayCamera'
+import { initSceneLoadManager } from './client/sceneLoadManager'
+import { resetClientSession } from './client/clientSession'
 
 /**
  * Debe ser síncrono: tras el primer await el runtime sella el motor y ya no se pueden
@@ -15,7 +17,9 @@ export function main() {
     initServer()
     return
   }
+  resetClientSession()
   setupUi()
+  initSceneLoadManager()
   initClient()
   initNPCSystem()
   initPlayerCloneSystem()

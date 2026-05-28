@@ -43,6 +43,10 @@ export function closePicker() {
   pickerOpen = false
 }
 
+export function resetCountryPicker(): void {
+  pickerOpen = false
+}
+
 export function selectCountry(iso: string) {
   localCountry = iso
   pickerOpen = false
