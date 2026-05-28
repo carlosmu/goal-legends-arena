@@ -50,13 +50,10 @@ function vw(size: number): `${number}vw` {
 
 const LEADERBOARD_TOP_N = 10
 
-const PICK_PANEL_WIDTH = isMobile() ? '40vw' : '25vw'
-const PICK_BTN_WIDTH = 130
-const PICK_BTN_HEIGHT = 100
-const PICK_BTN_GAP = 8
+// UI_choose.png is 1024x1024; each DIVE/SHOOT slice is half height => aspect 2:1 (w:h)
+// Pick sizes use isMobile() inside RootUi only — not at module load (Creator Hub loads as desktop).
 const PICK_BTN_ALPHA = 0.05
 const PICK_BTN_ALPHA_HOVER = 0.3
-const PICK_BTN_MARGIN_BOTTOM = 20
 
 let lbShowUntilMs = 0
 let prevPhase = ''
@@ -129,6 +126,14 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     : WAIT_DISPLAY_TOTAL_S
   const showPick =
     splashDismissed && s.phase === GameState.SelectingDirections && side && (s.mode === 'pvp' || (s.mode === 'pve' && !!side))
+
+  const pickMobile = isMobile()
+  const pickPanelWidth = pickMobile ? '40vw' : '25vw'
+  const pickPanelHeight = pickMobile ? '20vw' : '12.5vw'
+  const pickBtnWidth = pickMobile ? 300 : 130
+  const pickBtnHeight = pickMobile ? 230 : 100
+  const pickBtnGap = pickMobile ? 20 : 8
+  const pickBtnMarginBottom = pickMobile ? 50 : 20
   const showResult = splashDismissed && s.phase === GameState.ResolvingRound && !!s.resultLine
   const showMatchEnd = splashDismissed && s.phase === GameState.MatchEnd && !!s.winnerName
   const showStreak =
@@ -682,16 +687,18 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'flex-end',
+            padding: { bottom: isMobile() ? '8vh' : '4vh' },
             pointerFilter: 'none',
+            zIndex: 1000
           }}
         >
           {/* DIVE: mitad superior de UI_choose.png */}
           {!kicker && (
             <UiEntity
               uiTransform={{
-                width: PICK_PANEL_WIDTH,
-                height: 180,
+                width: pickPanelWidth,
+                height: pickPanelHeight,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -703,10 +710,10 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 uvs: [0, 0.5, 0, 1, 1, 1, 1, 0.5]
               }}
             >
-              <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { bottom: PICK_BTN_MARGIN_BOTTOM } }}>
+              <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { bottom: pickBtnMarginBottom } }}>
                 <Button
                   value=""
-                  uiTransform={{ width: PICK_BTN_WIDTH, height: PICK_BTN_HEIGHT, margin: { right: PICK_BTN_GAP } }}
+                  uiTransform={{ width: pickBtnWidth, height: pickBtnHeight, margin: { right: pickBtnGap } }}
                   uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickL ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
                   onMouseDown={() => room.send('submitDirection', { dir: 'L' })}
                   onMouseEnter={() => { hoverPickL = true }}
@@ -714,7 +721,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 />
                 <Button
                   value=""
-                  uiTransform={{ width: PICK_BTN_WIDTH, height: PICK_BTN_HEIGHT, margin: { right: PICK_BTN_GAP } }}
+                  uiTransform={{ width: pickBtnWidth, height: pickBtnHeight, margin: { right: pickBtnGap } }}
                   uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickC ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
                   onMouseDown={() => room.send('submitDirection', { dir: 'C' })}
                   onMouseEnter={() => { hoverPickC = true }}
@@ -722,7 +729,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 />
                 <Button
                   value=""
-                  uiTransform={{ width: PICK_BTN_WIDTH, height: PICK_BTN_HEIGHT }}
+                  uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
                   uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickR ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
                   onMouseDown={() => room.send('submitDirection', { dir: 'R' })}
                   onMouseEnter={() => { hoverPickR = true }}
@@ -735,8 +742,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           {kicker && (
             <UiEntity
               uiTransform={{
-                width: PICK_PANEL_WIDTH,
-                height: 180,
+                width: pickPanelWidth,
+                height: pickPanelHeight,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -748,10 +755,10 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 uvs: [0, 0, 0, 0.5, 1, 0.5, 1, 0]
               }}
             >
-              <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { bottom: PICK_BTN_MARGIN_BOTTOM } }}>
+              <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { bottom: pickBtnMarginBottom } }}>
                 <Button
                   value=""
-                  uiTransform={{ width: PICK_BTN_WIDTH, height: PICK_BTN_HEIGHT, margin: { right: PICK_BTN_GAP } }}
+                  uiTransform={{ width: pickBtnWidth, height: pickBtnHeight, margin: { right: pickBtnGap } }}
                   uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickL ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
                   onMouseDown={() => room.send('submitDirection', { dir: 'L' })}
                   onMouseEnter={() => { hoverPickL = true }}
@@ -759,7 +766,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 />
                 <Button
                   value=""
-                  uiTransform={{ width: PICK_BTN_WIDTH, height: PICK_BTN_HEIGHT, margin: { right: PICK_BTN_GAP } }}
+                  uiTransform={{ width: pickBtnWidth, height: pickBtnHeight, margin: { right: pickBtnGap } }}
                   uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickC ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
                   onMouseDown={() => room.send('submitDirection', { dir: 'C' })}
                   onMouseEnter={() => { hoverPickC = true }}
@@ -767,7 +774,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 />
                 <Button
                   value=""
-                  uiTransform={{ width: PICK_BTN_WIDTH, height: PICK_BTN_HEIGHT }}
+                  uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
                   uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickR ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
                   onMouseDown={() => room.send('submitDirection', { dir: 'R' })}
                   onMouseEnter={() => { hoverPickR = true }}
