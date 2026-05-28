@@ -106,6 +106,10 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const isPvE = s.mode === 'pve'
   const engineIsRed = isPvE && s.pveHumanIsRed === 0
   const engineIsBlue = isPvE && s.pveHumanIsRed === 1
+  const winnerEngineSide =
+    isPvE &&
+    !!s.winnerSide &&
+    ((s.winnerSide === 'red' && engineIsRed) || (s.winnerSide === 'blue' && engineIsBlue))
 
   /** Partida en curso (oculta welcome para nuevos hasta que termine). No incluye solo “esperando rival”. */
   const showWelcome = splashDismissed && s.hasActiveMatch === 0 && s.phase === GameState.LobbyIdle
@@ -153,6 +157,12 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
 
   // Prefetch scoreboard faces whenever active players change
   if (s.hasActiveMatch === 1) prefetchLeaderboardFaces([s.redAddr, s.blueAddr].filter(Boolean))
+  if (showMatchEnd && s.winnerSide && !winnerEngineSide) {
+    const winAddr = s.winnerSide === 'red' ? s.redAddr : s.blueAddr
+    if (winAddr) prefetchLeaderboardFaces([winAddr])
+  }
+  const winnerWinAddr = s.winnerSide === 'red' ? s.redAddr : s.blueAddr
+  const winnerFaceUrl = winnerEngineSide ? undefined : getLeaderboardFaceUrl(winnerWinAddr)
 
   // Seed local country from server snapshot (first time only)
   const myCountryInSnapshot = side === 'red' ? s.redCountry : side === 'blue' ? s.blueCountry : ''
@@ -850,8 +860,10 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               <UiEntity
                 uiTransform={{ width: 256, height: 256, margin: { bottom: 16 } }}
                 uiBackground={
-                  getLeaderboardFaceUrl(s.winnerSide === 'red' ? s.redAddr : s.blueAddr)
-                    ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.winnerSide === 'red' ? s.redAddr : s.blueAddr)! } }
+                  winnerEngineSide
+                    ? enginePicBackground()
+                    : winnerFaceUrl
+                    ? { textureMode: 'stretch', texture: { src: winnerFaceUrl } }
                     : { color: Color4.create(0.2, 0.2, 0.2, 1) }
                 }
               />
@@ -861,7 +873,12 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 color={Color4.create(1, 0.92, 0.35, 1)}
                 textAlign="middle-center"
               />
-              {(s.winnerSide === 'red' ? s.redCountry : s.blueCountry) ? (
+              {winnerEngineSide ? (
+                <UiEntity
+                  uiTransform={{ width: 96, height: 72, margin: { top: 16 } }}
+                  uiBackground={engineFlagBackground()}
+                />
+              ) : (s.winnerSide === 'red' ? s.redCountry : s.blueCountry) ? (
                 <UiEntity
                   uiTransform={{ width: 96, height: 72, margin: { top: 16 } }}
                   uiBackground={flagBackground(s.winnerSide === 'red' ? s.redCountry : s.blueCountry)}
