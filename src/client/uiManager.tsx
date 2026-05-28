@@ -20,6 +20,7 @@ import {
   bluePicBgBackground,
   redPicBgBackground
 } from './countryStore'
+import { logoBackground } from './uiAtlasStore'
 
 /**
  * React-ECS ya re-renderiza el árbol cada frame (`@dcl/react-ecs` lo registra como un system).
@@ -1033,7 +1034,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             />
             <UiEntity
               uiTransform={{ width: 540, height: 540, margin: { bottom: -60 } }}
-              uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/logo.png' }, color: Color4.White() }}
+              uiBackground={logoBackground()}
             />
             <UiEntity
               uiTransform={{
