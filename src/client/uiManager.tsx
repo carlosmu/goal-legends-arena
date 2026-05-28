@@ -66,6 +66,7 @@ let splashDismissed = false
 let hoverPickL = false
 let hoverPickC = false
 let hoverPickR = false
+let hoverSplashStart = false
 /** Offset entre reloj servidor y cliente, cacheado al primer snapshot válido (solo para debug). */
 let serverClockOffset: number | null = null
 /** Timestamp local del último click a un spot. Garantiza que el UI de "Waiting" aparezca incluso si
@@ -1005,20 +1006,41 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               uiTransform={{ width: 540, height: 540, margin: { bottom: -60 } }}
               uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/logo.png' }, color: Color4.White() }}
             />
-            <Button
-              value=""
-              // A2-B2 ocupa 2 celdas x 1 celda en una grilla 4x4 => ratio 2:1
-              uiTransform={{ width: 320, height: 160 }}
-              uiBackground={{
-                textureMode: 'stretch',
-                texture: { src: 'assets/images/UI_buttons.png' },
-                // 4x4 sheet; using A2-B2 (cols A+B, row 2)
-                // u: 0.00 -> 0.50, v: 0.50 -> 0.75
-                uvs: [0, 0.5, 0, 0.75, 0.5, 0.75, 0.5, 0.5],
-                color: Color4.White()
+            <UiEntity
+              uiTransform={{
+                width: isMobile() ? 320 : 240,
+                height: isMobile() ? 160 : 120,
+                positionType: 'relative'
               }}
-              onMouseDown={() => { splashDismissed = true }}
-            />
+            >
+              <Button
+                value=""
+                uiTransform={{ width: '100%', height: '100%' }}
+                uiBackground={{
+                  textureMode: 'stretch',
+                  texture: { src: 'assets/images/UI_buttons.png' },
+                  // 4x4 sheet; using A2-B2 (cols A+B, row 2)
+                  // u: 0.00 -> 0.50, v: 0.50 -> 0.75
+                  uvs: [0, 0.5, 0, 0.75, 0.5, 0.75, 0.5, 0.5],
+                  color: Color4.White()
+                }}
+                onMouseDown={() => { splashDismissed = true }}
+                onMouseEnter={() => { if (!isMobile()) hoverSplashStart = true }}
+                onMouseLeave={() => { if (!isMobile()) hoverSplashStart = false }}
+              />
+              {hoverSplashStart && !isMobile() && (
+                <UiEntity
+                  uiTransform={{
+                    positionType: 'absolute',
+                    position: { bottom: 0, left: '10%' },
+                    width: '80%',
+                    height: 5,
+                    pointerFilter: 'none'
+                  }}
+                  uiBackground={{ color: Color4.White() }}
+                />
+              )}
+            </UiEntity>
           </UiEntity>
         </UiEntity>
       )}
