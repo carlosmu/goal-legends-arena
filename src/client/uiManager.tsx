@@ -14,7 +14,9 @@ import {
   isPickerOpen,
   openPicker,
   selectCountry,
-  flagBackground
+  flagBackground,
+  engineFlagBackground,
+  enginePicBackground
 } from './countryStore'
 
 /**
@@ -204,7 +206,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               <Button
                 value=""
                 uiTransform={{ width: 96, height: 72, margin: { right: 6 } }}
-                uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/engine_flag.png' }, color: Color4.White() }}
+                uiBackground={engineFlagBackground()}
               />
             ) : s.blueCountry ? (
               <Button
@@ -231,7 +233,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 uiTransform={{ width: 64, height: 64 }}
                 uiBackground={
                   engineIsBlue
-                    ? { textureMode: 'stretch', texture: { src: 'assets/images/engine_pic.png' } }
+                    ? enginePicBackground()
                     : getLeaderboardFaceUrl(s.blueAddr)
                     ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.blueAddr)! } }
                     : { color: Color4.create(0, 0, 0, 0) }
@@ -257,7 +259,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 uiTransform={{ width: 64, height: 64 }}
                 uiBackground={
                   engineIsRed
-                    ? { textureMode: 'stretch', texture: { src: 'assets/images/engine_pic.png' } }
+                    ? enginePicBackground()
                     : getLeaderboardFaceUrl(s.redAddr)
                     ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.redAddr)! } }
                     : { color: Color4.create(0, 0, 0, 0) }
@@ -268,7 +270,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               <Button
                 value=""
                 uiTransform={{ width: 96, height: 72, margin: { left: 6 } }}
-                uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/engine_flag.png' }, color: Color4.White() }}
+                uiBackground={engineFlagBackground()}
               />
             ) : s.redCountry ? (
               <Button
@@ -498,7 +500,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 200
+            zIndex: 1001
           }}
           uiBackground={{ color: Color4.create(0, 0, 0, 0.99) }}
         >

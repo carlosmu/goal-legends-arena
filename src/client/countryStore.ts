@@ -67,16 +67,33 @@ export function getCountryByIso(iso: string): Country | undefined {
   return COUNTRIES.find((c) => c.iso.toLowerCase() === k)
 }
 
+/** PvE training AI sprites on flags.png atlas. */
+export const ENGINE_FLAG_COORD = 'A7'
+export const ENGINE_PIC_COORD = 'B7'
+
+/** uiBackground for a cell on flags.png (e.g. "A7"). */
+export function atlasCellBackground(coordinates: string) {
+  return {
+    textureMode: 'stretch' as const,
+    texture: { src: FLAGS_SHEET_SRC },
+    uvs: flagCoordinatesToUvs(coordinates),
+    color: Color4.White()
+  }
+}
+
+export function engineFlagBackground() {
+  return atlasCellBackground(ENGINE_FLAG_COORD)
+}
+
+export function enginePicBackground() {
+  return atlasCellBackground(ENGINE_PIC_COORD)
+}
+
 /** uiBackground for a country flag sprite (flags.png atlas). */
 export function flagBackground(iso: string) {
   const country = getCountryByIso(iso)
   if (!country?.coordinates) {
     return { color: Color4.create(0, 0, 0, 0) }
   }
-  return {
-    textureMode: 'stretch' as const,
-    texture: { src: FLAGS_SHEET_SRC },
-    uvs: flagCoordinatesToUvs(country.coordinates),
-    color: Color4.White()
-  }
+  return atlasCellBackground(country.coordinates)
 }
