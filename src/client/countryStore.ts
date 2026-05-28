@@ -67,9 +67,11 @@ export function getCountryByIso(iso: string): Country | undefined {
   return COUNTRIES.find((c) => c.iso.toLowerCase() === k)
 }
 
-/** PvE training AI sprites on flags.png atlas. */
+/** PvE / team sprites on flags.png atlas. */
 export const ENGINE_FLAG_COORD = 'A7'
 export const ENGINE_PIC_COORD = 'B7'
+export const BLUE_PIC_BG_COORD = 'C7'
+export const RED_PIC_BG_COORD = 'D7'
 
 /** uiBackground for a cell on flags.png (e.g. "A7"). */
 export function atlasCellBackground(coordinates: string) {
@@ -87,6 +89,14 @@ export function engineFlagBackground() {
 
 export function enginePicBackground() {
   return atlasCellBackground(ENGINE_PIC_COORD)
+}
+
+export function bluePicBgBackground() {
+  return atlasCellBackground(BLUE_PIC_BG_COORD)
+}
+
+export function redPicBgBackground() {
+  return atlasCellBackground(RED_PIC_BG_COORD)
 }
 
 /** uiBackground for a country flag sprite (flags.png atlas). */

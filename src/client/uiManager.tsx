@@ -16,7 +16,9 @@ import {
   selectCountry,
   flagBackground,
   engineFlagBackground,
-  enginePicBackground
+  enginePicBackground,
+  bluePicBgBackground,
+  redPicBgBackground
 } from './countryStore'
 
 /**
@@ -244,7 +246,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             )}
             <UiEntity
               uiTransform={{ width: 64, height: 64 }}
-              uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/blue_pic_bg.png' } }}
+              uiBackground={bluePicBgBackground()}
             >
               <UiEntity
                 uiTransform={{ width: 64, height: 64 }}
@@ -270,7 +272,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             {/* Red pic + flag */}
             <UiEntity
               uiTransform={{ width: 64, height: 64 }}
-              uiBackground={{ textureMode: 'stretch', texture: { src: 'assets/images/red_pic_bg.png' } }}
+              uiBackground={redPicBgBackground()}
             >
               <UiEntity
                 uiTransform={{ width: 64, height: 64 }}
