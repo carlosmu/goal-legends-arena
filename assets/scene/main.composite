@@ -951,27 +951,6 @@
             "parent": 0
           }
         },
-        "553": {
-          "json": {
-            "position": {
-              "x": 16,
-              "y": 0,
-              "z": 24
-            },
-            "scale": {
-              "x": 32,
-              "y": 0,
-              "z": 48
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "parent": 0
-          }
-        },
         "554": {
           "json": {
             "position": {
@@ -979,16 +958,16 @@
               "y": 0,
               "z": 16
             },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
             "rotation": {
               "x": 0,
               "y": 0,
               "z": 0,
               "w": 1
-            },
-            "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
             },
             "parent": 0
           }
@@ -1046,12 +1025,6 @@
           "json": {
             "networkId": 0,
             "entityId": 8006
-          }
-        },
-        "553": {
-          "json": {
-            "networkId": 0,
-            "entityId": 8008
           }
         }
       }
@@ -1143,13 +1116,6 @@
             "src": "assets/models/ball.glb",
             "visibleMeshesCollisionMask": 0,
             "invisibleMeshesCollisionMask": 3
-          }
-        },
-        "553": {
-          "json": {
-            "src": "assets/asset-packs/invisible_wall/invisible_box.glb",
-            "visibleMeshesCollisionMask": 2,
-            "invisibleMeshesCollisionMask": 0
           }
         },
         "554": {
@@ -1497,11 +1463,6 @@
             "value": "ball.glb"
           }
         },
-        "553": {
-          "json": {
-            "value": "Invisible Wall"
-          }
-        },
         "554": {
           "json": {
             "value": "stadium_flags.glb"
@@ -1612,13 +1573,6 @@
               1043
             ]
           }
-        },
-        "553": {
-          "json": {
-            "componentIds": [
-              1041
-            ]
-          }
         }
       }
     },
@@ -1650,11 +1604,6 @@
       },
       "data": {
         "513": {
-          "json": {
-            "visible": false
-          }
-        },
-        "553": {
           "json": {
             "visible": false
           }
@@ -1794,7 +1743,7 @@
         "serializationType": "map"
       },
       "data": {
-        "554": {
+        "512": {
           "json": {
             "gizmo": 0
           }
@@ -1861,7 +1810,6 @@
                   513,
                   515,
                   552,
-                  553,
                   554
                 ]
               },
@@ -2078,10 +2026,6 @@
                 "children": []
               },
               {
-                "entity": 553,
-                "children": []
-              },
-              {
                 "entity": 554,
                 "children": []
               }
@@ -2228,9 +2172,6 @@
           "json": {}
         },
         "552": {
-          "json": {}
-        },
-        "553": {
           "json": {}
         },
         "554": {

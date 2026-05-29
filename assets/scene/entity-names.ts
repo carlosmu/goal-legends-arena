@@ -19,7 +19,6 @@ export enum EntityNames {
   Fireworks = "Fireworks",
   Goal_Save_Collider = "Goal_Save_Collider",
   Goalkeeper = "Goalkeeper",
-  Invisible_Wall = "Invisible Wall",
   Kicker = "Kicker",
   NPC_Blue_1 = "NPC_Blue_1",
   NPC_Blue_2 = "NPC_Blue_2",

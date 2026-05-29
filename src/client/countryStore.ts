@@ -1,6 +1,9 @@
 import { Color4 } from '@dcl/sdk/math'
 import { room } from '../shared/messages'
+import { pickRandomCountryIso, resolveCountryIso } from '../shared/countryUtils'
 import countriesJson from '../data/countries.json'
+
+export { pickRandomCountryIso }
 
 export const FLAGS_SHEET_SRC = 'assets/images/flags.png'
 const FLAG_GRID_COLS = 8
@@ -45,6 +48,7 @@ export function closePicker() {
 
 export function resetCountryPicker(): void {
   pickerOpen = false
+  localCountry = ''
 }
 
 export function selectCountry(iso: string) {
@@ -76,6 +80,11 @@ export const ENGINE_FLAG_COORD = 'A7'
 export const ENGINE_PIC_COORD = 'B7'
 export const BLUE_PIC_BG_COORD = 'C7'
 export const RED_PIC_BG_COORD = 'D7'
+/** Default avatar when profile face URL is unavailable (mobile, guest, fetch failed). */
+export const DEFAULT_PROFILE_PIC_COORD = 'D8'
+/** Extra badges on scoreboard player-B row (flags.png). */
+export const SCOREBOARD_BADGE_F7 = 'F7'
+export const SCOREBOARD_BADGE_E7 = 'E7'
 
 /** uiBackground for a cell on flags.png (e.g. "A7"). */
 export function atlasCellBackground(coordinates: string) {
@@ -103,6 +112,30 @@ export function redPicBgBackground() {
   return atlasCellBackground(RED_PIC_BG_COORD)
 }
 
+export function defaultProfilePicBackground() {
+  return atlasCellBackground(DEFAULT_PROFILE_PIC_COORD)
+}
+
+/** Profile face from lambdas, or flags.png D8 if missing / loading / failed. */
+export function facePicBackground(faceUrl: string | undefined) {
+  if (faceUrl) {
+    return {
+      textureMode: 'stretch' as const,
+      texture: { src: faceUrl },
+      color: Color4.White()
+    }
+  }
+  return defaultProfilePicBackground()
+}
+
+export function scoreboardBadgeF7Background() {
+  return atlasCellBackground(SCOREBOARD_BADGE_F7)
+}
+
+export function scoreboardBadgeE7Background() {
+  return atlasCellBackground(SCOREBOARD_BADGE_E7)
+}
+
 /** uiBackground for a country flag sprite (flags.png atlas). */
 export function flagBackground(iso: string) {
   const country = getCountryByIso(iso)
@@ -110,4 +143,13 @@ export function flagBackground(iso: string) {
     return { color: Color4.create(0, 0, 0, 0) }
   }
   return atlasCellBackground(country.coordinates)
+}
+
+export function displayCountryIso(iso: string, seed = ''): string {
+  return resolveCountryIso(iso, seed)
+}
+
+/** Flag for a player; random-by-seed when iso missing (until server assigns). */
+export function flagBackgroundForPlayer(iso: string, seed: string) {
+  return flagBackground(displayCountryIso(iso, seed))
 }

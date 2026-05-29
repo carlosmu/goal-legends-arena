@@ -15,10 +15,14 @@ import {
   openPicker,
   selectCountry,
   flagBackground,
+  flagBackgroundForPlayer,
   engineFlagBackground,
   enginePicBackground,
   bluePicBgBackground,
-  redPicBgBackground
+  redPicBgBackground,
+  facePicBackground,
+  scoreboardBadgeF7Background,
+  scoreboardBadgeE7Background
 } from './countryStore'
 import { logoBackground } from './uiAtlasStore'
 
@@ -59,6 +63,41 @@ function scoreboardSideName(name: string, fallback: string, isEngineSide: boolea
   if (name === 'Training Mode' || name === 'Training AI') return 'Engine'
   return (name && name.trim()) || fallback
 }
+
+function scoreboardPlayerPicBackground(isEngine: boolean, addr: string) {
+  if (isEngine) return enginePicBackground()
+  return facePicBackground(getLeaderboardFaceUrl(addr))
+}
+
+const SB_FLAG_W = 112
+const SB_FLAG_H = 84
+const SB_PIC = 64
+const SB_BADGE = 40
+
+/** F7 = choose flag, E7 = leave match. */
+const ScoreboardLocalActions = () => (
+  <UiEntity
+    uiTransform={{
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start'
+    }}
+  >
+    <Button
+      value=""
+      uiTransform={{ width: SB_PIC, height: SB_PIC, margin: { right: 6 } }}
+      uiBackground={scoreboardBadgeF7Background()}
+      onMouseDown={() => openPicker()}
+    />
+    <Button
+      value=""
+      uiTransform={{ width: SB_PIC, height: SB_PIC }}
+      uiBackground={scoreboardBadgeE7Background()}
+      onMouseDown={() => room.send('leaveMatch', {})}
+    />
+  </UiEntity>
+)
 
 const LEADERBOARD_TOP_N = 10
 
@@ -187,6 +226,10 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const myCountryInSnapshot = side === 'red' ? s.redCountry : side === 'blue' ? s.blueCountry : ''
   initLocalCountryFromSnapshot(myCountryInSnapshot)
 
+  const showScoreboard =
+    splashDismissed &&
+    (s.hasActiveMatch === 1 || (!!side && s.phase === GameState.WaitingOpponent))
+
   const showCountryPicker = isPickerOpen()
   if (showCountryPicker && !prevPickerOpen) pickerPage = 0
   prevPickerOpen = showCountryPicker
@@ -208,181 +251,185 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       }}
     >
       {/* ========== SCOREBOARD ========== */}
-      {splashDismissed && s.hasActiveMatch === 1 && (
+      {showScoreboard && (
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
-            position: { top: 0 },
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: 5,
+            position: { top: 0, left: '35%' },
+            width: '30%',
+            padding: { top: 8, left: 12, right: 12, bottom: 8 },
             zIndex: 55
           }}
           uiBackground={{ color: Color4.create(0, 0, 0, 0.8) }}
         >
-          {/* Row 1: flag-pic-score-pic-flag */}
           <UiEntity
             uiTransform={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            {/* Blue flag + pic */}
-            {engineIsBlue ? (
-              <Button
-                value=""
-                uiTransform={{ width: 96, height: 72, margin: { right: 6 } }}
-                uiBackground={engineFlagBackground()}
-              />
-            ) : s.blueCountry ? (
-              <Button
-                value=""
-                uiTransform={{ width: 96, height: 72, margin: { right: 6 } }}
-                uiBackground={flagBackground(s.blueCountry)}
-                onMouseDown={() => { if (side === 'blue') openPicker() }}
-              />
-            ) : (
-              side === 'blue' && (
-                <Button
-                  value="🌍"
-                  fontSize={fs(30)}
-                  uiTransform={{ width: 40, height: 40, margin: { right: 6 } }}
-                  onMouseDown={() => openPicker()}
-                />
-              )
-            )}
-            <UiEntity
-              uiTransform={{ width: 64, height: 64 }}
-              uiBackground={bluePicBgBackground()}
-            >
-              <UiEntity
-                uiTransform={{ width: 64, height: 64 }}
-                uiBackground={
-                  engineIsBlue
-                    ? enginePicBackground()
-                    : getLeaderboardFaceUrl(s.blueAddr)
-                    ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.blueAddr)! } }
-                    : { color: Color4.create(0, 0, 0, 0) }
-                }
-              />
-            </UiEntity>
-
-            {/* Score */}
-            <Label
-              value={`${s.blueScore} - ${s.redScore}`}
-              fontSize={fs(70)}
-              color={Color4.White()}
-              textAlign="middle-center"
-              uiTransform={{ margin: { left: 16, right: 16 } }}
-            />
-
-            {/* Red pic + flag */}
-            <UiEntity
-              uiTransform={{ width: 64, height: 64 }}
-              uiBackground={redPicBgBackground()}
-            >
-              <UiEntity
-                uiTransform={{ width: 64, height: 64 }}
-                uiBackground={
-                  engineIsRed
-                    ? enginePicBackground()
-                    : getLeaderboardFaceUrl(s.redAddr)
-                    ? { textureMode: 'stretch', texture: { src: getLeaderboardFaceUrl(s.redAddr)! } }
-                    : { color: Color4.create(0, 0, 0, 0) }
-                }
-              />
-            </UiEntity>
-            {engineIsRed ? (
-              <Button
-                value=""
-                uiTransform={{ width: 96, height: 72, margin: { left: 6 } }}
-                uiBackground={engineFlagBackground()}
-              />
-            ) : s.redCountry ? (
-              <Button
-                value=""
-                uiTransform={{ width: 96, height: 72, margin: { left: 6 } }}
-                uiBackground={flagBackground(s.redCountry)}
-                onMouseDown={() => { if (side === 'red') openPicker() }}
-              />
-            ) : (
-              side === 'red' && (
-                <Button
-                  value="🌍"
-                  fontSize={fs(30)}
-                  uiTransform={{ width: 40, height: 40, margin: { left: 6 } }}
-                  onMouseDown={() => openPicker()}
-                />
-              )
-            )}
-          </UiEntity>
-
-          {/* Row 2: names */}
-          <UiEntity
-            uiTransform={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
               width: '100%',
+              display: 'flex',
+              flexDirection: 'column'
             }}
           >
-            <UiEntity uiTransform={{ flexGrow: 1, display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
-              <Label
-                value={scoreboardSideName(s.blueName, 'Blue', engineIsBlue)}
-                fontSize={fs(20)}
-                color={Color4.White()}
-                textAlign="middle-right"
-              />
+            {/* Fila 1: banderas, avatares y marcador */}
+            <UiEntity
+              uiTransform={{
+                width: '100%',
+                height: SB_PIC,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}
+            >
+              <UiEntity
+                uiTransform={{
+                  width: '37.5%',
+                  height: SB_PIC,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end'
+                }}
+              >
+                {engineIsBlue ? (
+                  <Button
+                    value=""
+                    uiTransform={{ width: SB_FLAG_W, height: SB_FLAG_H, margin: { right: 6 } }}
+                    uiBackground={engineFlagBackground()}
+                  />
+                ) : (
+                  <Button
+                    value=""
+                    uiTransform={{ width: SB_FLAG_W, height: SB_FLAG_H, margin: { right: 6 } }}
+                    uiBackground={flagBackgroundForPlayer(s.blueCountry, s.blueAddr)}
+                    onMouseDown={() => { if (side === 'blue') openPicker() }}
+                  />
+                )}
+                <UiEntity uiTransform={{ width: SB_PIC, height: SB_PIC }} uiBackground={bluePicBgBackground()}>
+                  <UiEntity
+                    uiTransform={{ width: SB_PIC, height: SB_PIC }}
+                    uiBackground={scoreboardPlayerPicBackground(engineIsBlue, s.blueAddr)}
+                  />
+                </UiEntity>
+              </UiEntity>
+
+              <UiEntity
+                uiTransform={{
+                  width: '25%',
+                  height: SB_PIC,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <Label
+                  value={`${s.blueScore} - ${s.redScore}`}
+                  fontSize={fs(45)}
+                  color={Color4.White()}
+                  textAlign="middle-center"
+                />
+              </UiEntity>
+
+              <UiEntity
+                uiTransform={{
+                  width: '37.5%',
+                  height: SB_PIC,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start'
+                }}
+              >
+                <UiEntity uiTransform={{ width: SB_PIC, height: SB_PIC, margin: { right: 6 } }} uiBackground={redPicBgBackground()}>
+                  <UiEntity
+                    uiTransform={{ width: SB_PIC, height: SB_PIC }}
+                    uiBackground={scoreboardPlayerPicBackground(engineIsRed, s.redAddr)}
+                  />
+                </UiEntity>
+                {engineIsRed ? (
+                  <Button
+                    value=""
+                    uiTransform={{ width: SB_FLAG_W, height: SB_FLAG_H }}
+                    uiBackground={engineFlagBackground()}
+                  />
+                ) : (
+                  <Button
+                    value=""
+                    uiTransform={{ width: SB_FLAG_W, height: SB_FLAG_H }}
+                    uiBackground={flagBackgroundForPlayer(s.redCountry, s.redAddr)}
+                    onMouseDown={() => { if (side === 'red') openPicker() }}
+                  />
+                )}
+              </UiEntity>
             </UiEntity>
-            <UiEntity uiTransform={{ width: '10vw' }} />
-            <UiEntity uiTransform={{ flexGrow: 1, display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
-              <Label
-                value={scoreboardSideName(s.redName, 'Red', engineIsRed)}
-                fontSize={fs(20)}
-                color={Color4.White()}
-                textAlign="middle-left"
-              />
+
+            {/* Fila 2: nombres alineados bajo cada avatar */}
+            <UiEntity
+              uiTransform={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'row',
+                margin: { top: 4 }
+              }}
+            >
+              <UiEntity
+                uiTransform={{
+                  width: '37.5%',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end'
+                }}
+              >
+                <UiEntity uiTransform={{ width: SB_FLAG_W, margin: { right: 6 } }} />
+                <Label
+                  value={scoreboardSideName(s.blueName, 'Blue', engineIsBlue)}
+                  fontSize={fs(18)}
+                  color={Color4.White()}
+                  textAlign="middle-right"
+                />
+              </UiEntity>
+
+              <UiEntity uiTransform={{ width: '25%' }} />
+
+              <UiEntity
+                uiTransform={{
+                  width: '37.5%',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start'
+                }}
+              >
+                <Label
+                  value={scoreboardSideName(s.redName, 'Red', engineIsRed)}
+                  fontSize={fs(18)}
+                  color={Color4.White()}
+                  textAlign="middle-left"
+                />
+                <UiEntity/>
+              </UiEntity>
             </UiEntity>
           </UiEntity>
         </UiEntity>
       )}
       {/* ========== fin SCOREBOARD ========== */}
 
-      {/* ========== MATCH ACTION BAR ========== */}
-      {splashDismissed && s.hasActiveMatch === 1 && side && (
+      {/* ========== MATCH ACTIONS (F7 / E7) — 30% derecha ========== */}
+      {showScoreboard && side && (
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
-            position: { top: 0, left: '70vw' },
+            position: { top: 0, right: 0 },
+            width: '30%',
+            padding: { top: 8, left: 12, right: 12, bottom: 8 },
             display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 55,
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+            zIndex: 55
           }}
         >
-          <Button
-            value="Choose your Flag"
-            fontSize={fs(20)}
-            color={Color4.White()}
-            uiTransform={{ width: 200, height: 60, margin: { right: 12 } }}
-            uiBackground={{ color: Color4.create(0.2, 0.35, 0.6, 1) }}
-            onMouseDown={() => openPicker()}
-          />
-          <Button
-            value="Leave Match"
-            fontSize={fs(20)}
-            color={Color4.White()}
-            uiTransform={{ width: 160, height: 60 }}
-            uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
-            onMouseDown={() => room.send('leaveMatch', {})}
-          />
+          <ScoreboardLocalActions />
         </UiEntity>
       )}
-      {/* ========== fin MATCH ACTION BAR ========== */}
+      {/* ========== fin MATCH ACTIONS ========== */}
 
       {/* ========== UI: LEADERBOARD (centrado en pantalla) ========== */}
       {splashDismissed && showLeaderboard && <UiEntity
@@ -474,20 +521,12 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   {/* Profile pic */}
                   <UiEntity
                     uiTransform={{ width: faceSz, height: faceSz, margin: { right: 5 } }}
-                    uiBackground={
-                      face
-                        ? { textureMode: 'stretch', texture: { src: face } }
-                        : { color: Color4.create(0.22, 0.24, 0.3, 1) }
-                    }
+                    uiBackground={facePicBackground(face)}
                   />
                   {/* Flag */}
                   <UiEntity
                     uiTransform={{ width: vw(3), height: vw(2), margin: { right: 5 } }}
-                    uiBackground={
-                      row.country
-                        ? flagBackground(row.country)
-                        : { color: Color4.create(0, 0, 0, 0) }
-                    }
+                    uiBackground={flagBackgroundForPlayer(row.country, row.addr)}
                   />
                   {/* Username */}
                   <UiEntity
@@ -879,11 +918,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               <UiEntity
                 uiTransform={{ width: 256, height: 256, margin: { bottom: 16 } }}
                 uiBackground={
-                  winnerEngineSide
-                    ? enginePicBackground()
-                    : winnerFaceUrl
-                    ? { textureMode: 'stretch', texture: { src: winnerFaceUrl } }
-                    : { color: Color4.create(0.2, 0.2, 0.2, 1) }
+                  winnerEngineSide ? enginePicBackground() : facePicBackground(winnerFaceUrl)
                 }
               />
               <Label
@@ -897,13 +932,14 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   uiTransform={{ width: 96, height: 72, margin: { top: 16 } }}
                   uiBackground={engineFlagBackground()}
                 />
-              ) : (s.winnerSide === 'red' ? s.redCountry : s.blueCountry) ? (
+              ) : (
                 <UiEntity
                   uiTransform={{ width: 96, height: 72, margin: { top: 16 } }}
-                  uiBackground={flagBackground(s.winnerSide === 'red' ? s.redCountry : s.blueCountry)}
+                  uiBackground={flagBackgroundForPlayer(
+                    s.winnerSide === 'red' ? s.redCountry : s.blueCountry,
+                    winnerWinAddr
+                  )}
                 />
-              ) : (
-                <UiEntity uiTransform={{ width: 1, height: 1 }} />
               )}
             </UiEntity>
           ) : (

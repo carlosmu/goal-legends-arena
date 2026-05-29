@@ -109,6 +109,8 @@ function shortAddr(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`
 }
 
+import { pickRandomCountryIso } from '../shared/countryUtils'
+
 const COUNTRY_KEY = 'gla_country'
 
 async function getCountry(addr: string): Promise<string> {
@@ -573,6 +575,11 @@ export function registerServerMessages() {
     console.log(`[Server] occupySpot team=${data.team} from=${addrRaw || '(empty)'}`)
 
     const savedCountry = addrRaw ? await getCountry(addrRaw) : ''
+    let country = savedCountry
+    if (!country) {
+      country = pickRandomCountryIso()
+      if (addrRaw) void saveCountry(addrRaw, country)
+    }
 
     if (addrRaw && (await isBanned(addrRaw))) {
       console.log(`[Server] banned player tried spot: ${addrRaw}`)
@@ -603,12 +610,14 @@ export function registerServerMessages() {
       if (m.redAddr && m.redAddr.toLowerCase() !== addr.toLowerCase()) return
       m.redAddr = addr
       m.redName = displayNameFor(addr)
-      if (savedCountry) m.redCountry = savedCountry
+      m.redCountry = country
+      if (addrRaw) lbCountries[addrRaw.toLowerCase()] = country
     } else {
       if (m.blueAddr && m.blueAddr.toLowerCase() !== addr.toLowerCase()) return
       m.blueAddr = addr
       m.blueName = displayNameFor(addr)
-      if (savedCountry) m.blueCountry = savedCountry
+      m.blueCountry = country
+      if (addrRaw) lbCountries[addrRaw.toLowerCase()] = country
     }
 
     const hasR = !!m.redAddr
