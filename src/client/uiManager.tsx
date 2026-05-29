@@ -23,7 +23,8 @@ import {
   redPicBgBackground,
   facePicBackground,
   scoreboardBadgeF7Background,
-  scoreboardBadgeE7Background
+  scoreboardBadgeE7Background,
+  splashStartButtonBackground
 } from './countryStore'
 import { logoBackground } from './uiAtlasStore'
 
@@ -1051,33 +1052,22 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             justifyContent: 'center',
             zIndex: 999,
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.95) }}
+          uiBackground={{ color: Color4.create(0.03, 0.2, 0.05, isMobile() ? 0.7 : 0.88) }}
         >
           <UiEntity
             uiTransform={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
+              width: 540,
+              height: 540,
+              margin: { bottom: isMobile() ? -12 : -20 },
               pointerFilter: 'none',
             }}
-          >
-            <Label
-              value="Welcome to:"
-              fontSize={fs(36)}
-              color={Color4.White()}
-              textAlign="middle-center"
-              uiTransform={{ margin: { bottom: 12 }, pointerFilter: 'none' }}
-            />
-            <UiEntity
-              uiTransform={{ width: 540, height: 540, margin: { bottom: 24 }, pointerFilter: 'none' }}
-              uiBackground={logoBackground()}
-            />
-          </UiEntity>
+            uiBackground={logoBackground()}
+          />
           <UiEntity
             uiTransform={{
-              width: isMobile() ? 320 : 240,
-              height: isMobile() ? 160 : 120,
+              width: isMobile() ? 330 : 240,
+              height: isMobile() ? 110 : 80,
+              margin: { top: isMobile() ? -8 : -12 },
               positionType: 'relative',
               zIndex: 1,
             }}
@@ -1085,28 +1075,11 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             <Button
               value=""
               uiTransform={{ width: '100%', height: '100%' }}
-              uiBackground={{
-                textureMode: 'stretch',
-                texture: { src: 'assets/images/UI_buttons.png' },
-                uvs: [0, 0.5, 0, 0.75, 0.5, 0.75, 0.5, 0.5],
-                color: Color4.White()
-              }}
+              uiBackground={splashStartButtonBackground(hoverSplashStart && !isMobile())}
               onMouseDown={() => { dismissSplash() }}
               onMouseEnter={() => { if (!isMobile()) hoverSplashStart = true }}
               onMouseLeave={() => { if (!isMobile()) hoverSplashStart = false }}
             />
-            {hoverSplashStart && !isMobile() && (
-              <UiEntity
-                uiTransform={{
-                  positionType: 'absolute',
-                  position: { bottom: 0, left: '10%' },
-                  width: '80%',
-                  height: 5,
-                  pointerFilter: 'none'
-                }}
-                uiBackground={{ color: Color4.White() }}
-              />
-            )}
           </UiEntity>
         </UiEntity>
       )}

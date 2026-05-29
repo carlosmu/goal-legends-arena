@@ -78,17 +78,44 @@ export function assignRandomCountryIfNeeded(snapshotIso: string) {
   selectCountry(pickRandomCountryIso())
 }
 
+function parseAtlasCell(coordinates: string): { col: number; row: number } | null {
+  const m = /^([A-H])([1-8])$/i.exec(coordinates.trim())
+  if (!m) return null
+  return { col: m[1].toUpperCase().charCodeAt(0) - 65, row: parseInt(m[2], 10) - 1 }
+}
+
 /** Grid cell "A1".."H8" → UV quad for flags.png (8×8, row 1 = top). */
 export function flagCoordinatesToUvs(coordinates: string): number[] {
-  const m = /^([A-H])([1-8])$/i.exec(coordinates.trim())
-  if (!m) return [0, 0, 0, 1, 1, 1, 1, 0]
-  const col = m[1].toUpperCase().charCodeAt(0) - 65
-  const row = parseInt(m[2], 10) - 1
-  const u0 = col / FLAG_GRID_COLS
-  const u1 = (col + 1) / FLAG_GRID_COLS
+  const cell = parseAtlasCell(coordinates)
+  if (!cell) return [0, 0, 0, 1, 1, 1, 1, 0]
+  const u0 = cell.col / FLAG_GRID_COLS
+  const u1 = (cell.col + 1) / FLAG_GRID_COLS
+  const v0 = (FLAG_GRID_ROWS - cell.row - 1) / FLAG_GRID_ROWS
+  const v1 = (FLAG_GRID_ROWS - cell.row) / FLAG_GRID_ROWS
+  return [u0, v0, u0, v1, u1, v1, u1, v0]
+}
+
+/** Adjacent cells on the same row (e.g. A8+B8+C8) as one wide sprite. */
+export function atlasCellsHorizontalBackground(coords: string[]) {
+  if (!coords.length) {
+    return { color: Color4.create(0, 0, 0, 0) }
+  }
+  const cells = coords.map(parseAtlasCell).filter((c): c is { col: number; row: number } => c !== null)
+  if (!cells.length) return atlasCellBackground(coords[0]!)
+  const row = cells[0]!.row
+  if (!cells.every((c) => c.row === row)) return atlasCellBackground(coords[0]!)
+  const minCol = Math.min(...cells.map((c) => c.col))
+  const maxCol = Math.max(...cells.map((c) => c.col))
+  const u0 = minCol / FLAG_GRID_COLS
+  const u1 = (maxCol + 1) / FLAG_GRID_COLS
   const v0 = (FLAG_GRID_ROWS - row - 1) / FLAG_GRID_ROWS
   const v1 = (FLAG_GRID_ROWS - row) / FLAG_GRID_ROWS
-  return [u0, v0, u0, v1, u1, v1, u1, v0]
+  return {
+    textureMode: 'stretch' as const,
+    texture: { src: FLAGS_SHEET_SRC },
+    uvs: [u0, v0, u0, v1, u1, v1, u1, v0],
+    color: Color4.White()
+  }
 }
 
 export function getCountryByIso(iso: string): Country | undefined {
@@ -106,6 +133,9 @@ export const DEFAULT_PROFILE_PIC_COORD = 'D8'
 /** Extra badges on scoreboard player-B row (flags.png). */
 export const SCOREBOARD_BADGE_F7 = 'F7'
 export const SCOREBOARD_BADGE_E7 = 'E7'
+/** Splash "Start" button on flags.png (normal / hover, row 8). */
+export const SPLASH_START_NORMAL = ['A8', 'B8', 'C8'] as const
+export const SPLASH_START_HOVER = ['D8', 'E8', 'F8'] as const
 
 /** uiBackground for a cell on flags.png (e.g. "A7"). */
 export function atlasCellBackground(coordinates: string) {
@@ -155,6 +185,12 @@ export function scoreboardBadgeF7Background() {
 
 export function scoreboardBadgeE7Background() {
   return atlasCellBackground(SCOREBOARD_BADGE_E7)
+}
+
+/** Splash Start: A8+B8+C8 normal, D8+E8+F8 hover (single texture, no Button children). */
+export function splashStartButtonBackground(hover = false) {
+  const coords = hover ? [...SPLASH_START_HOVER] : [...SPLASH_START_NORMAL]
+  return atlasCellsHorizontalBackground(coords)
 }
 
 /** uiBackground for a country flag sprite (flags.png atlas). */
