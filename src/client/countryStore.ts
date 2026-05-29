@@ -129,7 +129,7 @@ export const ENGINE_PIC_COORD = 'B7'
 export const BLUE_PIC_BG_COORD = 'C7'
 export const RED_PIC_BG_COORD = 'D7'
 /** Default avatar when profile face URL is unavailable (mobile, guest, fetch failed). */
-export const DEFAULT_PROFILE_PIC_COORD = 'D8'
+export const DEFAULT_PROFILE_PIC_COORD = 'G7'
 /** Extra badges on scoreboard player-B row (flags.png). */
 export const SCOREBOARD_BADGE_F7 = 'F7'
 export const SCOREBOARD_BADGE_E7 = 'E7'
@@ -167,7 +167,7 @@ export function defaultProfilePicBackground() {
   return atlasCellBackground(DEFAULT_PROFILE_PIC_COORD)
 }
 
-/** Profile face from lambdas, or flags.png D8 if missing / loading / failed. */
+/** Profile face from lambdas, or flags.png G7 if missing / loading / failed. */
 export function facePicBackground(faceUrl: string | undefined) {
   if (faceUrl) {
     return {
