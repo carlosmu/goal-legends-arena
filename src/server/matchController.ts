@@ -109,7 +109,7 @@ function shortAddr(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`
 }
 
-import { pickRandomCountryIso } from '../shared/countryUtils'
+import { isValidCountryIso, pickRandomCountryIso } from '../shared/countryUtils'
 
 const COUNTRY_KEY = 'gla_country'
 
@@ -556,7 +556,7 @@ export function registerServerMessages() {
   room.onMessage('setCountry', (data, ctx) => {
     if (!ctx?.from) return
     const iso = (data.iso || '').toLowerCase().trim()
-    if (!iso) return
+    if (!isValidCountryIso(iso)) return
     void saveCountry(ctx.from, iso)
     lbCountries[ctx.from.toLowerCase()] = iso
     const m = mut()
@@ -569,17 +569,9 @@ export function registerServerMessages() {
 
   room.onMessage('occupySpot', async (data, ctx) => {
     const addrRaw = ctx?.from ?? ''
-    const addr = addrRaw || `guest-${Math.random().toString(36).slice(2, 8)}`
     const mDbg = mut()
     mDbg.lastServerEvent = `occupySpot team=${data.team} from=${addrRaw || '(empty)'}`
     console.log(`[Server] occupySpot team=${data.team} from=${addrRaw || '(empty)'}`)
-
-    const savedCountry = addrRaw ? await getCountry(addrRaw) : ''
-    let country = savedCountry
-    if (!country) {
-      country = pickRandomCountryIso()
-      if (addrRaw) void saveCountry(addrRaw, country)
-    }
 
     if (addrRaw && (await isBanned(addrRaw))) {
       console.log(`[Server] banned player tried spot: ${addrRaw}`)
@@ -589,6 +581,28 @@ export function registerServerMessages() {
     if (!team) return
 
     const m = mut()
+
+    let addr = addrRaw
+    if (!addr) {
+      const slotAddr = team === 'red' ? m.redAddr : m.blueAddr
+      if (slotAddr && !slotAddr.startsWith('0x')) addr = slotAddr
+      else addr = `guest-${Math.random().toString(36).slice(2, 8)}`
+    }
+
+    const savedCountry = addrRaw ? await getCountry(addrRaw) : ''
+    const slotCountry = team === 'red' ? m.redCountry : m.blueCountry
+    const sameInSlot =
+      !!(team === 'red' ? m.redAddr : m.blueAddr) &&
+      (team === 'red' ? m.redAddr : m.blueAddr)!.toLowerCase() === addr.toLowerCase()
+
+    let country = isValidCountryIso(savedCountry)
+      ? savedCountry
+      : sameInSlot && isValidCountryIso(slotCountry)
+        ? slotCountry
+        : pickRandomCountryIso()
+    if (addrRaw && isValidCountryIso(country) && !isValidCountryIso(savedCountry)) {
+      void saveCountry(addrRaw, country)
+    }
 
     if (m.phase === GameState.ResolvingRound) {
       return

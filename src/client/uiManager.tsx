@@ -11,6 +11,7 @@ import { GameState } from '../shared/gameState'
 import {
   COUNTRIES,
   initLocalCountryFromSnapshot,
+  assignRandomCountryIfNeeded,
   isPickerOpen,
   openPicker,
   selectCountry,
@@ -225,6 +226,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   // Seed local country from server snapshot (first time only)
   const myCountryInSnapshot = side === 'red' ? s.redCountry : side === 'blue' ? s.blueCountry : ''
   initLocalCountryFromSnapshot(myCountryInSnapshot)
+  if (side) assignRandomCountryIfNeeded(myCountryInSnapshot)
 
   const showScoreboard =
     splashDismissed &&

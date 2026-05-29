@@ -1,6 +1,6 @@
 import { Color4 } from '@dcl/sdk/math'
 import { room } from '../shared/messages'
-import { pickRandomCountryIso, resolveCountryIso } from '../shared/countryUtils'
+import { isValidCountryIso, pickRandomCountryIso } from '../shared/countryUtils'
 import countriesJson from '../data/countries.json'
 
 export { pickRandomCountryIso }
@@ -24,6 +24,10 @@ export const COUNTRIES: Country[] = countriesJson as Country[]
 let localCountry = ''
 /** true = show country picker UI */
 let pickerOpen = false
+/** true after we sent a one-time random country for this session. */
+let localRandomCountrySent = false
+/** Display-only fallback per addr when server iso not synced yet (never re-rolled). */
+const displayIsoByAddr = new Map<string, string>()
 
 export function getLocalCountry(): string {
   return localCountry
@@ -35,7 +39,9 @@ export function isPickerOpen(): boolean {
 
 /** Called on first load to pre-populate from server snapshot. */
 export function initLocalCountryFromSnapshot(iso: string) {
-  if (!localCountry && iso) localCountry = iso
+  if (!iso || !isValidCountryIso(iso)) return
+  localCountry = iso
+  localRandomCountrySent = true
 }
 
 export function openPicker() {
@@ -49,12 +55,27 @@ export function closePicker() {
 export function resetCountryPicker(): void {
   pickerOpen = false
   localCountry = ''
+  localRandomCountrySent = false
+  displayIsoByAddr.clear()
 }
 
 export function selectCountry(iso: string) {
+  if (!isValidCountryIso(iso)) return
   localCountry = iso
+  localRandomCountrySent = true
   pickerOpen = false
   room.send('setCountry', { iso })
+}
+
+/**
+ * If the local player is in a spot but has no country in state, pick one random
+ * and sync once (until they change it in the picker).
+ */
+/** One-time random + setCountry when server snapshot has no flag yet. */
+export function assignRandomCountryIfNeeded(snapshotIso: string) {
+  if (isValidCountryIso(snapshotIso) || isValidCountryIso(localCountry) || localRandomCountrySent) return
+  localRandomCountrySent = true
+  selectCountry(pickRandomCountryIso())
 }
 
 /** Grid cell "A1".."H8" → UV quad for flags.png (8×8, row 1 = top). */
@@ -145,11 +166,18 @@ export function flagBackground(iso: string) {
   return atlasCellBackground(country.coordinates)
 }
 
-export function displayCountryIso(iso: string, seed = ''): string {
-  return resolveCountryIso(iso, seed)
+function displayIsoForPlayer(iso: string, addr: string): string {
+  if (isValidCountryIso(iso)) return iso.trim().toLowerCase()
+  const key = addr.trim().toLowerCase()
+  if (!key) return ''
+  const cached = displayIsoByAddr.get(key)
+  if (cached) return cached
+  const picked = pickRandomCountryIso()
+  if (picked) displayIsoByAddr.set(key, picked)
+  return picked
 }
 
-/** Flag for a player; random-by-seed when iso missing (until server assigns). */
-export function flagBackgroundForPlayer(iso: string, seed: string) {
-  return flagBackground(displayCountryIso(iso, seed))
+/** Flag for a player; uses server iso, or one cached random per addr until synced. */
+export function flagBackgroundForPlayer(iso: string, addr: string) {
+  return flagBackground(displayIsoForPlayer(iso, addr))
 }
