@@ -368,45 +368,72 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             <UiEntity
               uiTransform={{
                 width: '100%',
-                display: 'flex',
-                flexDirection: 'row',
+                padding: 2,
                 margin: { top: 4 }
               }}
+              uiBackground={{ color: Color4.Red() }}
             >
               <UiEntity
                 uiTransform={{
-                  width: '37.5%',
+                  width: '100%',
                   display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end'
+                  flexDirection: 'row'
                 }}
+                uiBackground={{ color: Color4.create(0, 0, 0, 0.8) }}
               >
-                <UiEntity uiTransform={{ width: SB_FLAG_W, margin: { right: 6 } }} />
-                <Label
-                  value={scoreboardSideName(s.blueName, 'Blue', engineIsBlue)}
-                  fontSize={fs(18)}
-                  color={Color4.White()}
-                  textAlign="middle-right"
-                />
-              </UiEntity>
+                <UiEntity
+                  uiTransform={{
+                    width: '37.5%',
+                    padding: 2
+                  }}
+                  uiBackground={{ color: Color4.Green() }}
+                >
+                  <UiEntity
+                    uiTransform={{
+                      width: '100%',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'flex-end'
+                    }}
+                    uiBackground={{ color: Color4.create(0, 0, 0, 0.8) }}
+                  >
+                    <UiEntity uiTransform={{ width: SB_FLAG_W, margin: { right: 6 } }} />
+                    <Label
+                      value={scoreboardSideName(s.blueName, 'Blue', engineIsBlue)}
+                      fontSize={fs(18)}
+                      color={Color4.White()}
+                      textAlign="middle-right"
+                    />
+                  </UiEntity>
+                </UiEntity>
 
-              <UiEntity uiTransform={{ width: '25%' }} />
+                <UiEntity uiTransform={{ width: '25%' }} />
 
-              <UiEntity
-                uiTransform={{
-                  width: '37.5%',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start'
-                }}
-              >
-                <Label
-                  value={scoreboardSideName(s.redName, 'Red', engineIsRed)}
-                  fontSize={fs(18)}
-                  color={Color4.White()}
-                  textAlign="middle-left"
-                />
-                <UiEntity/>
+                <UiEntity
+                  uiTransform={{
+                    width: '37.5%',
+                    padding: 2
+                  }}
+                  uiBackground={{ color: Color4.Green() }}
+                >
+                  <UiEntity
+                    uiTransform={{
+                      width: '100%',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start'
+                    }}
+                    uiBackground={{ color: Color4.create(0, 0, 0, 0.8) }}
+                  >
+                    <Label
+                      value={scoreboardSideName(s.redName, 'Red', engineIsRed)}
+                      fontSize={fs(18)}
+                      color={Color4.White()}
+                      textAlign="middle-left"
+                    />
+                    <UiEntity/>
+                  </UiEntity>
+                </UiEntity>
               </UiEntity>
             </UiEntity>
           </UiEntity>
