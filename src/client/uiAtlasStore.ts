@@ -45,3 +45,21 @@ export function uiAtlasRangeBackground(from: string, to: string) {
 export function logoBackground() {
   return uiAtlasRangeBackground(LOGO_COORD_FROM, LOGO_COORD_TO)
 }
+
+/** Scoreboard panel background (UI_atlas A8–F8). */
+export const SCOREBOARD_BG_FROM = 'A8'
+export const SCOREBOARD_BG_TO = 'E8'
+
+export function scoreboardBackground() {
+  return uiAtlasRangeBackground(SCOREBOARD_BG_FROM, SCOREBOARD_BG_TO)
+}
+
+/** Width/height of the scoreboard bg sprite (A8–F8 = 6×1 cells). */
+export function scoreboardAtlasAspect(): number {
+  const a = parseAtlasCell(SCOREBOARD_BG_FROM)
+  const b = parseAtlasCell(SCOREBOARD_BG_TO)
+  if (!a || !b) return 3
+  const cols = Math.abs(b.col - a.col) + 1
+  const rows = Math.abs(b.row - a.row) + 1
+  return cols / rows
+}

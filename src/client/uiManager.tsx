@@ -26,7 +26,7 @@ import {
   scoreboardBadgeE7Background,
   splashStartButtonBackground
 } from './countryStore'
-import { logoBackground } from './uiAtlasStore'
+import { logoBackground, scoreboardBackground } from './uiAtlasStore'
 
 /**
  * React-ECS ya re-renderiza el árbol cada frame (`@dcl/react-ecs` lo registra como un system).
@@ -55,8 +55,31 @@ function fs(size: number): number {
   return isMobile() ? Math.ceil(size * 1.5) : size
 }
 
+/** Scoreboard pic/flag sizes in px; ×1.5 on mobile (same factor as fs). */
+function sbPx(size: number): number {
+  return isMobile() ? Math.ceil(size * 1.5) : size
+}
+
+/** Profile pic (SB_PIC, ×1.5 en mobile). */
+function sbProfileSize(): number {
+  return sbPx(SB_PIC)
+}
+
+/** F7/E7: profile pic size; +25% extra en mobile. */
+function sbActionBtnSize(): number {
+  const base = sbProfileSize()
+  return isMobile() ? Math.ceil(base * 1.2) : base
+}
+
 function vw(size: number): `${number}vw` {
   return (isMobile() ? `${size * 1.5}vw` : `${size}vw`) as `${number}vw`
+}
+
+function scoreboardLayout(): { width: `${number}vw`; height: `${number}vw` } {
+  if (isMobile()) {
+    return { width: '65vw', height: '13vw' }
+  }
+  return { width: '35vw', height: '7vw' }
 }
 
 /** Nombre visible en UI; normaliza legacy "Training Mode" y fuerza "Engine" en PvE. */
@@ -64,6 +87,20 @@ function scoreboardSideName(name: string, fallback: string, isEngineSide: boolea
   if (isEngineSide) return 'Engine'
   if (name === 'Training Mode' || name === 'Training AI') return 'Engine'
   return (name && name.trim()) || fallback
+}
+
+/** Ancho útil del nombre en la columna 37.5% (virtual 1920, menos bandera + gap). */
+function scoreboardNameLabelWidth(): number {
+  const panelVw = isMobile() ? 0.6 : 0.3
+  const colPx = Math.floor(1920 * panelVw * 0.375)
+  return Math.max(48, colPx - sbPx(SB_FLAG_W) - sbPx(6))
+}
+
+function scoreboardDisplayName(name: string, fallback: string, isEngineSide: boolean): string {
+  const raw = scoreboardSideName(name, fallback, isEngineSide)
+  const charW = Math.max(7, Math.floor(fs(18) * 0.55))
+  const maxChars = Math.max(4, Math.floor(scoreboardNameLabelWidth() / charW))
+  return truncateName(raw, maxChars)
 }
 
 function scoreboardPlayerPicBackground(isEngine: boolean, addr: string) {
@@ -74,32 +111,35 @@ function scoreboardPlayerPicBackground(isEngine: boolean, addr: string) {
 const SB_FLAG_W = 112
 const SB_FLAG_H = 84
 const SB_PIC = 64
-const SB_BADGE = 40
 
-/** F7 = choose flag, E7 = leave match. */
-const ScoreboardLocalActions = () => (
-  <UiEntity
-    uiTransform={{
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      justifyContent: 'flex-start'
-    }}
-  >
-    <Button
-      value=""
-      uiTransform={{ width: SB_PIC, height: SB_PIC, margin: { right: 6 } }}
-      uiBackground={scoreboardBadgeF7Background()}
-      onMouseDown={() => openPicker()}
-    />
-    <Button
-      value=""
-      uiTransform={{ width: SB_PIC, height: SB_PIC }}
-      uiBackground={scoreboardBadgeE7Background()}
-      onMouseDown={() => room.send('leaveMatch', {})}
-    />
-  </UiEntity>
-)
+/** F7 = choose country, E7 = leave match (mismo tamaño que profile pic). */
+const ScoreboardLocalActions = () => {
+  const sz = sbActionBtnSize()
+  const gap = sbPx(6)
+  return (
+    <UiEntity
+      uiTransform={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start'
+      }}
+    >
+      <Button
+        value=""
+        uiTransform={{ width: sz, height: sz, margin: { right: gap } }}
+        uiBackground={scoreboardBadgeF7Background()}
+        onMouseDown={() => openPicker()}
+      />
+      <Button
+        value=""
+        uiTransform={{ width: sz, height: sz }}
+        uiBackground={scoreboardBadgeE7Background()}
+        onMouseDown={() => room.send('leaveMatch', {})}
+      />
+    </UiEntity>
+  )
+}
 
 const LEADERBOARD_TOP_N = 10
 
@@ -242,6 +282,14 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const TOTAL_PAGES = Math.ceil(COUNTRIES.length / PAGE_SIZE)
   const visibleCountries = COUNTRIES.slice(pickerPage * PAGE_SIZE, (pickerPage + 1) * PAGE_SIZE)
 
+  const sb = scoreboardLayout()
+  const sbPic = sbProfileSize()
+  const sbFlagW = sbPx(SB_FLAG_W)
+  const sbFlagH = sbPx(SB_FLAG_H)
+  const sbRowH = Math.max(sbPic, sbFlagH)
+  const sbNameH = Math.ceil(fs(18) * 1.2)
+  const sbNameW = scoreboardNameLabelWidth()
+
   return (
     <UiEntity
       uiTransform={{
@@ -257,26 +305,48 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       {showScoreboard && (
         <UiEntity
           uiTransform={{
-            positionType: 'absolute',
-            position: { top: 0, left: '35%' },
-            width: '30%',
-            padding: { top: 8, left: 12, right: 12, bottom: 8 },
+            width: sb.width,
+            height: sb.height,
             zIndex: 55
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.8) }}
         >
           <UiEntity
             uiTransform={{
               width: '100%',
+              height: '100%',
+              padding: isMobile()
+                ? { top: 8, left: 12, right: 12, bottom: 8 }
+                : { top: 0, left: 12, right: 12, bottom: 6 },
               display: 'flex',
-              flexDirection: 'column'
+              flexDirection: 'column',
+              alignItems: 'center',
+              positionType: 'relative'
             }}
           >
+            <UiEntity
+              uiTransform={{
+                positionType: 'absolute',
+                position: { top: 0, left: 0 },
+                width: '100%',
+                height: '100%',
+                zIndex: 0
+              }}
+              uiBackground={scoreboardBackground()}
+            />
+            <UiEntity
+              uiTransform={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                positionType: 'relative',
+                zIndex: 1
+              }}
+            >
             {/* Fila 1: banderas, avatares y marcador */}
             <UiEntity
               uiTransform={{
                 width: '100%',
-                height: SB_PIC,
+                height: sbRowH,
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center'
@@ -285,7 +355,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               <UiEntity
                 uiTransform={{
                   width: '37.5%',
-                  height: SB_PIC,
+                  height: sbRowH,
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -295,20 +365,20 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 {engineIsBlue ? (
                   <Button
                     value=""
-                    uiTransform={{ width: SB_FLAG_W, height: SB_FLAG_H, margin: { right: 6 } }}
+                    uiTransform={{ width: sbFlagW, height: sbFlagH, margin: { right: sbPx(6) } }}
                     uiBackground={engineFlagBackground()}
                   />
                 ) : (
                   <Button
                     value=""
-                    uiTransform={{ width: SB_FLAG_W, height: SB_FLAG_H, margin: { right: 6 } }}
+                    uiTransform={{ width: sbFlagW, height: sbFlagH, margin: { right: sbPx(6) } }}
                     uiBackground={flagBackgroundForPlayer(s.blueCountry, s.blueAddr)}
                     onMouseDown={() => { if (side === 'blue') openPicker() }}
                   />
                 )}
-                <UiEntity uiTransform={{ width: SB_PIC, height: SB_PIC }} uiBackground={bluePicBgBackground()}>
+                <UiEntity uiTransform={{ width: sbPic, height: sbPic }} uiBackground={bluePicBgBackground()}>
                   <UiEntity
-                    uiTransform={{ width: SB_PIC, height: SB_PIC }}
+                    uiTransform={{ width: sbPic, height: sbPic }}
                     uiBackground={scoreboardPlayerPicBackground(engineIsBlue, s.blueAddr)}
                   />
                 </UiEntity>
@@ -317,7 +387,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               <UiEntity
                 uiTransform={{
                   width: '25%',
-                  height: SB_PIC,
+                  height: sbRowH,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'
@@ -334,29 +404,29 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               <UiEntity
                 uiTransform={{
                   width: '37.5%',
-                  height: SB_PIC,
+                  height: sbRowH,
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'flex-start'
                 }}
               >
-                <UiEntity uiTransform={{ width: SB_PIC, height: SB_PIC, margin: { right: 6 } }} uiBackground={redPicBgBackground()}>
+                <UiEntity uiTransform={{ width: sbPic, height: sbPic, margin: { right: sbPx(6) } }} uiBackground={redPicBgBackground()}>
                   <UiEntity
-                    uiTransform={{ width: SB_PIC, height: SB_PIC }}
+                    uiTransform={{ width: sbPic, height: sbPic }}
                     uiBackground={scoreboardPlayerPicBackground(engineIsRed, s.redAddr)}
                   />
                 </UiEntity>
                 {engineIsRed ? (
                   <Button
                     value=""
-                    uiTransform={{ width: SB_FLAG_W, height: SB_FLAG_H }}
+                    uiTransform={{ width: sbFlagW, height: sbFlagH }}
                     uiBackground={engineFlagBackground()}
                   />
                 ) : (
                   <Button
                     value=""
-                    uiTransform={{ width: SB_FLAG_W, height: SB_FLAG_H }}
+                    uiTransform={{ width: sbFlagW, height: sbFlagH }}
                     uiBackground={flagBackgroundForPlayer(s.redCountry, s.redAddr)}
                     onMouseDown={() => { if (side === 'red') openPicker() }}
                   />
@@ -364,78 +434,63 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               </UiEntity>
             </UiEntity>
 
-            {/* Fila 2: nombres alineados bajo cada avatar */}
+            {/* Fila 2: nombres bajo avatar (misma huella que fila 1: bandera + gap + pic) */}
             <UiEntity
               uiTransform={{
                 width: '100%',
-                padding: 2,
-                margin: { top: 4 }
+                height: sbNameH,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                margin: { top: sbPx(4) }
               }}
-              uiBackground={{ color: Color4.Red() }}
             >
               <UiEntity
                 uiTransform={{
-                  width: '100%',
+                  width: '37.5%',
+                  height: sbNameH,
                   display: 'flex',
-                  flexDirection: 'row'
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end'
                 }}
-                uiBackground={{ color: Color4.create(0, 0, 0, 0.8) }}
               >
-                <UiEntity
-                  uiTransform={{
-                    width: '37.5%',
-                    padding: 2
-                  }}
-                  uiBackground={{ color: Color4.Green() }}
-                >
-                  <UiEntity
-                    uiTransform={{
-                      width: '100%',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'flex-end'
-                    }}
-                    uiBackground={{ color: Color4.create(0, 0, 0, 0.8) }}
-                  >
-                    <UiEntity uiTransform={{ width: SB_FLAG_W, margin: { right: 6 } }} />
-                    <Label
-                      value={scoreboardSideName(s.blueName, 'Blue', engineIsBlue)}
-                      fontSize={fs(18)}
-                      color={Color4.White()}
-                      textAlign="middle-right"
-                    />
-                  </UiEntity>
-                </UiEntity>
+                <UiEntity uiTransform={{ width: sbFlagW, height: sbNameH, margin: { right: sbPx(6) } }} />
+                <Label
+                  value={scoreboardDisplayName(s.blueName, 'Blue', engineIsBlue)}
+                  fontSize={fs(18)}
+                  color={Color4.White()}
+                  textAlign="middle-right"
+                  textWrap="nowrap"
+                  uiTransform={{ width: sbNameW, height: sbNameH }}
+                />
+              </UiEntity>
 
-                <UiEntity uiTransform={{ width: '25%' }} />
+              <UiEntity uiTransform={{ width: '25%', height: sbNameH }} />
 
-                <UiEntity
-                  uiTransform={{
-                    width: '37.5%',
-                    padding: 2
-                  }}
-                  uiBackground={{ color: Color4.Green() }}
-                >
-                  <UiEntity
-                    uiTransform={{
-                      width: '100%',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'flex-start'
-                    }}
-                    uiBackground={{ color: Color4.create(0, 0, 0, 0.8) }}
-                  >
-                    <Label
-                      value={scoreboardSideName(s.redName, 'Red', engineIsRed)}
-                      fontSize={fs(18)}
-                      color={Color4.White()}
-                      textAlign="middle-left"
-                    />
-                    <UiEntity/>
-                  </UiEntity>
-                </UiEntity>
+              <UiEntity
+                uiTransform={{
+                  width: '37.5%',
+                  height: sbNameH,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start'
+                }}
+              >
+                <Label
+                  value={scoreboardDisplayName(s.redName, 'Red', engineIsRed)}
+                  fontSize={fs(18)}
+                  color={Color4.White()}
+                  textAlign="middle-left"
+                  textWrap="nowrap"
+                  uiTransform={{ width: sbNameW, height: sbNameH }}
+                />
+                <UiEntity uiTransform={{ width: sbPx(6), height: sbNameH }} />
+                <UiEntity uiTransform={{ width: sbFlagW, height: sbNameH }} />
               </UiEntity>
             </UiEntity>
+          </UiEntity>
           </UiEntity>
         </UiEntity>
       )}
@@ -448,10 +503,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             positionType: 'absolute',
             position: { top: 0, right: 0 },
             width: '30%',
-            padding: { top: 8, left: 12, right: 12, bottom: 8 },
+            height: sbRowH,
+            padding: isMobile()
+              ? { top: 8, left: 12, right: 12 }
+              : { top: 0, left: 12, right: 12 },
             display: 'flex',
             flexDirection: 'row',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             justifyContent: 'flex-start',
             zIndex: 55
           }}
