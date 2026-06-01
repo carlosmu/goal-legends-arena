@@ -21,6 +21,7 @@ import { readPenaltySnapshot, penaltyStateEntityReady } from './gameStore'
 import { tickAudioManager } from './audioManager'
 import { initAnimationManager, tickAnimationManager } from './animationManager'
 import { tickFireworkManager } from './fireworkManager'
+import { initSpotBillboardManager, tickSpotBillboardManager } from './spotBillboardManager'
 import { markSpotClickedLocally } from './uiManager'
 
 let syncedPinged = false
@@ -62,6 +63,7 @@ export function initClient() {
   const red = findEntityByName('Red_Spot')
   registerSpotPointerHandlers(blue, 'blue', '')
   registerSpotPointerHandlers(red, 'red', '')
+  initSpotBillboardManager(red, blue)
 
   const dirs: Array<{ key: 'L' | 'C' | 'R'; pos: Vector3; scale: Vector3 }> = [
     { key: 'L', pos: AIM_COLLIDERS.L.pos, scale: AIM_COLLIDERS.L.scale },
@@ -107,6 +109,7 @@ export function initClient() {
     tickAudioManager(s)
     tickAnimationManager(s.phase)
     tickFireworkManager(s.phase)
+    tickSpotBillboardManager(s)
     if (!syncedPinged && isStateSyncronized()) {
       syncedPinged = true
       room.send('clientReadyPing', {})

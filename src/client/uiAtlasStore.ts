@@ -140,6 +140,13 @@ export function leaderboardTitleBackground() {
   return uiAtlasRangeHalfBackground('E2', 'F2', true)
 }
 
+/** 3D spot billboards (UI_atlas cell A4). */
+export const SPOT_BILLBOARD_CELL = 'A4'
+
+export function spotBillboardPlaneUvs(): number[] {
+  return uiAtlasRangeToUvs(SPOT_BILLBOARD_CELL, SPOT_BILLBOARD_CELL)
+}
+
 /** Leaderboard panel frame: cell H1 split 3×3 (1–9, row-major). */
 export const LEADERBOARD_FRAME_CELL = 'H1'
 
