@@ -26,7 +26,7 @@ import {
   scoreboardBadgeE7Background,
   splashStartButtonBackground
 } from './countryStore'
-import { logoBackground, scoreboardBackground } from './uiAtlasStore'
+import { logoBackground, scoreboardBackground, welcomeChooseSpotBackground, welcomeChooseSpotOverlayBackground } from './uiAtlasStore'
 
 /**
  * React-ECS ya re-renderiza el árbol cada frame (`@dcl/react-ecs` lo registra como un system).
@@ -305,11 +305,21 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       {showScoreboard && (
         <UiEntity
           uiTransform={{
-            width: sb.width,
-            height: sb.height,
+            positionType: 'absolute',
+            position: { top: 0, left: 0 },
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
             zIndex: 55
           }}
         >
+          <UiEntity
+            uiTransform={{
+              width: sb.width,
+              height: sb.height
+            }}
+          >
           <UiEntity
             uiTransform={{
               width: '100%',
@@ -490,6 +500,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 <UiEntity uiTransform={{ width: sbFlagW, height: sbNameH }} />
               </UiEntity>
             </UiEntity>
+          </UiEntity>
           </UiEntity>
           </UiEntity>
         </UiEntity>
@@ -764,26 +775,49 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       {showWelcome && (
         <UiEntity
           uiTransform={{
+            positionType: 'absolute',
+            position: { top: '10vh', left: 0 },
+            width: '100%',
             display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            margin: { top: '10vh' },
-            padding: { top: 26, bottom: 26, left: 34, right: 34 },
-            // maxWidth: 7201
+            flexDirection: 'row',
+            justifyContent: 'center',
+            zIndex: 48,
+            pointerFilter: 'none'
           }}
-          uiBackground={{ color: Color4.create(0.08, 0.38, 0.14, 0.70) }}
         >
           <UiEntity
-            uiTransform={{ width: isMobile() ? 800 : 480, height: isMobile() ? 200 : 120 }}
-            uiBackground={{
-              textureMode: 'stretch',
-              texture: { src: 'assets/images/UI_buttons.png' },
-              // 4x4 sheet; using A1-B1-C1-D1 (row 1 full width)
-              // u: 0.00 -> 1.00, v: 0.75 -> 1.00
-              uvs: [0, 0.75, 0, 1, 1, 1, 1, 0.75],
-              color: Color4.White()
+            uiTransform={{
+              width: isMobile() ? 800 : 480,
+              height: isMobile() ? 400 : 240,
+              positionType: 'relative'
             }}
-          />
+          >
+            <UiEntity
+              uiTransform={{
+                positionType: 'absolute',
+                position: { top: 0, left: 0 },
+                width: '100%',
+                height: '100%'
+              }}
+              uiBackground={welcomeChooseSpotBackground()}
+            />
+            <UiEntity
+              uiTransform={{
+                positionType: 'absolute',
+                position: { top: '10%', left: '10%' },
+                width: '80%',
+                height: '80%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <UiEntity
+                uiTransform={{ width: '100%', height: '100%' }}
+                uiBackground={welcomeChooseSpotOverlayBackground()}
+              />
+            </UiEntity>
+          </UiEntity>
         </UiEntity>
       )}
 

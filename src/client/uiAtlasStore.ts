@@ -54,6 +54,21 @@ export function scoreboardBackground() {
   return uiAtlasRangeBackground(SCOREBOARD_BG_FROM, SCOREBOARD_BG_TO)
 }
 
+/** “Choose a spot” lobby banner (UI_atlas E2–F2). */
+export const WELCOME_SPOT_FROM = 'E2'
+export const WELCOME_SPOT_TO = 'F2'
+export const WELCOME_SPOT_OVERLAY_FROM = 'G2'
+export const WELCOME_SPOT_OVERLAY_TO = 'H2'
+
+export function welcomeChooseSpotBackground() {
+  return uiAtlasRangeBackground(WELCOME_SPOT_FROM, WELCOME_SPOT_TO)
+}
+
+/** Overlay centered over welcome banner (UI_atlas G2–H2). */
+export function welcomeChooseSpotOverlayBackground() {
+  return uiAtlasRangeBackground(WELCOME_SPOT_OVERLAY_FROM, WELCOME_SPOT_OVERLAY_TO)
+}
+
 /** Width/height of the scoreboard bg sprite (A8–F8 = 6×1 cells). */
 export function scoreboardAtlasAspect(): number {
   const a = parseAtlasCell(SCOREBOARD_BG_FROM)
