@@ -270,6 +270,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const showWelcome =
     splashDismissed &&
     !welcomeChooseSpotDismissed &&
+    !showLeaderboard &&
     s.hasActiveMatch === 0 &&
     s.phase === GameState.LobbyIdle
   // Limpiar la bandera local cuando la partida ya está corriendo (no estamos esperando más).
