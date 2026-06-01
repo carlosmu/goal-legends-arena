@@ -74,6 +74,11 @@ export function pickDirectionPanelBackground() {
   return uiAtlasRangeBackground(WELCOME_SPOT_FROM, WELCOME_SPOT_TO)
 }
 
+/** “Waiting for opponent” panel (UI_atlas E2–F2). */
+export function waitingOpponentBackground() {
+  return uiAtlasRangeBackground(WELCOME_SPOT_FROM, WELCOME_SPOT_TO)
+}
+
 export function pickDirectionLeftBackground() {
   return uiAtlasRangeBackground('E1', 'E1')
 }
@@ -86,8 +91,8 @@ export function pickDirectionRightBackground() {
   return uiAtlasRangeBackground('G1', 'G1')
 }
 
-function pickDirectionTitleHalfBackground(useTopHalf: boolean) {
-  const fullUvs = uiAtlasRangeToUvs('G3', 'H3')
+function uiAtlasRangeHalfBackground(from: string, to: string, useTopHalf: boolean) {
+  const fullUvs = uiAtlasRangeToUvs(from, to)
   const u0 = fullUvs[0]
   const v0 = fullUvs[1]
   const u1 = fullUvs[4]
@@ -97,10 +102,14 @@ function pickDirectionTitleHalfBackground(useTopHalf: boolean) {
     textureMode: 'stretch' as const,
     texture: { src: UI_ATLAS_SRC },
     uvs: useTopHalf
-      ? [u0, vm, u0, v1, u1, v1, u1, vm] // Top half: "where to dive"
-      : [u0, v0, u0, vm, u1, vm, u1, v0], // Bottom half: "where to shoot"
+      ? [u0, vm, u0, v1, u1, v1, u1, vm]
+      : [u0, v0, u0, vm, u1, vm, u1, v0],
     color: Color4.White()
   }
+}
+
+function pickDirectionTitleHalfBackground(useTopHalf: boolean) {
+  return uiAtlasRangeHalfBackground('G3', 'H3', useTopHalf)
 }
 
 export function pickDirectionTitleDiveBackground() {
@@ -109,6 +118,21 @@ export function pickDirectionTitleDiveBackground() {
 
 export function pickDirectionTitleShootBackground() {
   return pickDirectionTitleHalfBackground(false)
+}
+
+/** “Waiting for opponent” title — top half of UI_atlas E3–F3. */
+export function waitingOpponentTitleBackground() {
+  return uiAtlasRangeHalfBackground('E3', 'F3', true)
+}
+
+/** Waiting panel: PvE — bottom half of UI_atlas E3. */
+export function waitingOpponentPvEButtonBackground() {
+  return uiAtlasRangeHalfBackground('E3', 'E3', false)
+}
+
+/** Waiting panel: Cancel — bottom half of UI_atlas F3. */
+export function waitingOpponentCancelButtonBackground() {
+  return uiAtlasRangeHalfBackground('F3', 'F3', false)
 }
 
 /** Width/height of the scoreboard bg sprite (A8–F8 = 6×1 cells). */

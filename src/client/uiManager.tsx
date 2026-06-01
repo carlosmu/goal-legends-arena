@@ -36,7 +36,11 @@ import {
   pickDirectionTitleShootBackground,
   pickDirectionLeftBackground,
   pickDirectionCenterBackground,
-  pickDirectionRightBackground
+  pickDirectionRightBackground,
+  waitingOpponentBackground,
+  waitingOpponentTitleBackground,
+  waitingOpponentPvEButtonBackground,
+  waitingOpponentCancelButtonBackground
 } from './uiAtlasStore'
 
 /**
@@ -167,6 +171,8 @@ let splashDismissed = false
 let hoverPickL = false
 let hoverPickC = false
 let hoverPickR = false
+let hoverWaitPvE = false
+let hoverWaitCancel = false
 let hoverSplashStart = false
 /** Offset entre reloj servidor y cliente, cacheado al primer snapshot válido (solo para debug). */
 let serverClockOffset: number | null = null
@@ -389,6 +395,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const sbRowH = Math.max(sbPic, sbFlagH)
   const sbNameH = Math.ceil(fs(18) * 1.2)
   const sbNameW = scoreboardNameLabelWidth()
+
+  const waitPanelW = Math.floor((isMobile() ? 620 : 480) * 1.2)
+  const waitPanelH = Math.floor(waitPanelW / 2)
+  const waitTitleWidth = Math.floor(waitPanelW * 0.85)
+  const waitTitleHeight = Math.floor(waitTitleWidth / 4)
+  const waitBtnW = Math.floor((isMobile() ? 220 : 180) * 1.2)
+  const waitBtnH = Math.floor(waitBtnW / 2)
 
   return (
     <UiEntity
@@ -924,20 +937,63 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       {showWaiting && (
         <UiEntity
           uiTransform={{
-            margin: { top: '12vh' },
-            padding: 18,
+            positionType: 'absolute',
+            position: { top: '17vh', left: 0 },
+            width: '100%',
             display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
+            flexDirection: 'row',
+            justifyContent: 'center',
+            zIndex: 48
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
         >
-          <Label value="Waiting for opponent" fontSize={fs(35)} color={Color4.White()} textAlign="middle-center" />
+          <UiEntity
+            uiTransform={{
+              width: waitPanelW,
+              height: waitPanelH,
+              positionType: 'relative'
+            }}
+          >
+            <UiEntity
+              uiTransform={{
+                positionType: 'absolute',
+                position: { top: 0, left: 0 },
+                width: '100%',
+                height: '100%',
+                zIndex: 0
+              }}
+              uiBackground={waitingOpponentBackground()}
+            />
+            <UiEntity
+              uiTransform={{
+                positionType: 'relative',
+                width: '100%',
+                height: '100%',
+                padding: { top: 22, bottom: 22, left: 24, right: 24 },
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 1
+              }}
+            >
+          <UiEntity
+            uiTransform={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center'
+            }}
+          >
+            <UiEntity
+              uiTransform={{ width: waitTitleWidth, height: waitTitleHeight }}
+              uiBackground={waitingOpponentTitleBackground()}
+            />
+          </UiEntity>
           <Label
             value={`${waitDisplayLeft}s`}
             fontSize={fs(30)}
             color={Color4.create(1, 0.85, 0.2, 1)}
-            uiTransform={{ margin: { top: 10 } }}
+            uiTransform={{ margin: { top: -20 } }}
           />
           <UiEntity
             uiTransform={{
@@ -949,21 +1005,29 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             }}
           >
             <Button
-              value="Player vs Engine"
-              fontSize={fs(20)}
-              color={Color4.White()}
-              uiTransform={{ width: 220, height: 44, margin: { right: 12 } }}
-              uiBackground={{ color: Color4.create(0.2, 0.45, 0.25, 1) }}
+              value=""
+              uiTransform={{ width: waitBtnW, height: waitBtnH, margin: { right: 14 } }}
+              uiBackground={{
+                ...waitingOpponentPvEButtonBackground(),
+                color: Color4.create(1, 1, 1, hoverWaitPvE ? 1 : 0.92)
+              }}
               onMouseDown={() => room.send('startPvE', {})}
+              onMouseEnter={() => { hoverWaitPvE = true }}
+              onMouseLeave={() => { hoverWaitPvE = false }}
             />
             <Button
-              value="Cancel"
-              fontSize={fs(20)}
-              color={Color4.White()}
-              uiTransform={{ width: 160, height: 44 }}
-              uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
+              value=""
+              uiTransform={{ width: waitBtnW, height: waitBtnH }}
+              uiBackground={{
+                ...waitingOpponentCancelButtonBackground(),
+                color: Color4.create(1, 1, 1, hoverWaitCancel ? 1 : 0.92)
+              }}
               onMouseDown={() => room.send('cancelWaiting', {})}
+              onMouseEnter={() => { hoverWaitCancel = true }}
+              onMouseLeave={() => { hoverWaitCancel = false }}
             />
+          </UiEntity>
+            </UiEntity>
           </UiEntity>
         </UiEntity>
       )}
