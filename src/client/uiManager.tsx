@@ -106,6 +106,12 @@ function countryPickerOverlayBackground() {
   return { color: Color4.create(0.03, 0.2, 0.05, isMobile() ? 0.7 : 0.98) }
 }
 
+/** Splash logo (UI_atlas A1–D3 = 4×3 celdas → 4:3). */
+function splashLogoSize(): { width: number; height: number } {
+  const width = isMobile() ? 480 : 540
+  return { width, height: Math.floor((width * 3) / 4) }
+}
+
 function scoreboardLayout(): { width: `${number}vw`; height: `${number}vw` } {
   if (isMobile()) {
     return { width: '65vw', height: '13vw' }
@@ -1509,9 +1515,9 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         >
           <UiEntity
             uiTransform={{
-              width: 540,
-              height: 540,
-              margin: { bottom: isMobile() ? -12 : -20 },
+              width: splashLogoSize().width,
+              height: splashLogoSize().height,
+              margin: { bottom: '5vh' },
               pointerFilter: 'none',
             }}
             uiBackground={logoBackground()}
@@ -1520,7 +1526,6 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             uiTransform={{
               width: isMobile() ? 330 : 240,
               height: isMobile() ? 110 : 80,
-              margin: { top: isMobile() ? -8 : -12 },
               positionType: 'relative',
               zIndex: 1,
             }}

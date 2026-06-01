@@ -4,9 +4,9 @@ export const UI_ATLAS_SRC = 'assets/images/UI_atlas.png'
 const UI_ATLAS_COLS = 8
 const UI_ATLAS_ROWS = 8
 
-/** Splash logo sprite on UI_atlas.png (cells A1–D4). */
+/** Splash logo sprite on UI_atlas.png (cells A1–D3). */
 export const LOGO_COORD_FROM = 'A1'
-export const LOGO_COORD_TO = 'D4'
+export const LOGO_COORD_TO = 'D3'
 
 function parseAtlasCell(coordinates: string): { col: number; row: number } | null {
   const m = /^([A-H])([1-8])$/i.exec(coordinates.trim())
