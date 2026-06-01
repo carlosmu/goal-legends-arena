@@ -246,15 +246,25 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
 
   const pickMobile = isMobile()
   const pickPanelWidth = pickMobile ? '40vw' : '25vw'
-  const pickBtnWidth = pickMobile ? 169 : 130
+  const pickPanelWidthPx = Math.floor(1920 * (pickMobile ? 0.4 : 0.25))
+  const pickBtnWidthCap = Math.floor((pickPanelWidthPx * 0.9) / 3)
+  const pickBtnWidth = Math.min(pickMobile ? 169 : 130, pickBtnWidthCap)
   const pickBtnHeight = pickBtnWidth
-  const pickTitleWidth = pickBtnWidth * 3
+  const pickLcrRowWidthPx = Math.floor(pickPanelWidthPx * 0.9)
+  const pickTitleWidth = Math.min(pickBtnWidth * 3, pickLcrRowWidthPx)
   const pickTitleHeight = Math.floor(pickTitleWidth / 4)
   const pickPanelPadPx = pickMobile ? 14 : 10
+  const pickTitleMarginTopPx = pickMobile ? 16 : 12
   const pickPanelGapPx = pickMobile ? 18 : 12
-  /** Alto en px: título + botones + padding (12.5vw era ~135px y los botones solos miden 130px). */
+  const pickLcrMarginBottomPx = 50
+  /** Alto en px: título + botones + padding + margin inferior del selector L/C/R. */
   const pickPanelHeightPx =
-    pickPanelPadPx * 2 + pickTitleHeight + pickPanelGapPx + pickBtnHeight
+    pickPanelPadPx * 2 +
+    pickTitleMarginTopPx +
+    pickTitleHeight +
+    pickPanelGapPx +
+    pickBtnHeight +
+    pickLcrMarginBottomPx
 
   const pickDirectionPanel = (titleBg: ReturnType<typeof pickDirectionTitleDiveBackground>) => (
     <UiEntity
@@ -271,6 +281,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       <UiEntity
         uiTransform={{
           width: '100%',
+          margin: { top: pickTitleMarginTopPx },
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'center'
@@ -284,10 +295,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       <UiEntity uiTransform={{ width: 1, height: pickPanelGapPx }} />
       <UiEntity
         uiTransform={{
-          width: '100%',
+          width: '90%',
+          maxWidth: '90%',
+          margin: { bottom: pickLcrMarginBottomPx },
           display: 'flex',
           flexDirection: 'row',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          alignItems: 'center'
         }}
       >
         <Button
