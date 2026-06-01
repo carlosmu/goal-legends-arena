@@ -199,6 +199,8 @@ let prevPhase = ''
 let pickerPage = 0
 let prevPickerOpen = false
 let splashDismissed = false
+/** "Pick a spot" banner cerrado esta sesión; se resetea en reload (resetSplashUi). */
+let welcomeChooseSpotDismissed = false
 let hoverPickL = false
 let hoverPickC = false
 let hoverPickR = false
@@ -223,8 +225,13 @@ export function dismissSplash(): void {
   splashDismissed = true
 }
 
+export function dismissWelcomeChooseSpot(): void {
+  welcomeChooseSpotDismissed = true
+}
+
 export function resetSplashUi(): void {
   splashDismissed = false
+  welcomeChooseSpotDismissed = false
   hoverSplashStart = false
 }
 
@@ -260,7 +267,11 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     ((s.winnerSide === 'red' && engineIsRed) || (s.winnerSide === 'blue' && engineIsBlue))
 
   /** Partida en curso (oculta welcome para nuevos hasta que termine). No incluye solo “esperando rival”. */
-  const showWelcome = splashDismissed && s.hasActiveMatch === 0 && s.phase === GameState.LobbyIdle
+  const showWelcome =
+    splashDismissed &&
+    !welcomeChooseSpotDismissed &&
+    s.hasActiveMatch === 0 &&
+    s.phase === GameState.LobbyIdle
   // Limpiar la bandera local cuando la partida ya está corriendo (no estamos esperando más).
   if (lastSpotClickAt > 0 && s.phase !== GameState.WaitingOpponent && s.phase !== GameState.LobbyIdle) {
     lastSpotClickAt = 0
@@ -1083,6 +1094,17 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 uiBackground={welcomeChooseSpotOverlayBackground()}
               />
             </UiEntity>
+            <Button
+              value=""
+              uiTransform={{
+                positionType: 'absolute',
+                position: { top: -12, right: -12 },
+                width: sbActionBtnSize(),
+                height: sbActionBtnSize()
+              }}
+              uiBackground={scoreboardBadgeE7Background()}
+              onMouseDown={() => dismissWelcomeChooseSpot()}
+            />
           </UiEntity>
         </UiEntity>
       )}
