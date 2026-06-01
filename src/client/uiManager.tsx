@@ -23,6 +23,7 @@ import {
   redPicBgBackground,
   facePicBackground,
   scoreboardBadgeF7Background,
+  scoreboardBadgeH7Background,
   scoreboardBadgeE7Background,
   splashStartButtonBackground
 } from './countryStore'
@@ -127,7 +128,7 @@ const SB_FLAG_W = 112
 const SB_FLAG_H = 84
 const SB_PIC = 64
 
-/** F7 = choose country, E7 = leave match (mismo tamaño que profile pic). */
+/** F7 = country, H7 = leaderboard, E7 = leave match. */
 const ScoreboardLocalActions = () => {
   const sz = sbActionBtnSize()
   const gap = sbPx(6)
@@ -148,6 +149,12 @@ const ScoreboardLocalActions = () => {
       />
       <Button
         value=""
+        uiTransform={{ width: sz, height: sz, margin: { right: gap } }}
+        uiBackground={scoreboardBadgeH7Background()}
+        onMouseDown={() => openLeaderboard()}
+      />
+      <Button
+        value=""
         uiTransform={{ width: sz, height: sz }}
         uiBackground={scoreboardBadgeE7Background()}
         onMouseDown={() => room.send('leaveMatch', {})}
@@ -156,14 +163,22 @@ const ScoreboardLocalActions = () => {
   )
 }
 
-const LEADERBOARD_TOP_N = 10
-
 // UI_choose.png is 1024x1024; each DIVE/SHOOT slice is half height => aspect 2:1 (w:h)
 // Pick sizes use isMobile() inside RootUi only — not at module load (Creator Hub loads as desktop).
 const PICK_BTN_ALPHA = 0.05
 const PICK_BTN_ALPHA_HOVER = 0.3
 
 let lbShowUntilMs = 0
+const LEADERBOARD_TOP_N = 10
+const LEADERBOARD_UI_MS = 30_000
+
+export function openLeaderboard(): void {
+  lbShowUntilMs = Date.now() + LEADERBOARD_UI_MS
+  prefetchLeaderboardFaces(
+    getLeaderboardRows(readPenaltySnapshot().leaderboardJson, LEADERBOARD_TOP_N).map((r) => r.addr)
+  )
+}
+
 let prevPhase = ''
 let pickerPage = 0
 let prevPickerOpen = false
@@ -642,7 +657,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       )}
       {/* ========== fin SCOREBOARD ========== */}
 
-      {/* ========== MATCH ACTIONS (F7 / E7) — 30% derecha ========== */}
+      {/* ========== MATCH ACTIONS (F7 / H7 / E7) — 30% derecha ========== */}
       {showScoreboard && side && (
         <UiEntity
           uiTransform={{

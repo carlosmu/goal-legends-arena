@@ -132,6 +132,7 @@ export const RED_PIC_BG_COORD = 'D7'
 export const DEFAULT_PROFILE_PIC_COORD = 'G7'
 /** Extra badges on scoreboard player-B row (flags.png). */
 export const SCOREBOARD_BADGE_F7 = 'F7'
+export const SCOREBOARD_BADGE_H7 = 'H7'
 export const SCOREBOARD_BADGE_E7 = 'E7'
 /** Splash "Start" button on flags.png (normal / hover, row 8). */
 export const SPLASH_START_NORMAL = ['A8', 'B8', 'C8'] as const
@@ -181,6 +182,10 @@ export function facePicBackground(faceUrl: string | undefined) {
 
 export function scoreboardBadgeF7Background() {
   return atlasCellBackground(SCOREBOARD_BADGE_F7)
+}
+
+export function scoreboardBadgeH7Background() {
+  return atlasCellBackground(SCOREBOARD_BADGE_H7)
 }
 
 export function scoreboardBadgeE7Background() {
