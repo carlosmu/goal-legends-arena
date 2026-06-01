@@ -26,7 +26,18 @@ import {
   scoreboardBadgeE7Background,
   splashStartButtonBackground
 } from './countryStore'
-import { logoBackground, scoreboardBackground, welcomeChooseSpotBackground, welcomeChooseSpotOverlayBackground } from './uiAtlasStore'
+import {
+  logoBackground,
+  scoreboardBackground,
+  welcomeChooseSpotBackground,
+  welcomeChooseSpotOverlayBackground,
+  pickDirectionPanelBackground,
+  pickDirectionTitleDiveBackground,
+  pickDirectionTitleShootBackground,
+  pickDirectionLeftBackground,
+  pickDirectionCenterBackground,
+  pickDirectionRightBackground
+} from './uiAtlasStore'
 
 /**
  * React-ECS ya re-renderiza el árbol cada frame (`@dcl/react-ecs` lo registra como un system).
@@ -235,11 +246,86 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
 
   const pickMobile = isMobile()
   const pickPanelWidth = pickMobile ? '40vw' : '25vw'
-  const pickPanelHeight = pickMobile ? '20vw' : '12.5vw'
-  const pickBtnWidth = pickMobile ? 300 : 130
-  const pickBtnHeight = pickMobile ? 230 : 100
-  const pickBtnGap = pickMobile ? 20 : 8
-  const pickBtnMarginBottom = pickMobile ? 50 : 20
+  const pickBtnWidth = pickMobile ? 169 : 130
+  const pickBtnHeight = pickBtnWidth
+  const pickTitleWidth = pickBtnWidth * 3
+  const pickTitleHeight = Math.floor(pickTitleWidth / 4)
+  const pickPanelPadPx = pickMobile ? 14 : 10
+  const pickPanelGapPx = pickMobile ? 18 : 12
+  /** Alto en px: título + botones + padding (12.5vw era ~135px y los botones solos miden 130px). */
+  const pickPanelHeightPx =
+    pickPanelPadPx * 2 + pickTitleHeight + pickPanelGapPx + pickBtnHeight
+
+  const pickDirectionPanel = (titleBg: ReturnType<typeof pickDirectionTitleDiveBackground>) => (
+    <UiEntity
+      uiTransform={{
+        width: pickPanelWidth,
+        height: pickPanelHeightPx,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: { top: pickPanelPadPx, bottom: pickPanelPadPx }
+      }}
+      uiBackground={pickDirectionPanelBackground()}
+    >
+      <UiEntity
+        uiTransform={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center'
+        }}
+      >
+        <UiEntity
+          uiTransform={{ width: pickTitleWidth, height: pickTitleHeight }}
+          uiBackground={titleBg}
+        />
+      </UiEntity>
+      <UiEntity uiTransform={{ width: 1, height: pickPanelGapPx }} />
+      <UiEntity
+        uiTransform={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center'
+        }}
+      >
+        <Button
+          value=""
+          uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
+          uiBackground={{
+            ...pickDirectionLeftBackground(),
+            color: Color4.create(1, 1, 1, hoverPickL ? 1 : 0.92)
+          }}
+          onMouseDown={() => room.send('submitDirection', { dir: 'L' })}
+          onMouseEnter={() => { hoverPickL = true }}
+          onMouseLeave={() => { hoverPickL = false }}
+        />
+        <Button
+          value=""
+          uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
+          uiBackground={{
+            ...pickDirectionCenterBackground(),
+            color: Color4.create(1, 1, 1, hoverPickC ? 1 : 0.92)
+          }}
+          onMouseDown={() => room.send('submitDirection', { dir: 'C' })}
+          onMouseEnter={() => { hoverPickC = true }}
+          onMouseLeave={() => { hoverPickC = false }}
+        />
+        <Button
+          value=""
+          uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
+          uiBackground={{
+            ...pickDirectionRightBackground(),
+            color: Color4.create(1, 1, 1, hoverPickR ? 1 : 0.92)
+          }}
+          onMouseDown={() => room.send('submitDirection', { dir: 'R' })}
+          onMouseEnter={() => { hoverPickR = true }}
+          onMouseLeave={() => { hoverPickR = false }}
+        />
+      </UiEntity>
+    </UiEntity>
+  )
   const showResult = splashDismissed && s.phase === GameState.ResolvingRound && !!s.resultLine
   const showMatchEnd = splashDismissed && s.phase === GameState.MatchEnd && !!s.winnerName
   const showStreak =
@@ -885,96 +971,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             zIndex: 1000
           }}
         >
-          {/* DIVE: mitad superior de UI_choose.png */}
-          {!kicker && (
-            <UiEntity
-              uiTransform={{
-                width: pickPanelWidth,
-                height: pickPanelHeight,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-              }}
-              uiBackground={{
-                textureMode: 'stretch',
-                texture: { src: 'assets/images/UI_choose.png' },
-                uvs: [0, 0.5, 0, 1, 1, 1, 1, 0.5]
-              }}
-            >
-              <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { bottom: pickBtnMarginBottom } }}>
-                <Button
-                  value=""
-                  uiTransform={{ width: pickBtnWidth, height: pickBtnHeight, margin: { right: pickBtnGap } }}
-                  uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickL ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
-                  onMouseDown={() => room.send('submitDirection', { dir: 'L' })}
-                  onMouseEnter={() => { hoverPickL = true }}
-                  onMouseLeave={() => { hoverPickL = false }}
-                />
-                <Button
-                  value=""
-                  uiTransform={{ width: pickBtnWidth, height: pickBtnHeight, margin: { right: pickBtnGap } }}
-                  uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickC ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
-                  onMouseDown={() => room.send('submitDirection', { dir: 'C' })}
-                  onMouseEnter={() => { hoverPickC = true }}
-                  onMouseLeave={() => { hoverPickC = false }}
-                />
-                <Button
-                  value=""
-                  uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
-                  uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickR ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
-                  onMouseDown={() => room.send('submitDirection', { dir: 'R' })}
-                  onMouseEnter={() => { hoverPickR = true }}
-                  onMouseLeave={() => { hoverPickR = false }}
-                />
-              </UiEntity>
-            </UiEntity>
-          )}
-          {/* SHOOT: mitad inferior de UI_choose.png */}
-          {kicker && (
-            <UiEntity
-              uiTransform={{
-                width: pickPanelWidth,
-                height: pickPanelHeight,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-              }}
-              uiBackground={{
-                textureMode: 'stretch',
-                texture: { src: 'assets/images/UI_choose.png' },
-                uvs: [0, 0, 0, 0.5, 1, 0.5, 1, 0]
-              }}
-            >
-              <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { bottom: pickBtnMarginBottom } }}>
-                <Button
-                  value=""
-                  uiTransform={{ width: pickBtnWidth, height: pickBtnHeight, margin: { right: pickBtnGap } }}
-                  uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickL ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
-                  onMouseDown={() => room.send('submitDirection', { dir: 'L' })}
-                  onMouseEnter={() => { hoverPickL = true }}
-                  onMouseLeave={() => { hoverPickL = false }}
-                />
-                <Button
-                  value=""
-                  uiTransform={{ width: pickBtnWidth, height: pickBtnHeight, margin: { right: pickBtnGap } }}
-                  uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickC ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
-                  onMouseDown={() => room.send('submitDirection', { dir: 'C' })}
-                  onMouseEnter={() => { hoverPickC = true }}
-                  onMouseLeave={() => { hoverPickC = false }}
-                />
-                <Button
-                  value=""
-                  uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
-                  uiBackground={{ color: Color4.create(0.15, 0.45, 0.85, hoverPickR ? PICK_BTN_ALPHA_HOVER : PICK_BTN_ALPHA) }}
-                  onMouseDown={() => room.send('submitDirection', { dir: 'R' })}
-                  onMouseEnter={() => { hoverPickR = true }}
-                  onMouseLeave={() => { hoverPickR = false }}
-                />
-              </UiEntity>
-            </UiEntity>
-          )}
+          {!kicker && pickDirectionPanel(pickDirectionTitleDiveBackground())}
+          {kicker && pickDirectionPanel(pickDirectionTitleShootBackground())}
         </UiEntity>
       )}
 

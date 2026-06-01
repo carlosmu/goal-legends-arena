@@ -69,6 +69,48 @@ export function welcomeChooseSpotOverlayBackground() {
   return uiAtlasRangeBackground(WELCOME_SPOT_OVERLAY_FROM, WELCOME_SPOT_OVERLAY_TO)
 }
 
+/** Pick panel background for Left/Center/Right selector (UI_atlas E2–F2). */
+export function pickDirectionPanelBackground() {
+  return uiAtlasRangeBackground(WELCOME_SPOT_FROM, WELCOME_SPOT_TO)
+}
+
+export function pickDirectionLeftBackground() {
+  return uiAtlasRangeBackground('E1', 'E1')
+}
+
+export function pickDirectionCenterBackground() {
+  return uiAtlasRangeBackground('F1', 'F1')
+}
+
+export function pickDirectionRightBackground() {
+  return uiAtlasRangeBackground('G1', 'G1')
+}
+
+function pickDirectionTitleHalfBackground(useTopHalf: boolean) {
+  const fullUvs = uiAtlasRangeToUvs('G3', 'H3')
+  const u0 = fullUvs[0]
+  const v0 = fullUvs[1]
+  const u1 = fullUvs[4]
+  const v1 = fullUvs[5]
+  const vm = (v0 + v1) / 2
+  return {
+    textureMode: 'stretch' as const,
+    texture: { src: UI_ATLAS_SRC },
+    uvs: useTopHalf
+      ? [u0, vm, u0, v1, u1, v1, u1, vm] // Top half: "where to dive"
+      : [u0, v0, u0, vm, u1, vm, u1, v0], // Bottom half: "where to shoot"
+    color: Color4.White()
+  }
+}
+
+export function pickDirectionTitleDiveBackground() {
+  return pickDirectionTitleHalfBackground(true)
+}
+
+export function pickDirectionTitleShootBackground() {
+  return pickDirectionTitleHalfBackground(false)
+}
+
 /** Width/height of the scoreboard bg sprite (A8–F8 = 6×1 cells). */
 export function scoreboardAtlasAspect(): number {
   const a = parseAtlasCell(SCOREBOARD_BG_FROM)
