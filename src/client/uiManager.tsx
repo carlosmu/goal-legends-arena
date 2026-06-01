@@ -261,29 +261,51 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const pickTitleHeight = Math.floor(pickTitleWidth / 4)
   const pickPanelPadPx = pickMobile ? 14 : 10
   const pickTitleMarginTopPx = pickMobile ? 16 : 12
-  const pickPanelGapPx = pickMobile ? 18 : 12
-  const pickLcrMarginBottomPx = 50
-  /** Alto en px: título + botones + padding + margin inferior del selector L/C/R. */
-  const pickPanelHeightPx =
+  const pickPanelGapPx = pickMobile ? -20 : -20
+  /** Margin inferior del panel dive/shoot — distancia al borde de pantalla. */
+  const pickPanelMarginBottom = pickMobile ? '1vh' : '3vh'
+  /** Solo baja el fondo E4–H5; título y picker (L/C/R) no se mueven. */
+  const pickPanelBgShiftDownPx = pickMobile ? 32 : 24
+  /** Alto del contenido (título + picker). */
+  const pickPanelContentHeightPx =
     pickPanelPadPx * 2 +
     pickTitleMarginTopPx +
     pickTitleHeight +
     pickPanelGapPx +
-    pickBtnHeight +
-    pickLcrMarginBottomPx
+    pickBtnHeight
+  const pickPanelOuterHeightPx = pickPanelContentHeightPx + pickPanelBgShiftDownPx
 
   const pickDirectionPanel = (titleBg: ReturnType<typeof pickDirectionTitleDiveBackground>) => (
     <UiEntity
       uiTransform={{
         width: pickPanelWidth,
-        height: pickPanelHeightPx,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: { top: pickPanelPadPx, bottom: pickPanelPadPx }
+        height: pickPanelOuterHeightPx,
+        margin: { bottom: pickPanelMarginBottom },
+        positionType: 'relative'
       }}
-      uiBackground={pickDirectionPanelBackground()}
     >
+      <UiEntity
+        uiTransform={{
+          positionType: 'absolute',
+          position: { top: pickPanelBgShiftDownPx, left: 0 },
+          width: '100%',
+          height: pickPanelContentHeightPx,
+          zIndex: 0
+        }}
+        uiBackground={pickDirectionPanelBackground()}
+      />
+      <UiEntity
+        uiTransform={{
+          positionType: 'relative',
+          width: '100%',
+          height: pickPanelContentHeightPx,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: { top: pickPanelPadPx, bottom: pickPanelPadPx },
+          zIndex: 1
+        }}
+      >
       <UiEntity
         uiTransform={{
           width: '100%',
@@ -303,7 +325,6 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         uiTransform={{
           width: '90%',
           maxWidth: '90%',
-          margin: { bottom: pickLcrMarginBottomPx },
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'center',
@@ -343,6 +364,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           onMouseEnter={() => { hoverPickR = true }}
           onMouseLeave={() => { hoverPickR = false }}
         />
+      </UiEntity>
       </UiEntity>
     </UiEntity>
   )
@@ -1044,7 +1066,6 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-end',
-            padding: { bottom: isMobile() ? '8vh' : '4vh' },
             pointerFilter: 'none',
             zIndex: 1000
           }}

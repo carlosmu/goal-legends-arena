@@ -54,9 +54,9 @@ export function scoreboardBackground() {
   return uiAtlasRangeBackground(SCOREBOARD_BG_FROM, SCOREBOARD_BG_TO)
 }
 
-/** “Choose a spot” lobby banner (UI_atlas E2–F2). */
-export const WELCOME_SPOT_FROM = 'E2'
-export const WELCOME_SPOT_TO = 'F2'
+/** Panel banner 2:1 hi-res (UI_atlas E4–H5; antes E2–F2). Usado en welcome, pick y waiting. */
+export const WELCOME_SPOT_FROM = 'E4'
+export const WELCOME_SPOT_TO = 'H5'
 export const WELCOME_SPOT_OVERLAY_FROM = 'G2'
 export const WELCOME_SPOT_OVERLAY_TO = 'H2'
 
@@ -69,12 +69,12 @@ export function welcomeChooseSpotOverlayBackground() {
   return uiAtlasRangeBackground(WELCOME_SPOT_OVERLAY_FROM, WELCOME_SPOT_OVERLAY_TO)
 }
 
-/** Pick panel background for Left/Center/Right selector (UI_atlas E2–F2). */
+/** Pick panel background (UI_atlas E4–H5). */
 export function pickDirectionPanelBackground() {
   return uiAtlasRangeBackground(WELCOME_SPOT_FROM, WELCOME_SPOT_TO)
 }
 
-/** “Waiting for opponent” panel (UI_atlas E2–F2). */
+/** “Waiting for opponent” panel (UI_atlas E4–H5). */
 export function waitingOpponentBackground() {
   return uiAtlasRangeBackground(WELCOME_SPOT_FROM, WELCOME_SPOT_TO)
 }
