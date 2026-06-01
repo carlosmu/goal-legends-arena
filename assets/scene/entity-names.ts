@@ -36,6 +36,7 @@ export enum EntityNames {
   Sit_Spot_2 = "Sit Spot_2",
   Sit_Spot_3 = "Sit Spot_3",
   Sit_Spot_4 = "Sit Spot_4",
+  Sit_Spot_5 = "Sit Spot_5",
   Sit_Spots = "Sit_Spots",
   Spot_Lights = "Spot Lights",
   Spot_Rotation_1 = "Spot Rotation_1",

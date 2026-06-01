@@ -15,8 +15,9 @@ import {
   initLocalCountryFromSnapshot,
   assignRandomCountryIfNeeded,
   isPickerOpen,
+  isCountryConfirmVisible,
   openPicker,
-  selectCountry,
+  selectCountryFromPicker,
   flagBackground,
   flagBackgroundForPlayer,
   engineFlagBackground,
@@ -93,6 +94,16 @@ function sbActionBtnSize(): number {
 
 function vw(size: number): `${number}vw` {
   return (isMobile() ? `${size * 1.5}vw` : `${size}vw`) as `${number}vw`
+}
+
+/** Fondo verde pantalla completa (splash, confirmación). */
+function welcomeScreenOverlayBackground() {
+  return { color: Color4.create(0.03, 0.2, 0.05, isMobile() ? 0.7 : 0.88) }
+}
+
+/** Selector de banderas — alpha un poco mayor en desktop. */
+function countryPickerOverlayBackground() {
+  return { color: Color4.create(0.03, 0.2, 0.05, isMobile() ? 0.7 : 0.98) }
 }
 
 function scoreboardLayout(): { width: `${number}vw`; height: `${number}vw` } {
@@ -258,6 +269,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   }
   prevPhase = s.phase
   const showLeaderboard = Date.now() < lbShowUntilMs
+  const showCountryPicker = isPickerOpen()
+  const showCountryConfirm = splashDismissed && isCountryConfirmVisible()
 
   // Determine if engine is red or blue in PvE
   const isPvE = s.mode === 'pve'
@@ -273,6 +286,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     splashDismissed &&
     !welcomeChooseSpotDismissed &&
     !showLeaderboard &&
+    !showCountryConfirm &&
     s.hasActiveMatch === 0 &&
     s.phase === GameState.LobbyIdle
   // Limpiar la bandera local cuando la partida ya está corriendo (no estamos esperando más).
@@ -446,14 +460,17 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     splashDismissed &&
     (s.hasActiveMatch === 1 || (!!side && s.phase === GameState.WaitingOpponent))
 
-  const showCountryPicker = isPickerOpen()
   if (showCountryPicker && !prevPickerOpen) pickerPage = 0
   prevPickerOpen = showCountryPicker
   const FLAGS_PER_ROW = 6
   const FLAG_ROWS = 2
   const FLAG_PICKER_BTN_W = 168
+  const FLAG_PICKER_BTN_H = 126
   const FLAG_PICKER_CELL_MARGIN_X = 8
   const pickerGridWidthPx = FLAGS_PER_ROW * (FLAG_PICKER_BTN_W + FLAG_PICKER_CELL_MARGIN_X)
+  const countryConfirmFlagW = FLAG_PICKER_BTN_W * 2
+  const countryConfirmFlagH = FLAG_PICKER_BTN_H * 2
+  const countryConfirmCountry = showCountryConfirm ? getCountryByIso(getLocalCountry()) : undefined
   const PAGE_SIZE = FLAGS_PER_ROW * FLAG_ROWS
   const TOTAL_PAGES = Math.ceil(COUNTRIES.length / PAGE_SIZE)
   const visibleCountries = COUNTRIES.slice(pickerPage * PAGE_SIZE, (pickerPage + 1) * PAGE_SIZE)
@@ -953,7 +970,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             justifyContent: 'center',
             zIndex: 1001
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 0.99) }}
+          uiBackground={countryPickerOverlayBackground()}
         >
           <Label
             value="Welcome to Goal Legends Arena"
@@ -1025,7 +1042,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                       value=""
                       uiTransform={{ width: FLAG_PICKER_BTN_W, height: 126 }}
                       uiBackground={flagBackground(c.iso)}
-                      onMouseDown={() => selectCountry(c.iso)}
+                        onMouseDown={() => selectCountryFromPicker(c.iso)}
                     />
                     <Label
                       value={c.name.length > 10 ? c.name.slice(0, 10) + '...' : c.name}
@@ -1080,6 +1097,41 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         </UiEntity>
       )}
       {/* ========== fin COUNTRY PICKER ========== */}
+
+      {showCountryConfirm && countryConfirmCountry && (
+        <UiEntity
+          uiTransform={{
+            positionType: 'absolute',
+            position: { top: 0, left: 0 },
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1002
+          }}
+          uiBackground={welcomeScreenOverlayBackground()}
+        >
+          <UiEntity
+            uiTransform={{ width: countryConfirmFlagW, height: countryConfirmFlagH, margin: { bottom: 10 } }}
+            uiBackground={flagBackground(getLocalCountry())}
+          />
+          <Label
+            value={countryConfirmCountry.name}
+            fontSize={fs(isMobile() ? 40 : 48)}
+            color={Color4.White()}
+            textAlign="middle-center"
+            uiTransform={{ margin: { bottom: 2 } }}
+          />
+          <Label
+            value="has selected"
+            fontSize={fs(isMobile() ? 28 : 34)}
+            color={Color4.White()}
+            textAlign="middle-center"
+          />
+        </UiEntity>
+      )}
 
       {showWelcome && (
         <UiEntity
@@ -1453,7 +1505,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             justifyContent: 'center',
             zIndex: 999,
           }}
-          uiBackground={{ color: Color4.create(0.03, 0.2, 0.05, isMobile() ? 0.7 : 0.88) }}
+          uiBackground={welcomeScreenOverlayBackground()}
         >
           <UiEntity
             uiTransform={{

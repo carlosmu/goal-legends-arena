@@ -24,6 +24,9 @@ export const COUNTRIES: Country[] = countriesJson as Country[]
 let localCountry = ''
 /** true = show country picker UI */
 let pickerOpen = false
+/** Local-only “Selected country” overlay until this timestamp (ms). */
+let countryConfirmUntilMs = 0
+const COUNTRY_CONFIRM_MS = 2000
 /** true after we sent a one-time random country for this session. */
 let localRandomCountrySent = false
 /** Display-only fallback per addr when server iso not synced yet (never re-rolled). */
@@ -35,6 +38,10 @@ export function getLocalCountry(): string {
 
 export function isPickerOpen(): boolean {
   return pickerOpen
+}
+
+export function isCountryConfirmVisible(): boolean {
+  return Date.now() < countryConfirmUntilMs
 }
 
 /** Called on first load to pre-populate from server snapshot. */
@@ -54,11 +61,23 @@ export function closePicker() {
 
 export function resetCountryPicker(): void {
   pickerOpen = false
+  countryConfirmUntilMs = 0
   localCountry = ''
   localRandomCountrySent = false
   displayIsoByAddr.clear()
 }
 
+/** Picker click: sync + 2s local confirmation overlay. */
+export function selectCountryFromPicker(iso: string) {
+  if (!isValidCountryIso(iso)) return
+  localCountry = iso
+  localRandomCountrySent = true
+  pickerOpen = false
+  countryConfirmUntilMs = Date.now() + COUNTRY_CONFIRM_MS
+  room.send('setCountry', { iso })
+}
+
+/** Silent set (random assign, etc.) — no confirmation overlay. */
 export function selectCountry(iso: string) {
   if (!isValidCountryIso(iso)) return
   localCountry = iso
