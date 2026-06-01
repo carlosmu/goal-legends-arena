@@ -10,6 +10,8 @@ import { room } from '../shared/messages'
 import { GameState } from '../shared/gameState'
 import {
   COUNTRIES,
+  getLocalCountry,
+  getCountryByIso,
   initLocalCountryFromSnapshot,
   assignRandomCountryIfNeeded,
   isPickerOpen,
@@ -449,9 +451,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   prevPickerOpen = showCountryPicker
   const FLAGS_PER_ROW = 6
   const FLAG_ROWS = 2
+  const FLAG_PICKER_BTN_W = 168
+  const FLAG_PICKER_CELL_MARGIN_X = 8
+  const pickerGridWidthPx = FLAGS_PER_ROW * (FLAG_PICKER_BTN_W + FLAG_PICKER_CELL_MARGIN_X)
   const PAGE_SIZE = FLAGS_PER_ROW * FLAG_ROWS
   const TOTAL_PAGES = Math.ceil(COUNTRIES.length / PAGE_SIZE)
   const visibleCountries = COUNTRIES.slice(pickerPage * PAGE_SIZE, (pickerPage + 1) * PAGE_SIZE)
+  const pickerSelectedName = getCountryByIso(getLocalCountry())?.name ?? '—'
 
   const sb = scoreboardLayout()
   const sbPic = sbProfileSize()
@@ -963,51 +969,76 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             textAlign="middle-center"
             uiTransform={{ margin: { bottom: 20 } }}
           />
-          <Label
-            value="— Select your country —"
-            fontSize={fs(30)}
-            color={Color4.create(0.75, 0.85, 1, 1)}
-            textAlign="middle-center"
-            uiTransform={{ margin: { bottom: 16 } }}
-          />
-          {/* Flag grid: 6 per row, 4 rows */}
-          {Array.from({ length: FLAG_ROWS }, (_, row) => (
+          <UiEntity
+            uiTransform={{
+              width: pickerGridWidthPx,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'stretch'
+            }}
+          >
             <UiEntity
-              key={`row-${row}`}
               uiTransform={{
+                width: '100%',
                 display: 'flex',
                 flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'flex-start'
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                margin: { bottom: 16 }
               }}
             >
-              {visibleCountries.slice(row * FLAGS_PER_ROW, (row + 1) * FLAGS_PER_ROW).map((c) => (
-                <UiEntity
-                  key={c.iso}
-                  uiTransform={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    margin: { left: 4, right: 4, bottom: '3vw' }
-                  }}
-                >
-                  <Button
-                    value=""
-                    uiTransform={{ width: 168, height: 126 }}
-                    uiBackground={flagBackground(c.iso)}
-                    onMouseDown={() => selectCountry(c.iso)}
-                  />
-                  <Label
-                    value={c.name.length > 10 ? c.name.slice(0, 10) + '...' : c.name}
-                    fontSize={fs(20)}
-                    color={Color4.White()}
-                    textAlign="middle-center"
-                    uiTransform={{ width: 168 }}
-                  />
-                </UiEntity>
-              ))}
+              <Label
+                value="Select your country"
+                fontSize={fs(30)}
+                color={Color4.White()}
+                textAlign="middle-left"
+              />
+              <Label
+                value={`Selected: ${pickerSelectedName}`}
+                fontSize={fs(30)}
+                color={Color4.White()}
+                textAlign="middle-right"
+              />
             </UiEntity>
-          ))}
+            {/* Flag grid: 6 per row, 2 rows */}
+            {Array.from({ length: FLAG_ROWS }, (_, row) => (
+              <UiEntity
+                key={`row-${row}`}
+                uiTransform={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'flex-start'
+                }}
+              >
+                {visibleCountries.slice(row * FLAGS_PER_ROW, (row + 1) * FLAGS_PER_ROW).map((c) => (
+                  <UiEntity
+                    key={c.iso}
+                    uiTransform={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      margin: { left: 4, right: 4, bottom: '3vw' }
+                    }}
+                  >
+                    <Button
+                      value=""
+                      uiTransform={{ width: FLAG_PICKER_BTN_W, height: 126 }}
+                      uiBackground={flagBackground(c.iso)}
+                      onMouseDown={() => selectCountry(c.iso)}
+                    />
+                    <Label
+                      value={c.name.length > 10 ? c.name.slice(0, 10) + '...' : c.name}
+                      fontSize={fs(20)}
+                      color={Color4.White()}
+                      textAlign="middle-center"
+                      uiTransform={{ width: FLAG_PICKER_BTN_W }}
+                    />
+                  </UiEntity>
+                ))}
+              </UiEntity>
+            ))}
+          </UiEntity>
           {/* Pagination */}
           <UiEntity
             uiTransform={{
