@@ -59,6 +59,16 @@ export function setupUi() {
   ReactEcsRenderer.setUiRenderer(RootUi, { virtualWidth: 1920, virtualHeight: 1080 })
 }
 
+/** Partida en curso (no waiting/lobby). */
+function isScoreboardMatchPhase(phase: string): boolean {
+  return (
+    phase === GameState.SelectingDirections ||
+    phase === GameState.ResolvingRound ||
+    phase === GameState.MatchEnd ||
+    phase === GameState.WinnerContinuePrompt
+  )
+}
+
 function mySide(s: typeof clientSnapshot, me: string): 'red' | 'blue' | null {
   if (!me) return null
   if (s.redAddr && me.toLowerCase() === s.redAddr.toLowerCase()) return 'red'
@@ -186,7 +196,11 @@ const ScoreboardLeaveButton = () => {
       value=""
       uiTransform={{ width: sz, height: sz, margin: { left: gap } }}
       uiBackground={scoreboardBadgeE7Background()}
-      onMouseDown={() => room.send('leaveMatch', {})}
+      onMouseDown={() => {
+        const snap = readPenaltySnapshot()
+        if (isScoreboardMatchPhase(snap.phase)) hideScoreboardAfterLeave = true
+        room.send('leaveMatch', {})
+      }}
     />
   )
 }
@@ -235,6 +249,8 @@ const LOCAL_WAIT_MIN_MS = 3000
 /** Ancla local del countdown cosmético de waiting. Arranca cuando la UI se vuelve visible y baja 30→0. */
 let waitDisplayAnchorMs = 0
 const WAIT_DISPLAY_TOTAL_S = 30
+/** Oculta scoreboard local tras abandonar; se resetea cuando no hay partida activa. */
+let hideScoreboardAfterLeave = false
 
 export function markSpotClickedLocally(): void {
   lastSpotClickAt = Date.now()
@@ -251,6 +267,7 @@ export function dismissWelcomeChooseSpot(): void {
 export function resetSplashUi(): void {
   splashDismissed = false
   welcomeChooseSpotDismissed = false
+  hideScoreboardAfterLeave = false
   hoverSplashStart = false
 }
 
@@ -462,9 +479,12 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   initLocalCountryFromSnapshot(myCountryInSnapshot)
   if (side) assignRandomCountryIfNeeded(myCountryInSnapshot)
 
-  const showScoreboard =
-    splashDismissed &&
-    (s.hasActiveMatch === 1 || (!!side && s.phase === GameState.WaitingOpponent))
+  if (s.phase === GameState.LobbyIdle || s.phase === GameState.WaitingOpponent) {
+    hideScoreboardAfterLeave = false
+  } else if (isScoreboardMatchPhase(s.phase) && !isScoreboardMatchPhase(prevPhase)) {
+    hideScoreboardAfterLeave = false
+  }
+  const showScoreboard = splashDismissed && isScoreboardMatchPhase(s.phase) && !hideScoreboardAfterLeave
 
   if (showCountryPicker && !prevPickerOpen) pickerPage = 0
   prevPickerOpen = showCountryPicker
