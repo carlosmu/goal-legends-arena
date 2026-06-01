@@ -135,6 +135,41 @@ export function waitingOpponentCancelButtonBackground() {
   return uiAtlasRangeHalfBackground('F3', 'F3', false)
 }
 
+/** Leaderboard title — top half of UI_atlas E2–F2. */
+export function leaderboardTitleBackground() {
+  return uiAtlasRangeHalfBackground('E2', 'F2', true)
+}
+
+/** Leaderboard panel frame: cell H1 split 3×3 (1–9, row-major). */
+export const LEADERBOARD_FRAME_CELL = 'H1'
+
+function uiAtlasCellNinthUvs(cell: string, ninth: number): number[] {
+  const full = uiAtlasRangeToUvs(cell, cell)
+  const u0 = full[0]
+  const v0 = full[1]
+  const u1 = full[4]
+  const v1 = full[5]
+  const col = (ninth - 1) % 3
+  const row = Math.floor((ninth - 1) / 3)
+  const du = (u1 - u0) / 3
+  const dv = (v1 - v0) / 3
+  const su0 = u0 + col * du
+  const su1 = u0 + (col + 1) * du
+  const sv1 = v1 - row * dv
+  const sv0 = v1 - (row + 1) * dv
+  return [su0, sv0, su0, sv1, su1, sv1, su1, sv0]
+}
+
+/** One of nine H1 slices: 1–3 top row, 4–6 middle, 7–9 bottom (stretch in layout). */
+export function leaderboardFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
+  return {
+    textureMode: 'stretch' as const,
+    texture: { src: UI_ATLAS_SRC },
+    uvs: uiAtlasCellNinthUvs(LEADERBOARD_FRAME_CELL, ninth),
+    color: Color4.White()
+  }
+}
+
 /** Width/height of the scoreboard bg sprite (A8–F8 = 6×1 cells). */
 export function scoreboardAtlasAspect(): number {
   const a = parseAtlasCell(SCOREBOARD_BG_FROM)

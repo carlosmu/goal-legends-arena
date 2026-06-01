@@ -41,7 +41,9 @@ import {
   waitingOpponentBackground,
   waitingOpponentTitleBackground,
   waitingOpponentPvEButtonBackground,
-  waitingOpponentCancelButtonBackground
+  waitingOpponentCancelButtonBackground,
+  leaderboardFrameSliceBackground,
+  leaderboardTitleBackground
 } from './uiAtlasStore'
 
 /**
@@ -169,6 +171,9 @@ const ScoreboardLeaveButton = () => {
     />
   )
 }
+
+const LEADERBOARD_PANEL_WIDTH_VW = 30
+const LEADERBOARD_PANEL_WIDTH_MOBILE_VW = 45
 
 // UI_choose.png is 1024x1024; each DIVE/SHOOT slice is half height => aspect 2:1 (w:h)
 // Pick sizes use isMobile() inside RootUi only — not at module load (Creator Hub loads as desktop).
@@ -451,6 +456,21 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const waitBtnW = Math.floor((isMobile() ? 220 : 180) * 1.2)
   const waitBtnH = Math.floor(waitBtnW / 2)
 
+  const lbPanelWidthPx = Math.floor(1920 * ((isMobile() ? LEADERBOARD_PANEL_WIDTH_MOBILE_VW : LEADERBOARD_PANEL_WIDTH_VW) / 100))
+  const lbSlicePx = isMobile() ? 34 : 28
+  const lbRowH = vw(2)
+  const lbFaceSz = vw(2)
+  const lbColGap = 5
+  const lbRankW = vw(2)
+  const lbFlagColW = vw(3)
+  const lbNameW = vw(10)
+  const lbWinsW = vw(5)
+  const lbWinsTextColor = Color4.create(1, 0.9, 0.3, 1)
+  const lbRowOddBg = { color: Color4.create(1, 0.9, 0.3, 0.03) }
+  const lbContentWidthPx = lbPanelWidthPx - 2 * (lbSlicePx + 10)
+  const lbTitleWidth = Math.floor(lbContentWidthPx * 0.6)
+  const lbTitleHeight = Math.floor(lbTitleWidth / 4)
+
   return (
     <UiEntity
       uiTransform={{
@@ -707,32 +727,111 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           pointerFilter: 'none'
         }}
       >
-        {/* Panel visible del leaderboard (fondo + texto) */}
+        {/* Panel visible del leaderboard (H1 nine-slice) */}
         <UiEntity
           uiTransform={{
             positionType: 'relative',
+            width: lbPanelWidthPx,
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            padding: isMobile() ? 42 : 38,
-            minWidth: '25%',
-            minHeight: '25%'
+            alignItems: 'stretch'
           }}
-          uiBackground={{ color: Color4.create(0.08, 0.38, 0.14, 0.70) }}
         >
+          <UiEntity
+            uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0 }, width: lbSlicePx, height: lbSlicePx }}
+            uiBackground={leaderboardFrameSliceBackground(1)}
+          />
+          <UiEntity
+            uiTransform={{ positionType: 'absolute', position: { top: 0, right: 0 }, width: lbSlicePx, height: lbSlicePx }}
+            uiBackground={leaderboardFrameSliceBackground(3)}
+          />
+          <UiEntity
+            uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: 0 }, width: lbSlicePx, height: lbSlicePx }}
+            uiBackground={leaderboardFrameSliceBackground(7)}
+          />
+          <UiEntity
+            uiTransform={{ positionType: 'absolute', position: { bottom: 0, right: 0 }, width: lbSlicePx, height: lbSlicePx }}
+            uiBackground={leaderboardFrameSliceBackground(9)}
+          />
+          <UiEntity
+            uiTransform={{
+              positionType: 'absolute',
+              position: { top: 0, left: lbSlicePx, right: lbSlicePx },
+              height: lbSlicePx
+            }}
+            uiBackground={leaderboardFrameSliceBackground(2)}
+          />
+          <UiEntity
+            uiTransform={{
+              positionType: 'absolute',
+              position: { bottom: 0, left: lbSlicePx, right: lbSlicePx },
+              height: lbSlicePx
+            }}
+            uiBackground={leaderboardFrameSliceBackground(8)}
+          />
+          <UiEntity
+            uiTransform={{
+              positionType: 'absolute',
+              position: { top: lbSlicePx, bottom: lbSlicePx, left: 0 },
+              width: lbSlicePx
+            }}
+            uiBackground={leaderboardFrameSliceBackground(4)}
+          />
+          <UiEntity
+            uiTransform={{
+              positionType: 'absolute',
+              position: { top: lbSlicePx, bottom: lbSlicePx, right: 0 },
+              width: lbSlicePx
+            }}
+            uiBackground={leaderboardFrameSliceBackground(6)}
+          />
+          <UiEntity
+            uiTransform={{
+              positionType: 'absolute',
+              position: { top: lbSlicePx, bottom: lbSlicePx, left: lbSlicePx, right: lbSlicePx }
+            }}
+            uiBackground={leaderboardFrameSliceBackground(5)}
+          />
           <Button
             value=""
             uiTransform={{
               positionType: 'absolute',
-              position: { top: -16, right: -16},
+              position: { top: -12, right: -12 },
               width: sbActionBtnSize(),
-              height: sbActionBtnSize(),
-              zIndex: 2
+              height: sbActionBtnSize()
             }}
             uiBackground={scoreboardBadgeE7Background()}
             onMouseDown={() => closeLeaderboard()}
           />
-          <Label value="Leaderboard" fontSize={fs(30)} color={Color4.White()} textAlign="middle-center" uiTransform={{ width: '100%', margin: { bottom: 8 } }} />
+          <UiEntity
+            uiTransform={{
+              positionType: 'relative',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              padding: {
+                top: lbSlicePx + 10,
+                bottom: lbSlicePx + 10,
+                left: lbSlicePx + 10,
+                right: lbSlicePx + 10
+              }
+            }}
+          >
+          <UiEntity
+            uiTransform={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              margin: { bottom: -20 }
+            }}
+          >
+            <UiEntity
+              uiTransform={{ width: lbTitleWidth, height: lbTitleHeight }}
+              uiBackground={leaderboardTitleBackground()}
+            />
+          </UiEntity>
           {lbRows.length === 0 ? (
             <Label
               value="(no wins yet)"
@@ -741,31 +840,39 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               uiTransform={{ margin: { top: 6 } }}
             />
           ) : (
-            <UiEntity uiTransform={{ display: 'flex', flexDirection: 'column' }}>
-              {/* Header row */}
+            <UiEntity uiTransform={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+              {/* Header row — mismas columnas que las filas de jugadores */}
               <UiEntity
                 uiTransform={{
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
-                  justifyContent: 'flex-start',
-                  height: vw(2),
-                  margin: { top: 4, bottom: 2 }
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  height: lbRowH,
+                  margin: { bottom: 2 }
                 }}
               >
-                <UiEntity uiTransform={{ flexGrow: 1 }} />
-                <Label
-                  value="wins"
-                  fontSize={fs(20)}
-                  color={Color4.create(1, 0.9, 0.3, 1)}
-                  textAlign="middle-center"
-                  uiTransform={{ width: vw(5) }}
-                />
+                <UiEntity
+                  uiTransform={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
+                >
+                  <UiEntity uiTransform={{ width: lbRankW, height: lbRowH, margin: { right: lbColGap } }} />
+                  <UiEntity uiTransform={{ width: lbFaceSz, height: lbRowH, margin: { right: lbColGap } }} />
+                  <UiEntity uiTransform={{ width: lbFlagColW, height: lbRowH, margin: { right: lbColGap } }} />
+                  <UiEntity uiTransform={{ width: lbNameW, height: lbRowH }} />
+                </UiEntity>
+                <UiEntity uiTransform={{ width: lbWinsW, height: lbRowH }}>
+                  <Label
+                    value="wins"
+                    fontSize={fs(20)}
+                    color={lbWinsTextColor}
+                    textAlign="middle-center"
+                    uiTransform={{ width: '100%', height: lbRowH }}
+                  />
+                </UiEntity>
               </UiEntity>
             {lbRows.map((row) => {
               const face = getLeaderboardFaceUrl(row.addr)
-              const rowH = vw(2)
-              const faceSz = vw(2)
               return (
                 <UiEntity
                   key={row.addr}
@@ -773,45 +880,42 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    height: rowH,
-                    margin: { top: row.rank === 1 ? 6 : 3 }
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    height: lbRowH,
+                    margin: { top: 3 }
                   }}
-                  uiBackground={row.rank % 2 === 1 ? { color: Color4.create(1, 1, 1, 0.05) } : { color: Color4.create(0, 0, 0, 0) }}
+                  uiBackground={row.rank % 2 === 1 ? lbRowOddBg : undefined}
                 >
-                  {/* Position */}
                   <UiEntity
-                    uiTransform={{ width: vw(2), height: rowH, margin: { right: 5 } }}
+                    uiTransform={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
                   >
-                    <Label value={`${row.rank}.`} fontSize={fs(20)} color={Color4.White()} textAlign="middle-right" uiTransform={{ width: '100%', height: rowH }} />
+                    <UiEntity
+                      uiTransform={{ width: lbRankW, height: lbRowH, margin: { right: lbColGap } }}
+                    >
+                      <Label value={`${row.rank}.`} fontSize={fs(20)} color={Color4.White()} textAlign="middle-right" uiTransform={{ width: '100%', height: lbRowH }} />
+                    </UiEntity>
+                    <UiEntity
+                      uiTransform={{ width: lbFaceSz, height: lbRowH, margin: { right: lbColGap } }}
+                      uiBackground={facePicBackground(face)}
+                    />
+                    <UiEntity
+                      uiTransform={{ width: lbFlagColW, height: lbRowH, margin: { right: lbColGap } }}
+                      uiBackground={flagBackgroundForPlayer(row.country, row.addr)}
+                    />
+                    <UiEntity uiTransform={{ width: lbNameW, height: lbRowH }}>
+                      <Label value={truncateName(row.name)} fontSize={fs(20)} color={Color4.create(0.9, 0.95, 1, 1)} textAlign="middle-left" uiTransform={{ width: '100%', height: lbRowH }} />
+                    </UiEntity>
                   </UiEntity>
-                  {/* Profile pic */}
-                  <UiEntity
-                    uiTransform={{ width: faceSz, height: faceSz, margin: { right: 5 } }}
-                    uiBackground={facePicBackground(face)}
-                  />
-                  {/* Flag */}
-                  <UiEntity
-                    uiTransform={{ width: vw(3), height: vw(2), margin: { right: 5 } }}
-                    uiBackground={flagBackgroundForPlayer(row.country, row.addr)}
-                  />
-                  {/* Username */}
-                  <UiEntity
-                    uiTransform={{ width: vw(10), height: rowH, margin: { right: 5 } }}
-                  >
-                    <Label value={truncateName(row.name)} fontSize={fs(20)} color={Color4.create(0.9, 0.95, 1, 1)} textAlign="middle-left" uiTransform={{ width: '100%', height: rowH }} />
-                  </UiEntity>
-                  {/* Wins */}
-                  <UiEntity
-                    uiTransform={{ width: vw(5), height: rowH }}
-                  >
-                    <Label value={`${row.wins}`} fontSize={fs(20)} color={Color4.create(1, 0.9, 0.3, 1)} textAlign="middle-center" uiTransform={{ width: '100%', height: rowH }} />
+                  <UiEntity uiTransform={{ width: lbWinsW, height: lbRowH }}>
+                    <Label value={`${row.wins}`} fontSize={fs(20)} color={lbWinsTextColor} textAlign="middle-center" uiTransform={{ width: '100%', height: lbRowH }} />
                   </UiEntity>
                 </UiEntity>
               )
             })}
             </UiEntity>
           )}
+          </UiEntity>
         </UiEntity>
       </UiEntity>
       }
