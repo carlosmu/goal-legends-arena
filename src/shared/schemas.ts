@@ -47,7 +47,7 @@ export const PenaltyMatchState = engine.defineComponent('gla:penalty-match-state
   winnerStreakAddr: Schemas.String,
   /** Deadline for winner to play again if they chose YES (ms); 0 if not waiting. */
   winnerStreakDeadlineMs: Schemas.Number,
-  /** JSON: { wins, sessionMax, names? } — names: addr → display name at last win */
+  /** JSON: { wins, names?, countries? } */
   leaderboardJson: Schemas.String,
   /** Updated by server for cooldown rule (≤2 players → no ban). */
   playersInScene: Schemas.Int,

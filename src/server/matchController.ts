@@ -30,9 +30,6 @@ type LeaderboardFile = {
 
 let stateEntity: Entity = 0 as Entity
 
-const sessionStreak = new Map<string, number>()
-const sessionMaxStreak = new Map<string, number>()
-
 let lbWins: Record<string, number> = {}
 let lbDisplayNames: Record<string, string> = {}
 let lbCountries: Record<string, string> = {}
@@ -51,9 +48,7 @@ function bumpEpoch() {
 }
 
 function packLeaderboardJson(): string {
-  const sessionMax: Record<string, number> = {}
-  for (const [k, v] of sessionMaxStreak.entries()) sessionMax[k] = v
-  return JSON.stringify({ wins: lbWins, sessionMax, names: lbDisplayNames, countries: lbCountries })
+  return JSON.stringify({ wins: lbWins, names: lbDisplayNames, countries: lbCountries })
 }
 
 function syncLbToState() {
@@ -340,10 +335,6 @@ function finishMatch(side: 'red' | 'blue') {
     m.spectatorWinnerName = winName
     m.spectatorChallengeActive = 1
     if (winAddr) {
-      if (loseAddr) sessionStreak.set(loseAddr, 0)
-      const cur = (sessionStreak.get(winAddr) || 0) + 1
-      sessionStreak.set(winAddr, cur)
-      sessionMaxStreak.set(winAddr, Math.max(sessionMaxStreak.get(winAddr) || 0, cur))
       lbWins[winAddr] = (lbWins[winAddr] || 0) + 1
       lbDisplayNames[winAddr] = (winName && winName.trim()) || displayNameFor(winAddr)
       const winCountry = (side === 'red' ? m.redCountry : m.blueCountry) || ''

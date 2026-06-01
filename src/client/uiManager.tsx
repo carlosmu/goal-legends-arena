@@ -128,8 +128,8 @@ const SB_FLAG_W = 112
 const SB_FLAG_H = 84
 const SB_PIC = 64
 
-/** F7 = country, H7 = leaderboard, E7 = leave match. */
-const ScoreboardLocalActions = () => {
+/** F7 = country, H7 = leaderboard (siempre visibles). E7 = leave match (solo en partida). */
+const ScoreboardGlobalActions = () => {
   const sz = sbActionBtnSize()
   const gap = sbPx(6)
   return (
@@ -149,17 +149,24 @@ const ScoreboardLocalActions = () => {
       />
       <Button
         value=""
-        uiTransform={{ width: sz, height: sz, margin: { right: gap } }}
+        uiTransform={{ width: sz, height: sz }}
         uiBackground={scoreboardBadgeH7Background()}
         onMouseDown={() => openLeaderboard()}
       />
-      <Button
-        value=""
-        uiTransform={{ width: sz, height: sz }}
-        uiBackground={scoreboardBadgeE7Background()}
-        onMouseDown={() => room.send('leaveMatch', {})}
-      />
     </UiEntity>
+  )
+}
+
+const ScoreboardLeaveButton = () => {
+  const sz = sbActionBtnSize()
+  const gap = sbPx(6)
+  return (
+    <Button
+      value=""
+      uiTransform={{ width: sz, height: sz, margin: { left: gap } }}
+      uiBackground={scoreboardBadgeE7Background()}
+      onMouseDown={() => room.send('leaveMatch', {})}
+    />
   )
 }
 
@@ -177,6 +184,10 @@ export function openLeaderboard(): void {
   prefetchLeaderboardFaces(
     getLeaderboardRows(readPenaltySnapshot().leaderboardJson, LEADERBOARD_TOP_N).map((r) => r.addr)
   )
+}
+
+export function closeLeaderboard(): void {
+  lbShowUntilMs = 0
 }
 
 let prevPhase = ''
@@ -657,8 +668,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       )}
       {/* ========== fin SCOREBOARD ========== */}
 
-      {/* ========== MATCH ACTIONS (F7 / H7 / E7) — 30% derecha ========== */}
-      {showScoreboard && side && (
+      {/* ========== GLOBAL ACTIONS (F7 / H7) + leave (E7) — esquina superior derecha ========== */}
+      {splashDismissed && (
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
@@ -672,13 +683,14 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'flex-start',
-            zIndex: 55
+            zIndex: 56
           }}
         >
-          <ScoreboardLocalActions />
+          <ScoreboardGlobalActions />
+          {!!side && <ScoreboardLeaveButton />}
         </UiEntity>
       )}
-      {/* ========== fin MATCH ACTIONS ========== */}
+      {/* ========== fin GLOBAL ACTIONS ========== */}
 
       {/* ========== UI: LEADERBOARD (centrado en pantalla) ========== */}
       {splashDismissed && showLeaderboard && <UiEntity
@@ -698,6 +710,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         {/* Panel visible del leaderboard (fondo + texto) */}
         <UiEntity
           uiTransform={{
+            positionType: 'relative',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -707,6 +720,18 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           }}
           uiBackground={{ color: Color4.create(0.08, 0.38, 0.14, 0.70) }}
         >
+          <Button
+            value=""
+            uiTransform={{
+              positionType: 'absolute',
+              position: { top: -16, right: -16},
+              width: sbActionBtnSize(),
+              height: sbActionBtnSize(),
+              zIndex: 2
+            }}
+            uiBackground={scoreboardBadgeE7Background()}
+            onMouseDown={() => closeLeaderboard()}
+          />
           <Label value="Leaderboard" fontSize={fs(30)} color={Color4.White()} textAlign="middle-center" uiTransform={{ width: '100%', margin: { bottom: 8 } }} />
           {lbRows.length === 0 ? (
             <Label
@@ -733,13 +758,6 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   value="wins"
                   fontSize={fs(20)}
                   color={Color4.create(1, 0.9, 0.3, 1)}
-                  textAlign="middle-center"
-                  uiTransform={{ width: vw(5), margin: { right: 4 } }}
-                />
-                <Label
-                  value="streaks"
-                  fontSize={fs(20)}
-                  color={Color4.create(0.5, 1, 0.6, 1)}
                   textAlign="middle-center"
                   uiTransform={{ width: vw(5) }}
                 />
@@ -785,15 +803,9 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   </UiEntity>
                   {/* Wins */}
                   <UiEntity
-                    uiTransform={{ width: vw(5), height: rowH, margin: { right: 4 } }}
-                  >
-                    <Label value={`${row.wins}`} fontSize={fs(20)} color={Color4.create(1, 0.9, 0.3, 1)} textAlign="middle-center" uiTransform={{ width: '100%', height: rowH }} />
-                  </UiEntity>
-                  {/* Streak */}
-                  <UiEntity
                     uiTransform={{ width: vw(5), height: rowH }}
                   >
-                    <Label value={`${row.streak}`} fontSize={fs(20)} color={Color4.create(0.5, 1, 0.6, 1)} textAlign="middle-center" uiTransform={{ width: '100%', height: rowH }} />
+                    <Label value={`${row.wins}`} fontSize={fs(20)} color={Color4.create(1, 0.9, 0.3, 1)} textAlign="middle-center" uiTransform={{ width: '100%', height: rowH }} />
                   </UiEntity>
                 </UiEntity>
               )
