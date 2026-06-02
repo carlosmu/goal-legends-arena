@@ -43,7 +43,7 @@ function ensureTrainingBot(): Entity {
     Transform.create(trainingBot, { scale: Vector3.Zero() })
     Animator.create(trainingBot, {
       states: [
-        { clip: 'K_intro_emote',  playing: false, loop: false },
+        { clip: 'K_intro_emote',  playing: false, loop: true  },
         { clip: 'K_shoot_emote',  playing: false, loop: false },
         { clip: 'GK_intro_emote', playing: false, loop: true  },
         { clip: 'GK_shoot_emote', playing: false, loop: false },
@@ -55,19 +55,12 @@ function ensureTrainingBot(): Entity {
 
 function playTrainingBotAnim(phase: string) {
   if (!trainingBot) return
-  const anim = Animator.getMutable(trainingBot)
   const isIntro = phase === GameState.SelectingDirections
-  if (trainingBotIsKicker) {
-    anim.states[0].playing = isIntro   // K_intro_emote
-    anim.states[1].playing = !isIntro  // K_shoot_emote
-    anim.states[2].playing = false
-    anim.states[3].playing = false
-  } else {
-    anim.states[0].playing = false
-    anim.states[1].playing = false
-    anim.states[2].playing = isIntro   // GK_intro_emote
-    anim.states[3].playing = !isIntro  // GK_shoot_emote
-  }
+  const clip = trainingBotIsKicker
+    ? (isIntro ? 'K_intro_emote'  : 'K_shoot_emote')
+    : (isIntro ? 'GK_intro_emote' : 'GK_shoot_emote')
+  Animator.stopAllAnimations(trainingBot, true)
+  Animator.playSingleAnimation(trainingBot, clip, true)
 }
 
 function showTrainingBot(pos: Vector3, rot: { x: number; y: number; z: number; w: number }) {
