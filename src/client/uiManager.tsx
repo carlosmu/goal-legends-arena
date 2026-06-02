@@ -1015,14 +1015,14 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           uiBackground={countryPickerOverlayBackground()}
         >
           <Label
-            value="Welcome to Goal Legends Arena"
+            value="Select your flag"
             fontSize={fs(50)}
             color={Color4.White()}
             textAlign="middle-center"
             uiTransform={{ margin: { bottom: 4 } }}
           />
           <Label
-            value="World Cup Edition"
+            value="World Cup 2026 Edition"
             fontSize={fs(35)}
             color={Color4.create(1, 0.85, 0.1, 1)}
             textAlign="middle-center"
@@ -1047,7 +1047,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               }}
             >
               <Label
-                value="Select your country"
+                value="48 teams"
                 fontSize={fs(30)}
                 color={Color4.White()}
                 textAlign="middle-left"
@@ -1059,6 +1059,14 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 textAlign="middle-right"
               />
             </UiEntity>
+            <UiEntity
+              uiTransform={{
+                width: '100%',
+                height: 1,
+                margin: { bottom: 16 }
+              }}
+              uiBackground={{ color: Color4.create(1, 0.85, 0.1, 1) }}
+            />
             {/* Flag grid: 6 per row, 2 rows */}
             {Array.from({ length: FLAG_ROWS }, (_, row) => (
               <UiEntity
