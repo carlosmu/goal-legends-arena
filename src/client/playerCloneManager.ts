@@ -1,4 +1,4 @@
-import { engine, Transform, Entity, PlayerIdentityData, GltfContainer, Animator, InputModifier } from '@dcl/sdk/ecs'
+import { engine, Transform, Entity, PlayerIdentityData, GltfContainer, Animator, InputModifier, executeTask } from '@dcl/sdk/ecs'
 import { Vector3 } from '@dcl/sdk/math'
 import { movePlayerTo, triggerSceneEmote } from '~system/RestrictedActions'
 import { clientSnapshot } from './gameStore'
@@ -28,6 +28,10 @@ let trainingBot: Entity | null = null
 let prevRoleKey         = ''
 let prevPhase           = ''
 let trainingBotIsKicker = false
+let repositionPromise: Promise<void> = Promise.resolve()
+let localEmoteToken     = 0
+
+const EMOTE_AFTER_MOVE_MS = 150
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -43,7 +47,7 @@ function ensureTrainingBot(): Entity {
     Transform.create(trainingBot, { scale: Vector3.Zero() })
     Animator.create(trainingBot, {
       states: [
-        { clip: 'K_intro_emote',  playing: false, loop: true  },
+        { clip: 'K_intro_emote',  playing: false, loop: false },
         { clip: 'K_shoot_emote',  playing: false, loop: false },
         { clip: 'GK_intro_emote', playing: false, loop: true  },
         { clip: 'GK_shoot_emote', playing: false, loop: false },
@@ -88,6 +92,18 @@ function unlockLocomotion() {
   })
 }
 
+function shouldLoopSceneEmote(src: string, phase: string): boolean {
+  return phase === GameState.SelectingDirections && src.endsWith('GK_intro_emote.glb')
+}
+
+function playSceneEmote(src: string, loop: boolean): void {
+  if (loop) {
+    void triggerSceneEmote({ src, loop: true })
+    return
+  }
+  void triggerSceneEmote({ src, loop: false })
+}
+
 function triggerLocalEmote(phase: string) {
   const entry = EMOTES[phase as keyof typeof EMOTES]
   if (!entry) return
@@ -97,9 +113,16 @@ function triggerLocalEmote(phase: string) {
   const localAddr   = localPlayerAddr()
   const kickerAddr  = (kickerIsRed ? s.redAddr : s.blueAddr).toLowerCase()
   const isKicker    = localAddr === kickerAddr
+  const src         = isKicker ? entry.kicker : entry.gk
+  const loop        = shouldLoopSceneEmote(src, phase)
+  const token       = ++localEmoteToken
 
-  const loop = phase === GameState.SelectingDirections
-  void triggerSceneEmote({ src: isKicker ? entry.kicker : entry.gk, loop })
+  executeTask(async () => {
+    await repositionPromise
+    await new Promise<void>((resolve) => setTimeout(() => resolve(), EMOTE_AFTER_MOVE_MS))
+    if (token !== localEmoteToken) return
+    playSceneEmote(src, loop)
+  })
 }
 
 function repositionPlayers() {
@@ -116,11 +139,9 @@ function repositionPlayers() {
 
   // ── Move local player and freeze locomotion ────────────────────────────────
   lockLocomotion()
-  if (localIsKicker) {
-    void movePlayerTo({ newRelativePosition: KICKER_POS, cameraTarget: GK_POS })
-  } else {
-    void movePlayerTo({ newRelativePosition: GK_POS, cameraTarget: KICKER_POS })
-  }
+  repositionPromise = localIsKicker
+    ? movePlayerTo({ newRelativePosition: KICKER_POS, cameraTarget: GK_POS }).then(() => {})
+    : movePlayerTo({ newRelativePosition: GK_POS, cameraTarget: KICKER_POS }).then(() => {})
 }
 
 function manageTrainingBot() {
@@ -164,6 +185,8 @@ export function initPlayerCloneSystem(): void {
         hideTrainingBot()
         unlockLocomotion()
         prevPhase = ''
+        localEmoteToken++
+        repositionPromise = Promise.resolve()
       }
     }
 
