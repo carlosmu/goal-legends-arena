@@ -522,6 +522,9 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
 
   const lbPanelWidthPx = Math.floor(1920 * ((isMobile() ? LEADERBOARD_PANEL_WIDTH_MOBILE_VW : LEADERBOARD_PANEL_WIDTH_VW) / 100))
   const lbSlicePx = isMobile() ? 34 : 28
+  /** 1px overlap between H1 ninths to hide sub-pixel seams. */
+  const lbSliceOverlap = 1
+  const lbInset = lbSlicePx - lbSliceOverlap
   const lbRowH = vw(2)
   const lbFaceSz = vw(2)
   const lbColGap = 5
@@ -791,7 +794,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           pointerFilter: 'none'
         }}
       >
-        {/* Panel visible del leaderboard (H1 nine-slice) */}
+        {/* Panel visible del leaderboard (H1 → 9 slices, UI_atlas 8×8) */}
         <UiEntity
           uiTransform={{
             positionType: 'relative',
@@ -801,6 +804,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             alignItems: 'stretch'
           }}
         >
+          <UiEntity
+            uiTransform={{
+              positionType: 'absolute',
+              position: { top: 0, left: 0, right: 0, bottom: 0 },
+              zIndex: 0
+            }}
+          >
           <UiEntity
             uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0 }, width: lbSlicePx, height: lbSlicePx }}
             uiBackground={leaderboardFrameSliceBackground(1)}
@@ -820,7 +830,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           <UiEntity
             uiTransform={{
               positionType: 'absolute',
-              position: { top: 0, left: lbSlicePx, right: lbSlicePx },
+              position: { top: 0, left: lbInset, right: lbInset },
               height: lbSlicePx
             }}
             uiBackground={leaderboardFrameSliceBackground(2)}
@@ -828,7 +838,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           <UiEntity
             uiTransform={{
               positionType: 'absolute',
-              position: { bottom: 0, left: lbSlicePx, right: lbSlicePx },
+              position: { bottom: 0, left: lbInset, right: lbInset },
               height: lbSlicePx
             }}
             uiBackground={leaderboardFrameSliceBackground(8)}
@@ -836,7 +846,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           <UiEntity
             uiTransform={{
               positionType: 'absolute',
-              position: { top: lbSlicePx, bottom: lbSlicePx, left: 0 },
+              position: { top: lbInset, bottom: lbInset, left: 0 },
               width: lbSlicePx
             }}
             uiBackground={leaderboardFrameSliceBackground(4)}
@@ -844,7 +854,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           <UiEntity
             uiTransform={{
               positionType: 'absolute',
-              position: { top: lbSlicePx, bottom: lbSlicePx, right: 0 },
+              position: { top: lbInset, bottom: lbInset, right: 0 },
               width: lbSlicePx
             }}
             uiBackground={leaderboardFrameSliceBackground(6)}
@@ -852,17 +862,19 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           <UiEntity
             uiTransform={{
               positionType: 'absolute',
-              position: { top: lbSlicePx, bottom: lbSlicePx, left: lbSlicePx, right: lbSlicePx }
+              position: { top: lbInset, bottom: lbInset, left: lbInset, right: lbInset }
             }}
             uiBackground={leaderboardFrameSliceBackground(5)}
           />
+          </UiEntity>
           <Button
             value=""
             uiTransform={{
               positionType: 'absolute',
               position: { top: -12, right: -12 },
               width: sbActionBtnSize(),
-              height: sbActionBtnSize()
+              height: sbActionBtnSize(),
+              zIndex: 2
             }}
             uiBackground={scoreboardBadgeE7Background()}
             onMouseDown={() => closeLeaderboard()}
@@ -879,7 +891,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 bottom: lbSlicePx + 10,
                 left: lbSlicePx + 10,
                 right: lbSlicePx + 10
-              }
+              },
+              zIndex: 1
             }}
           >
           <UiEntity

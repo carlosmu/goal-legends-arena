@@ -147,10 +147,15 @@ export function spotBillboardPlaneUvs(): number[] {
   return uiAtlasRangeToUvs(SPOT_BILLBOARD_CELL, SPOT_BILLBOARD_CELL)
 }
 
-/** Leaderboard panel frame: cell H1 split 3×3 (1–9, row-major). */
+/** Leaderboard panel frame: cell H1 of 8×8 UI_atlas, split 3×3 (1–9 row-major). */
 export const LEADERBOARD_FRAME_CELL = 'H1'
 
-function uiAtlasCellNinthUvs(cell: string, ninth: number): number[] {
+const UI_ATLAS_PX = 1024
+const HALF_TEXEL_U = 0.5 / UI_ATLAS_PX
+const HALF_TEXEL_V = 0.5 / UI_ATLAS_PX
+
+/** UVs for one ninth of an atlas cell (H1 → 9 tiles). Insets half-texel on internal edges. */
+function uiAtlasCellNinthUvs(cell: string, ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9): number[] {
   const full = uiAtlasRangeToUvs(cell, cell)
   const u0 = full[0]
   const v0 = full[1]
@@ -160,14 +165,18 @@ function uiAtlasCellNinthUvs(cell: string, ninth: number): number[] {
   const row = Math.floor((ninth - 1) / 3)
   const du = (u1 - u0) / 3
   const dv = (v1 - v0) / 3
-  const su0 = u0 + col * du
-  const su1 = u0 + (col + 1) * du
-  const sv1 = v1 - row * dv
-  const sv0 = v1 - (row + 1) * dv
+  let su0 = u0 + col * du
+  let su1 = u0 + (col + 1) * du
+  let sv1 = v1 - row * dv
+  let sv0 = v1 - (row + 1) * dv
+  if (col > 0) su0 += HALF_TEXEL_U
+  if (col < 2) su1 -= HALF_TEXEL_U
+  if (row > 0) sv1 -= HALF_TEXEL_V
+  if (row < 2) sv0 += HALF_TEXEL_V
   return [su0, sv0, su0, sv1, su1, sv1, su1, sv0]
 }
 
-/** One of nine H1 slices: 1–3 top row, 4–6 middle, 7–9 bottom (stretch in layout). */
+/** One of nine H1 slices: 1–3 top, 4–6 middle, 7–9 bottom. */
 export function leaderboardFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
   return {
     textureMode: 'stretch' as const,
