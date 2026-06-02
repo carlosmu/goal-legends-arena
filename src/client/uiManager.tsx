@@ -210,8 +210,8 @@ const LEADERBOARD_PANEL_WIDTH_MOBILE_VW = 45
 
 // UI_choose.png is 1024x1024; each DIVE/SHOOT slice is half height => aspect 2:1 (w:h)
 // Pick sizes use isMobile() inside RootUi only — not at module load (Creator Hub loads as desktop).
-const PICK_BTN_ALPHA = 0.05
-const PICK_BTN_ALPHA_HOVER = 0.3
+const PICK_BTN_TINT_IDLE = 0.72
+const PICK_BTN_TINT_HOVER = 1
 
 let lbShowUntilMs = 0
 const LEADERBOARD_TOP_N = 10
@@ -421,7 +421,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
           uiBackground={{
             ...pickDirectionLeftBackground(),
-            color: Color4.create(1, 1, 1, hoverPickL ? 1 : 0.92)
+            color: Color4.create(1, 1, 1, hoverPickL ? PICK_BTN_TINT_HOVER : PICK_BTN_TINT_IDLE)
           }}
           onMouseDown={() => room.send('submitDirection', { dir: 'L' })}
           onMouseEnter={() => { hoverPickL = true }}
@@ -432,7 +432,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
           uiBackground={{
             ...pickDirectionCenterBackground(),
-            color: Color4.create(1, 1, 1, hoverPickC ? 1 : 0.92)
+            color: Color4.create(1, 1, 1, hoverPickC ? PICK_BTN_TINT_HOVER : PICK_BTN_TINT_IDLE)
           }}
           onMouseDown={() => room.send('submitDirection', { dir: 'C' })}
           onMouseEnter={() => { hoverPickC = true }}
@@ -443,7 +443,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
           uiBackground={{
             ...pickDirectionRightBackground(),
-            color: Color4.create(1, 1, 1, hoverPickR ? 1 : 0.92)
+            color: Color4.create(1, 1, 1, hoverPickR ? PICK_BTN_TINT_HOVER : PICK_BTN_TINT_IDLE)
           }}
           onMouseDown={() => room.send('submitDirection', { dir: 'R' })}
           onMouseEnter={() => { hoverPickR = true }}
