@@ -251,6 +251,8 @@ let waitDisplayAnchorMs = 0
 const WAIT_DISPLAY_TOTAL_S = 30
 /** Oculta scoreboard local tras abandonar; se resetea cuando no hay partida activa. */
 let hideScoreboardAfterLeave = false
+/** Panel de debug (state, sync, timeout…) abierto con el botón "i". */
+let debugInfoOpen = false
 
 export function markSpotClickedLocally(): void {
   lastSpotClickAt = Date.now()
@@ -268,6 +270,7 @@ export function resetSplashUi(): void {
   splashDismissed = false
   welcomeChooseSpotDismissed = false
   hideScoreboardAfterLeave = false
+  debugInfoOpen = false
   hoverSplashStart = false
 }
 
@@ -1563,53 +1566,64 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       )}
       {/* ========== fin SPLASH ========== */}
 
-      {splashDismissed && !isMobile() && <UiEntity
-        uiTransform={{
-          positionType: 'absolute',
-          position: { bottom: 0, left: 0, right: 0 },
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'flex-end'
-        }}
-      >
+      {splashDismissed && (
         <UiEntity
           uiTransform={{
+            positionType: 'absolute',
+            position: { bottom: 12, right: 12 },
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'flex-start',
-            padding: { top: 8, bottom: 8, left: 12, right: 12 },
-            maxWidth: 720,
-            minHeight: 180
+            alignItems: 'flex-end',
+            zIndex: 40
           }}
-          uiBackground={{ color: Color4.create(0, 0, 0, 1) }}
         >
-          <Label
-            value={`state: ${s.phase} | sync: ${isStateSyncronized() ? 'ok' : 'no'} | match: ${penaltyStateEntityReady() ? 'ok' : '—'} | mode: ${s.mode} | active: ${s.hasActiveMatch}`}
-            fontSize={fs(14)}
-            color={Color4.create(0.75, 1, 0.8, 1)}
-          />
-          <Label
-            value={`side: ${side ?? '(none)'} | red: ${s.redName || '—'} | blue: ${s.blueName || '—'}`}
-            fontSize={fs(14)}
-            color={Color4.create(0.85, 0.9, 1, 1)}
-            uiTransform={{ margin: { top: 4 } }}
-          />
-          <Label
-            value={'Timeout in: ' + (typeof s.inactivityDeadlineMs === 'number' && s.inactivityDeadlineMs > 0 ? Math.max(0, Math.ceil((s.inactivityDeadlineMs - serverApproxNow) / 1000)) + 's' : 'off') + ` | server tick: ${s.serverTickCounter}`}
-            fontSize={fs(14)}
-            color={Color4.create(1, 0.7, 0.7, 1)}
-            uiTransform={{ margin: { top: 4 } }}
-          />
-          <Label
-            value={`last server event: ${resolveEventAddrs(s.lastServerEvent, s.redAddr, s.redName, s.blueAddr, s.blueName) || '(none)'}`}
-            fontSize={fs(14)}
-            color={Color4.create(1, 0.9, 0.6, 1)}
-            uiTransform={{ margin: { top: 4 } }}
+          {debugInfoOpen && (
+            <UiEntity
+              uiTransform={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                padding: { top: 8, bottom: 8, left: 12, right: 12 },
+                maxWidth: isMobile() ? 340 : 720,
+                margin: { bottom: 8 }
+              }}
+              uiBackground={{ color: Color4.create(0, 0, 0, 0.92) }}
+            >
+              <Label
+                value={`state: ${s.phase} | sync: ${isStateSyncronized() ? 'ok' : 'no'} | match: ${penaltyStateEntityReady() ? 'ok' : '—'} | mode: ${s.mode} | active: ${s.hasActiveMatch}`}
+                fontSize={fs(14)}
+                color={Color4.create(0.75, 1, 0.8, 1)}
+              />
+              <Label
+                value={`side: ${side ?? '(none)'} | red: ${s.redName || '—'} | blue: ${s.blueName || '—'}`}
+                fontSize={fs(14)}
+                color={Color4.create(0.85, 0.9, 1, 1)}
+                uiTransform={{ margin: { top: 4 } }}
+              />
+              <Label
+                value={'Timeout in: ' + (typeof s.inactivityDeadlineMs === 'number' && s.inactivityDeadlineMs > 0 ? Math.max(0, Math.ceil((s.inactivityDeadlineMs - serverApproxNow) / 1000)) + 's' : 'off') + ` | server tick: ${s.serverTickCounter}`}
+                fontSize={fs(14)}
+                color={Color4.create(1, 0.7, 0.7, 1)}
+                uiTransform={{ margin: { top: 4 } }}
+              />
+              <Label
+                value={`last server event: ${resolveEventAddrs(s.lastServerEvent, s.redAddr, s.redName, s.blueAddr, s.blueName) || '(none)'}`}
+                fontSize={fs(14)}
+                color={Color4.create(1, 0.9, 0.6, 1)}
+                uiTransform={{ margin: { top: 4 } }}
+              />
+            </UiEntity>
+          )}
+          <Button
+            value="i"
+            fontSize={fs(isMobile() ? 18 : 16)}
+            color={Color4.White()}
+            uiTransform={{ width: isMobile() ? 36 : 32, height: isMobile() ? 36 : 32 }}
+            uiBackground={{ color: Color4.create(0.1, 0.15, 0.2, 0.9) }}
+            onMouseDown={() => { debugInfoOpen = !debugInfoOpen }}
           />
         </UiEntity>
-      </UiEntity>}
+      )}
     </UiEntity>
   )
 }
