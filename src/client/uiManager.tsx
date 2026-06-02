@@ -17,6 +17,7 @@ import {
   isPickerOpen,
   isCountryConfirmVisible,
   openPicker,
+  closePicker,
   selectCountryFromPicker,
   flagBackground,
   flagBackgroundForPlayer,
@@ -46,7 +47,8 @@ import {
   waitingOpponentPvEButtonBackground,
   waitingOpponentCancelButtonBackground,
   leaderboardFrameSliceBackground,
-  leaderboardTitleBackground
+  leaderboardTitleBackground,
+  countryPickerFrameSliceBackground
 } from './uiAtlasStore'
 
 /**
@@ -497,6 +499,10 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const FLAG_PICKER_BTN_H = 126
   const FLAG_PICKER_CELL_MARGIN_X = 8
   const pickerGridWidthPx = FLAGS_PER_ROW * (FLAG_PICKER_BTN_W + FLAG_PICKER_CELL_MARGIN_X)
+  const cpSlicePx = isMobile() ? 34 : 28
+  const cpSliceOverlap = 1
+  const cpInset = cpSlicePx - cpSliceOverlap
+  const cpPanelWidthPx = pickerGridWidthPx + 2 * (cpSlicePx + 16)
   const countryConfirmFlagW = FLAG_PICKER_BTN_W * 2
   const countryConfirmFlagH = FLAG_PICKER_BTN_H * 2
   const countryConfirmCountry = showCountryConfirm ? getCountryByIso(getLocalCountry()) : undefined
@@ -1014,6 +1020,106 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           }}
           uiBackground={countryPickerOverlayBackground()}
         >
+          <UiEntity
+            uiTransform={{
+              positionType: 'relative',
+              width: cpPanelWidthPx,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'stretch'
+            }}
+          >
+            <UiEntity
+              uiTransform={{
+                positionType: 'absolute',
+                position: { top: 0, left: 0, right: 0, bottom: 0 },
+                zIndex: 0
+              }}
+            >
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0 }, width: cpSlicePx, height: cpSlicePx }}
+                uiBackground={countryPickerFrameSliceBackground(1)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { top: 0, right: 0 }, width: cpSlicePx, height: cpSlicePx }}
+                uiBackground={countryPickerFrameSliceBackground(3)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: 0 }, width: cpSlicePx, height: cpSlicePx }}
+                uiBackground={countryPickerFrameSliceBackground(7)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { bottom: 0, right: 0 }, width: cpSlicePx, height: cpSlicePx }}
+                uiBackground={countryPickerFrameSliceBackground(9)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: 0, left: cpInset, right: cpInset },
+                  height: cpSlicePx
+                }}
+                uiBackground={countryPickerFrameSliceBackground(2)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { bottom: 0, left: cpInset, right: cpInset },
+                  height: cpSlicePx
+                }}
+                uiBackground={countryPickerFrameSliceBackground(8)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: cpInset, bottom: cpInset, left: 0 },
+                  width: cpSlicePx
+                }}
+                uiBackground={countryPickerFrameSliceBackground(4)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: cpInset, bottom: cpInset, right: 0 },
+                  width: cpSlicePx
+                }}
+                uiBackground={countryPickerFrameSliceBackground(6)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: cpInset, bottom: cpInset, left: cpInset, right: cpInset }
+                }}
+                uiBackground={countryPickerFrameSliceBackground(5)}
+              />
+            </UiEntity>
+            <Button
+              value=""
+              uiTransform={{
+                positionType: 'absolute',
+                position: { top: -12, right: -12 },
+                width: sbActionBtnSize(),
+                height: sbActionBtnSize(),
+                zIndex: 2
+              }}
+              uiBackground={scoreboardBadgeE7Background()}
+              onMouseDown={() => closePicker()}
+            />
+            <UiEntity
+              uiTransform={{
+                positionType: 'relative',
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: {
+                  top: cpSlicePx + 16,
+                  bottom: cpSlicePx + 16,
+                  left: cpSlicePx + 16,
+                  right: cpSlicePx + 16
+                },
+                zIndex: 1
+              }}
+            >
           <Label
             value="Select your flag"
             fontSize={fs(50)}
@@ -1022,7 +1128,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             uiTransform={{ margin: { bottom: 4 } }}
           />
           <Label
-            value="World Cup 2026 Edition"
+            value="World Cup 2026"
             fontSize={fs(35)}
             color={Color4.create(1, 0.85, 0.1, 1)}
             textAlign="middle-center"
@@ -1065,7 +1171,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 height: 1,
                 margin: { bottom: 16 }
               }}
-              uiBackground={{ color: Color4.create(1, 0.85, 0.1, 1) }}
+              uiBackground={{ color: Color4.create(0.898, 0.333, 0.98, 1) }}
             />
             {/* Flag grid: 6 per row, 2 rows */}
             {Array.from({ length: FLAG_ROWS }, (_, row) => (
@@ -1143,6 +1249,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 onMouseDown={() => { pickerPage++ }}
               />
             )}
+          </UiEntity>
+            </UiEntity>
           </UiEntity>
         </UiEntity>
       )}

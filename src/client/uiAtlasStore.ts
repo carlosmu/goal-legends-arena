@@ -154,7 +154,7 @@ const UI_ATLAS_PX = 1024
 const HALF_TEXEL_U = 0.5 / UI_ATLAS_PX
 const HALF_TEXEL_V = 0.5 / UI_ATLAS_PX
 
-/** UVs for one ninth of an atlas cell (H1 → 9 tiles). Insets half-texel on internal edges. */
+/** UVs for one ninth of an 8×8 atlas cell (3×3 grid). Insets half-texel on internal edges. */
 function uiAtlasCellNinthUvs(cell: string, ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9): number[] {
   const full = uiAtlasRangeToUvs(cell, cell)
   const u0 = full[0]
@@ -176,14 +176,28 @@ function uiAtlasCellNinthUvs(cell: string, ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 
   return [su0, sv0, su0, sv1, su1, sv1, su1, sv0]
 }
 
-/** One of nine H1 slices: 1–3 top, 4–6 middle, 7–9 bottom. */
-export function leaderboardFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
+/** One of nine slices from any atlas cell: 1–3 top, 4–6 middle, 7–9 bottom. */
+export function atlasCellFrameSliceBackground(
+  cell: string,
+  ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+) {
   return {
     textureMode: 'stretch' as const,
     texture: { src: UI_ATLAS_SRC },
-    uvs: uiAtlasCellNinthUvs(LEADERBOARD_FRAME_CELL, ninth),
+    uvs: uiAtlasCellNinthUvs(cell, ninth),
     color: Color4.White()
   }
+}
+
+export function leaderboardFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
+  return atlasCellFrameSliceBackground(LEADERBOARD_FRAME_CELL, ninth)
+}
+
+/** Country picker panel frame: cell B4 of 8×8 UI_atlas. */
+export const COUNTRY_PICKER_FRAME_CELL = 'B4'
+
+export function countryPickerFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
+  return atlasCellFrameSliceBackground(COUNTRY_PICKER_FRAME_CELL, ninth)
 }
 
 /** Width/height of the scoreboard bg sprite (A8–F8 = 6×1 cells). */
