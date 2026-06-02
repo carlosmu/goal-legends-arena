@@ -503,8 +503,12 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const cpSliceOverlap = 1
   const cpInset = cpSlicePx - cpSliceOverlap
   const cpPanelWidthPx = pickerGridWidthPx + 2 * (cpSlicePx + 16)
+  const PICKER_PAGE_BTN_W = 140
+  const PICKER_PAGE_BTN_H = 88
+  const PICKER_ACCENT = Color4.create(0.898, 0.333, 0.98, 1)
   const countryConfirmFlagW = FLAG_PICKER_BTN_W * 2
   const countryConfirmFlagH = FLAG_PICKER_BTN_H * 2
+  const cfPanelWidthPx = countryConfirmFlagW + 2 * (cpSlicePx + 40)
   const countryConfirmCountry = showCountryConfirm ? getCountryByIso(getLocalCountry()) : undefined
   const PAGE_SIZE = FLAGS_PER_ROW * FLAG_ROWS
   const TOTAL_PAGES = Math.ceil(COUNTRIES.length / PAGE_SIZE)
@@ -1171,7 +1175,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 height: 1,
                 margin: { bottom: 16 }
               }}
-              uiBackground={{ color: Color4.create(0.898, 0.333, 0.98, 1) }}
+              uiBackground={{ color: PICKER_ACCENT }}
             />
             {/* Flag grid: 6 per row, 2 rows */}
             {Array.from({ length: FLAG_ROWS }, (_, row) => (
@@ -1222,32 +1226,36 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               margin: { top: 16 }
             }}
           >
-            {pickerPage > 0 && (
+            {pickerPage > 0 ? (
               <Button
                 value="← Prev"
                 fontSize={fs(20)}
                 color={Color4.White()}
-                uiTransform={{ width: 140, height: 44, margin: { right: 16 } }}
-                uiBackground={{ color: Color4.create(0.2, 0.3, 0.5, 1) }}
+                uiTransform={{ width: PICKER_PAGE_BTN_W, height: PICKER_PAGE_BTN_H }}
+                uiBackground={{ color: PICKER_ACCENT }}
                 onMouseDown={() => { pickerPage-- }}
               />
+            ) : (
+              <UiEntity uiTransform={{ width: PICKER_PAGE_BTN_W, height: PICKER_PAGE_BTN_H }} />
             )}
             <Label
               value={`${pickerPage + 1} / ${TOTAL_PAGES}`}
               fontSize={fs(20)}
-              color={Color4.create(0.8, 0.85, 1, 1)}
+              color={Color4.White()}
               textAlign="middle-center"
-              uiTransform={{ width: 60 }}
+              uiTransform={{ width: PICKER_PAGE_BTN_W, height: PICKER_PAGE_BTN_H }}
             />
-            {pickerPage < TOTAL_PAGES - 1 && (
+            {pickerPage < TOTAL_PAGES - 1 ? (
               <Button
                 value="Next →"
                 fontSize={fs(20)}
                 color={Color4.White()}
-                uiTransform={{ width: 140, height: 44, margin: { left: 16 } }}
-                uiBackground={{ color: Color4.create(0.2, 0.3, 0.5, 1) }}
+                uiTransform={{ width: PICKER_PAGE_BTN_W, height: PICKER_PAGE_BTN_H }}
+                uiBackground={{ color: PICKER_ACCENT }}
                 onMouseDown={() => { pickerPage++ }}
               />
+            ) : (
+              <UiEntity uiTransform={{ width: PICKER_PAGE_BTN_W, height: PICKER_PAGE_BTN_H }} />
             )}
           </UiEntity>
             </UiEntity>
@@ -1272,6 +1280,94 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           uiBackground={welcomeScreenOverlayBackground()}
         >
           <UiEntity
+            uiTransform={{
+              positionType: 'relative',
+              width: cfPanelWidthPx,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'stretch'
+            }}
+          >
+            <UiEntity
+              uiTransform={{
+                positionType: 'absolute',
+                position: { top: 0, left: 0, right: 0, bottom: 0 },
+                zIndex: 0
+              }}
+            >
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0 }, width: cpSlicePx, height: cpSlicePx }}
+                uiBackground={countryPickerFrameSliceBackground(1)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { top: 0, right: 0 }, width: cpSlicePx, height: cpSlicePx }}
+                uiBackground={countryPickerFrameSliceBackground(3)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: 0 }, width: cpSlicePx, height: cpSlicePx }}
+                uiBackground={countryPickerFrameSliceBackground(7)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { bottom: 0, right: 0 }, width: cpSlicePx, height: cpSlicePx }}
+                uiBackground={countryPickerFrameSliceBackground(9)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: 0, left: cpInset, right: cpInset },
+                  height: cpSlicePx
+                }}
+                uiBackground={countryPickerFrameSliceBackground(2)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { bottom: 0, left: cpInset, right: cpInset },
+                  height: cpSlicePx
+                }}
+                uiBackground={countryPickerFrameSliceBackground(8)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: cpInset, bottom: cpInset, left: 0 },
+                  width: cpSlicePx
+                }}
+                uiBackground={countryPickerFrameSliceBackground(4)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: cpInset, bottom: cpInset, right: 0 },
+                  width: cpSlicePx
+                }}
+                uiBackground={countryPickerFrameSliceBackground(6)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: cpInset, bottom: cpInset, left: cpInset, right: cpInset }
+                }}
+                uiBackground={countryPickerFrameSliceBackground(5)}
+              />
+            </UiEntity>
+            <UiEntity
+              uiTransform={{
+                positionType: 'relative',
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: {
+                  top: cpSlicePx + 24,
+                  bottom: cpSlicePx + 24,
+                  left: cpSlicePx + 24,
+                  right: cpSlicePx + 24
+                },
+                zIndex: 1
+              }}
+            >
+          <UiEntity
             uiTransform={{ width: countryConfirmFlagW, height: countryConfirmFlagH, margin: { bottom: 10 } }}
             uiBackground={flagBackground(getLocalCountry())}
           />
@@ -1288,6 +1384,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             color={Color4.White()}
             textAlign="middle-center"
           />
+            </UiEntity>
+          </UiEntity>
         </UiEntity>
       )}
 
