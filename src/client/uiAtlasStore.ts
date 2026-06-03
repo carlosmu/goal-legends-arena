@@ -200,6 +200,21 @@ export function countryPickerFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 |
   return atlasCellFrameSliceBackground(COUNTRY_PICKER_FRAME_CELL, ninth)
 }
 
+/** Leave match dialog title — top half of UI_atlas C4–D4. */
+export function leaveMatchTitleBackground() {
+  return uiAtlasRangeHalfBackground('C4', 'D4', true)
+}
+
+/** Leave match: No — bottom half of UI_atlas C4. */
+export function leaveMatchNoButtonBackground() {
+  return uiAtlasRangeHalfBackground('C4', 'C4', false)
+}
+
+/** Leave match: Yes — bottom half of UI_atlas D4. */
+export function leaveMatchYesButtonBackground() {
+  return uiAtlasRangeHalfBackground('D4', 'D4', false)
+}
+
 /** Width/height of the scoreboard bg sprite (A8–F8 = 6×1 cells). */
 export function scoreboardAtlasAspect(): number {
   const a = parseAtlasCell(SCOREBOARD_BG_FROM)

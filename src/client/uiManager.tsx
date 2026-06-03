@@ -48,7 +48,10 @@ import {
   waitingOpponentCancelButtonBackground,
   leaderboardFrameSliceBackground,
   leaderboardTitleBackground,
-  countryPickerFrameSliceBackground
+  countryPickerFrameSliceBackground,
+  leaveMatchTitleBackground,
+  leaveMatchNoButtonBackground,
+  leaveMatchYesButtonBackground
 } from './uiAtlasStore'
 
 /**
@@ -190,6 +193,13 @@ const ScoreboardGlobalActions = () => {
   )
 }
 
+function executeLeaveMatch(): void {
+  const snap = readPenaltySnapshot()
+  leaveMatchConfirmOpen = false
+  if (isScoreboardMatchPhase(snap.phase)) hideScoreboardAfterLeave = true
+  room.send('leaveMatch', {})
+}
+
 const ScoreboardLeaveButton = () => {
   const sz = sbActionBtnSize()
   const gap = sbPx(6)
@@ -200,8 +210,8 @@ const ScoreboardLeaveButton = () => {
       uiBackground={scoreboardBadgeE7Background()}
       onMouseDown={() => {
         const snap = readPenaltySnapshot()
-        if (isScoreboardMatchPhase(snap.phase)) hideScoreboardAfterLeave = true
-        room.send('leaveMatch', {})
+        if (snap.hasActiveMatch !== 1) return
+        leaveMatchConfirmOpen = true
       }}
     />
   )
@@ -253,6 +263,7 @@ let waitDisplayAnchorMs = 0
 const WAIT_DISPLAY_TOTAL_S = 30
 /** Oculta scoreboard local tras abandonar; se resetea cuando no hay partida activa. */
 let hideScoreboardAfterLeave = false
+let leaveMatchConfirmOpen = false
 /** Panel de debug (state, sync, timeout…) abierto con el botón "i". */
 let debugInfoOpen = false
 
@@ -272,6 +283,7 @@ export function resetSplashUi(): void {
   splashDismissed = false
   welcomeChooseSpotDismissed = false
   hideScoreboardAfterLeave = false
+  leaveMatchConfirmOpen = false
   debugInfoOpen = false
   hoverSplashStart = false
 }
@@ -486,9 +498,11 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
 
   if (s.phase === GameState.LobbyIdle || s.phase === GameState.WaitingOpponent) {
     hideScoreboardAfterLeave = false
+    leaveMatchConfirmOpen = false
   } else if (isScoreboardMatchPhase(s.phase) && !isScoreboardMatchPhase(prevPhase)) {
     hideScoreboardAfterLeave = false
   }
+  if (s.hasActiveMatch !== 1) leaveMatchConfirmOpen = false
   const showScoreboard = splashDismissed && isScoreboardMatchPhase(s.phase) && !hideScoreboardAfterLeave
 
   if (showCountryPicker && !prevPickerOpen) pickerPage = 0
@@ -506,6 +520,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const PICKER_PAGE_BTN_W = 140
   const PICKER_PAGE_BTN_H = 88
   const PICKER_ACCENT = Color4.create(0.898, 0.333, 0.98, 1)
+  const leaveConfirmBtnW = Math.floor(PICKER_PAGE_BTN_W * 1.3)
+  const leaveConfirmBtnH = Math.floor((PICKER_PAGE_BTN_W / 2) * 1.3)
+  const leaveConfirmPanelW = leaveConfirmBtnW * 2 + 96
+  const leaveConfirmTitleW = Math.floor(leaveConfirmPanelW * 0.9)
+  const leaveConfirmTitleH = Math.floor(leaveConfirmTitleW / 4)
+  const leaveConfirmPadY = cpSlicePx + 8
+  const leaveConfirmPadX = cpSlicePx + 36
   const countryConfirmFlagW = FLAG_PICKER_BTN_W * 2
   const countryConfirmFlagH = FLAG_PICKER_BTN_H * 2
   const cfPanelWidthPx = countryConfirmFlagW + 2 * (cpSlicePx + 40)
@@ -784,10 +805,147 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           }}
         >
           <ScoreboardGlobalActions />
-          {!!side && <ScoreboardLeaveButton />}
+          {!!side && s.hasActiveMatch === 1 && <ScoreboardLeaveButton />}
         </UiEntity>
       )}
       {/* ========== fin GLOBAL ACTIONS ========== */}
+
+      {/* ========== LEAVE MATCH CONFIRM ========== */}
+      {splashDismissed && leaveMatchConfirmOpen && s.hasActiveMatch === 1 && !!side && (
+        <UiEntity
+          uiTransform={{
+            positionType: 'absolute',
+            position: { top: 0, left: 0 },
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1003,
+            pointerFilter: 'none'
+          }}
+        >
+          <UiEntity
+            uiTransform={{
+              positionType: 'relative',
+              width: leaveConfirmPanelW
+            }}
+          >
+            <UiEntity
+              uiTransform={{
+                positionType: 'absolute',
+                position: { top: 0, left: 0, right: 0, bottom: 0 },
+                zIndex: 0
+              }}
+            >
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: cpInset, bottom: cpInset, left: cpInset, right: cpInset }
+                }}
+                uiBackground={countryPickerFrameSliceBackground(5)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0 }, width: cpSlicePx, height: cpSlicePx }}
+                uiBackground={countryPickerFrameSliceBackground(1)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { top: 0, right: 0 }, width: cpSlicePx, height: cpSlicePx }}
+                uiBackground={countryPickerFrameSliceBackground(3)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: 0 }, width: cpSlicePx, height: cpSlicePx }}
+                uiBackground={countryPickerFrameSliceBackground(7)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { bottom: 0, right: 0 }, width: cpSlicePx, height: cpSlicePx }}
+                uiBackground={countryPickerFrameSliceBackground(9)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: 0, left: cpInset, right: cpInset },
+                  height: cpSlicePx
+                }}
+                uiBackground={countryPickerFrameSliceBackground(2)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { bottom: 0, left: cpInset, right: cpInset },
+                  height: cpSlicePx
+                }}
+                uiBackground={countryPickerFrameSliceBackground(8)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: cpInset, bottom: cpInset, left: 0 },
+                  width: cpSlicePx
+                }}
+                uiBackground={countryPickerFrameSliceBackground(4)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: cpInset, bottom: cpInset, right: 0 },
+                  width: cpSlicePx
+                }}
+                uiBackground={countryPickerFrameSliceBackground(6)}
+              />
+            </UiEntity>
+            <UiEntity
+              uiTransform={{
+                positionType: 'relative',
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: {
+                  top: leaveConfirmPadY,
+                  bottom: leaveConfirmPadY,
+                  left: leaveConfirmPadX,
+                  right: leaveConfirmPadX
+                },
+                zIndex: 1
+              }}
+            >
+              <UiEntity
+                uiTransform={{
+                  width: leaveConfirmTitleW,
+                  height: leaveConfirmTitleH,
+                  margin: { bottom: 20 }
+                }}
+                uiBackground={leaveMatchTitleBackground()}
+              />
+              <UiEntity
+                uiTransform={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                <Button
+                  value=""
+                  uiTransform={{ width: leaveConfirmBtnW, height: leaveConfirmBtnH, margin: { right: 8 } }}
+                  uiBackground={leaveMatchNoButtonBackground()}
+                  onMouseDown={() => { leaveMatchConfirmOpen = false }}
+                />
+                <Button
+                  value=""
+                  uiTransform={{ width: leaveConfirmBtnW, height: leaveConfirmBtnH, margin: { left: 8 } }}
+                  uiBackground={leaveMatchYesButtonBackground()}
+                  onMouseDown={() => executeLeaveMatch()}
+                />
+              </UiEntity>
+            </UiEntity>
+          </UiEntity>
+        </UiEntity>
+      )}
+      {/* ========== fin LEAVE MATCH CONFIRM ========== */}
 
       {/* ========== UI: LEADERBOARD (centrado en pantalla) ========== */}
       {splashDismissed && showLeaderboard && <UiEntity
