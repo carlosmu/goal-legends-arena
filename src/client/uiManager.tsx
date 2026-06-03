@@ -1393,10 +1393,12 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
-            position: { top: '10vh', left: 0 },
+            position: { top: 0, left: 0 },
             width: '100%',
+            height: '100%',
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: 'column',
+            alignItems: 'center',
             justifyContent: 'center',
             zIndex: 48,
             pointerFilter: 'none'
