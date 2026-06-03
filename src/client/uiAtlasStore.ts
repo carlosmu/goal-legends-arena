@@ -215,6 +215,23 @@ export function leaveMatchYesButtonBackground() {
   return uiAtlasRangeHalfBackground('D4', 'D4', false)
 }
 
+/** Goal/Save result panel frame: cell C5 of 8×8 UI_atlas. */
+export const GOAL_SAVE_FRAME_CELL = 'C5'
+
+export function goalSaveFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
+  return atlasCellFrameSliceBackground(GOAL_SAVE_FRAME_CELL, ninth)
+}
+
+/** GOAL — top half of UI_atlas A5–B5. */
+export function goalSaveGoalBannerBackground() {
+  return uiAtlasRangeHalfBackground('A5', 'B5', true)
+}
+
+/** SAVE — bottom half of UI_atlas A5–B5. */
+export function goalSaveSaveBannerBackground() {
+  return uiAtlasRangeHalfBackground('A5', 'B5', false)
+}
+
 /** Width/height of the scoreboard bg sprite (A8–F8 = 6×1 cells). */
 export function scoreboardAtlasAspect(): number {
   const a = parseAtlasCell(SCOREBOARD_BG_FROM)

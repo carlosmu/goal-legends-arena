@@ -51,7 +51,10 @@ import {
   countryPickerFrameSliceBackground,
   leaveMatchTitleBackground,
   leaveMatchNoButtonBackground,
-  leaveMatchYesButtonBackground
+  leaveMatchYesButtonBackground,
+  goalSaveFrameSliceBackground,
+  goalSaveGoalBannerBackground,
+  goalSaveSaveBannerBackground
 } from './uiAtlasStore'
 
 /**
@@ -527,6 +530,14 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const leaveConfirmTitleH = Math.floor(leaveConfirmTitleW / 4)
   const leaveConfirmPadY = cpSlicePx + 8
   const leaveConfirmPadX = cpSlicePx + 36
+  const resultIsGoal = s.resultLine.startsWith('GOAL')
+  const resultSlicePx = Math.floor(cpSlicePx / 2)
+  const resultInset = resultSlicePx - cpSliceOverlap
+  const resultBannerW = isMobile() ? 240 : 280
+  const resultBannerH = Math.floor(resultBannerW / 4)
+  const resultPadY = Math.floor((cpSlicePx + 12) / 2)
+  const resultPadX = Math.floor((cpSlicePx + 28) / 2)
+  const resultPanelW = resultBannerW + 2 * resultPadX
   const countryConfirmFlagW = FLAG_PICKER_BTN_W * 2
   const countryConfirmFlagH = FLAG_PICKER_BTN_H * 2
   const cfPanelWidthPx = countryConfirmFlagW + 2 * (cpSlicePx + 40)
@@ -1732,6 +1743,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
+            position: { top: 0, left: 0 },
             width: '100%',
             height: '100%',
             display: 'flex',
@@ -1744,20 +1756,94 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         >
           <UiEntity
             uiTransform={{
-              padding: 22,
-              maxWidth: 900,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
+              positionType: 'relative',
+              width: resultPanelW
             }}
-            uiBackground={{ color: Color4.create(0, 0, 0, 0.90) }}
           >
-            <Label
-              value={s.resultLine.split('\n')[0] || ''}
-              fontSize={fs(60)}
-              color={s.resultLine.startsWith('GOAL') ? Color4.create(1, 0.9, 0.1, 1) : Color4.create(0.4, 0.8, 1, 1)}
-              textAlign="middle-center"
-            />
+            <UiEntity
+              uiTransform={{
+                positionType: 'absolute',
+                position: { top: 0, left: 0, right: 0, bottom: 0 },
+                zIndex: 0
+              }}
+            >
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: resultInset, bottom: resultInset, left: resultInset, right: resultInset }
+                }}
+                uiBackground={goalSaveFrameSliceBackground(5)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0 }, width: resultSlicePx, height: resultSlicePx }}
+                uiBackground={goalSaveFrameSliceBackground(1)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { top: 0, right: 0 }, width: resultSlicePx, height: resultSlicePx }}
+                uiBackground={goalSaveFrameSliceBackground(3)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: 0 }, width: resultSlicePx, height: resultSlicePx }}
+                uiBackground={goalSaveFrameSliceBackground(7)}
+              />
+              <UiEntity
+                uiTransform={{ positionType: 'absolute', position: { bottom: 0, right: 0 }, width: resultSlicePx, height: resultSlicePx }}
+                uiBackground={goalSaveFrameSliceBackground(9)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: 0, left: resultInset, right: resultInset },
+                  height: resultSlicePx
+                }}
+                uiBackground={goalSaveFrameSliceBackground(2)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { bottom: 0, left: resultInset, right: resultInset },
+                  height: resultSlicePx
+                }}
+                uiBackground={goalSaveFrameSliceBackground(8)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: resultInset, bottom: resultInset, left: 0 },
+                  width: resultSlicePx
+                }}
+                uiBackground={goalSaveFrameSliceBackground(4)}
+              />
+              <UiEntity
+                uiTransform={{
+                  positionType: 'absolute',
+                  position: { top: resultInset, bottom: resultInset, right: 0 },
+                  width: resultSlicePx
+                }}
+                uiBackground={goalSaveFrameSliceBackground(6)}
+              />
+            </UiEntity>
+            <UiEntity
+              uiTransform={{
+                positionType: 'relative',
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: {
+                  top: resultPadY,
+                  bottom: resultPadY,
+                  left: resultPadX,
+                  right: resultPadX
+                },
+                zIndex: 1
+              }}
+            >
+              <UiEntity
+                uiTransform={{ width: resultBannerW, height: resultBannerH }}
+                uiBackground={resultIsGoal ? goalSaveGoalBannerBackground() : goalSaveSaveBannerBackground()}
+              />
+            </UiEntity>
           </UiEntity>
         </UiEntity>
       )}
