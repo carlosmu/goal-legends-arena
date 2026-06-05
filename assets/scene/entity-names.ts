@@ -52,6 +52,7 @@ export enum EntityNames {
   Spotlight_3 = "Spotlight_3",
   Spotlight_4 = "Spotlight_4",
   Video_Screen = "Video Screen",
+  arrow_glb = "arrow.glb",
   ball_glb = "ball.glb",
   futbol_arena_glb = "futbol_arena.glb",
   plaza_glb = "plaza.glb",
