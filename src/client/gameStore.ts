@@ -15,6 +15,7 @@ export type ClientSnapshot = {
   kickerIsRed: number
   redScore: number
   blueScore: number
+  gkPick: string
   resultLine: string
   lastRoundWasGoal: number
   winnerName: string
@@ -49,6 +50,7 @@ export const defaultSnapshot: ClientSnapshot = {
   kickerIsRed: 1,
   redScore: 0,
   blueScore: 0,
+  gkPick: '',
   resultLine: '',
   lastRoundWasGoal: 0,
   winnerName: '',
@@ -104,6 +106,7 @@ export function readPenaltySnapshot(): ClientSnapshot {
     kickerIsRed: p.kickerIsRed,
     redScore: p.redScore,
     blueScore: p.blueScore,
+    gkPick: p.gkPick,
     resultLine: p.resultLine,
     lastRoundWasGoal: p.lastRoundWasGoal,
     winnerName: p.winnerName,

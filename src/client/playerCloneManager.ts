@@ -1,8 +1,8 @@
 import { engine, Transform, Entity, PlayerIdentityData, GltfContainer, Animator, InputModifier, executeTask } from '@dcl/sdk/ecs'
 import { Vector3 } from '@dcl/sdk/math'
 import { movePlayerTo, triggerSceneEmote } from '~system/RestrictedActions'
-import { clientSnapshot } from './gameStore'
-import { GameState } from '../shared/gameState'
+import { clientSnapshot, readPenaltySnapshot } from './gameStore'
+import { GameState, AimDirection } from '../shared/gameState'
 
 // ── Spawn positions (from assets/scene/main.composite, entities 542 / 543) ────
 
@@ -17,7 +17,29 @@ const TRAINING_BOT_SRC = 'assets/models/avatar_training.glb'
 const ANIMS = 'assets/models/animations/'
 const EMOTES = {
   [GameState.SelectingDirections]: { kicker: ANIMS + 'K_intro_emote.glb', gk: ANIMS + 'GK_intro_emote.glb' },
-  [GameState.ResolvingRound]:      { kicker: ANIMS + 'K_shoot_emote.glb', gk: ANIMS + 'GK_shoot_emote.glb' },
+  [GameState.ResolvingRound]:      { kicker: ANIMS + 'K_shoot_emote.glb' },
+}
+
+function gkShootEmoteSrc(pick: string): string {
+  switch (pick as AimDirection) {
+    case 'L':
+      return ANIMS + 'GK_shoot_L_emote.glb'
+    case 'R':
+      return ANIMS + 'GK_shoot_R_emote.glb'
+    default:
+      return ANIMS + 'GK_shoot_C_emote.glb'
+  }
+}
+
+function gkShootClip(pick: string): string {
+  switch (pick as AimDirection) {
+    case 'L':
+      return 'GK_shoot_L_emote'
+    case 'R':
+      return 'GK_shoot_R_emote'
+    default:
+      return 'GK_shoot_C_emote'
+  }
 }
 
 // ── Module state ───────────────────────────────────────────────────────────────
@@ -49,20 +71,22 @@ function ensureTrainingBot(): Entity {
       states: [
         { clip: 'K_intro_emote',  playing: false, loop: false },
         { clip: 'K_shoot_emote',  playing: false, loop: false },
-        { clip: 'GK_intro_emote', playing: false, loop: true  },
-        { clip: 'GK_shoot_emote', playing: false, loop: false },
+        { clip: 'GK_intro_emote',    playing: false, loop: true  },
+        { clip: 'GK_shoot_L_emote',  playing: false, loop: false },
+        { clip: 'GK_shoot_C_emote',  playing: false, loop: false },
+        { clip: 'GK_shoot_R_emote',  playing: false, loop: false },
       ]
     })
   }
   return trainingBot
 }
 
-function playTrainingBotAnim(phase: string) {
+function playTrainingBotAnim(phase: string, gkPick: string) {
   if (!trainingBot) return
   const isIntro = phase === GameState.SelectingDirections
   const clip = trainingBotIsKicker
     ? (isIntro ? 'K_intro_emote'  : 'K_shoot_emote')
-    : (isIntro ? 'GK_intro_emote' : 'GK_shoot_emote')
+    : (isIntro ? 'GK_intro_emote' : gkShootClip(gkPick))
   Animator.stopAllAnimations(trainingBot, true)
   Animator.playSingleAnimation(trainingBot, clip, true)
 }
@@ -104,7 +128,7 @@ function playSceneEmote(src: string, loop: boolean): void {
   void triggerSceneEmote({ src, loop: false })
 }
 
-function triggerLocalEmote(phase: string) {
+function triggerLocalEmote(phase: string, gkPick: string) {
   const entry = EMOTES[phase as keyof typeof EMOTES]
   if (!entry) return
 
@@ -113,7 +137,11 @@ function triggerLocalEmote(phase: string) {
   const localAddr   = localPlayerAddr()
   const kickerAddr  = (kickerIsRed ? s.redAddr : s.blueAddr).toLowerCase()
   const isKicker    = localAddr === kickerAddr
-  const src         = isKicker ? entry.kicker : entry.gk
+  const src = isKicker
+    ? entry.kicker
+    : phase === GameState.ResolvingRound
+      ? gkShootEmoteSrc(gkPick)
+      : (entry as { kicker: string; gk: string }).gk
   const loop        = shouldLoopSceneEmote(src, phase)
   const token       = ++localEmoteToken
 
@@ -168,7 +196,7 @@ function manageTrainingBot() {
 
 export function initPlayerCloneSystem(): void {
   engine.addSystem((_dt: number) => {
-    const s       = clientSnapshot
+    const s       = readPenaltySnapshot()
     const active  = s.hasActiveMatch
     const phase   = s.phase
     const localAddr = localPlayerAddr()
@@ -193,9 +221,9 @@ export function initPlayerCloneSystem(): void {
     if (active === 1 && phase !== prevPhase) {
       prevPhase = phase
       if (localIsRed || localIsBlue) {
-        triggerLocalEmote(phase)
+        triggerLocalEmote(phase, s.gkPick)
       }
-      playTrainingBotAnim(phase)
+      playTrainingBotAnim(phase, s.gkPick)
     }
   })
 }
