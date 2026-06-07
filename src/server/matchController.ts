@@ -17,7 +17,8 @@ import {
   SYNC_STATE_ENTITY_ENUM,
   WAIT_OPPONENT_MS,
   WINNER_STREAK_TIMEOUT_MS,
-  getRandomExpulsionLocation
+  getRandomExpulsionLocation,
+  getSpawnLocation
 } from '../shared/constants'
 import { parseDir, randomDir, regulationEarlyWinner, suddenDeathWinner } from './matchHelpers'
 

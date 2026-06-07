@@ -49,6 +49,25 @@ export function getRandomExpulsionLocation(): { pos: Vector3; cam: Vector3 } {
   }
 }
 
+/** Scene spawn point (mirrors scene.json SpawnArea1); the match loser returns here. */
+export const SPAWN_BOUNDS = {
+  xMin: 14.75,
+  xMax: 17.75,
+  y: 1.29,
+  zMin: 34,
+  zMax: 37,
+  cam: Vector3.create(8, 1, 8)
+}
+
+export function getSpawnLocation(): { pos: Vector3; cam: Vector3 } {
+  const x = SPAWN_BOUNDS.xMin + Math.random() * (SPAWN_BOUNDS.xMax - SPAWN_BOUNDS.xMin)
+  const z = SPAWN_BOUNDS.zMin + Math.random() * (SPAWN_BOUNDS.zMax - SPAWN_BOUNDS.zMin)
+  return {
+    pos: Vector3.create(x, SPAWN_BOUNDS.y, z),
+    cam: SPAWN_BOUNDS.cam
+  }
+}
+
 /**
  * Direction helper colliders near the goal (scene space).
  * Sit Spots están a z≈23.3 y el POV/portería a z≈16, así que “adelante” (hacia la portería)
