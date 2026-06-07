@@ -36,7 +36,6 @@ import {
   logoBackground,
   scoreboardBackground,
   welcomeChooseSpotOverlayBackground,
-  pickDirectionPanelBackground,
   pickDirectionTitleDiveBackground,
   pickDirectionTitleShootBackground,
   pickDirectionLeftBackground,
@@ -435,8 +434,9 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           height: pickPanelContentHeightPx,
           zIndex: 0
         }}
-        uiBackground={pickDirectionPanelBackground()}
-      />
+      >
+        {cpNineSliceFrame(cpSlicePx, cpInset)}
+      </UiEntity>
       <UiEntity
         uiTransform={{
           positionType: 'relative',
