@@ -363,12 +363,13 @@ function finishMatch(side: 'red' | 'blue') {
 
   syncLbToState()
 
-  if (m.mode === 'pvp' && loseAddr) {
-    if (m.playersInScene > 2) {
+  if (loseAddr) {
+    // Ban cooldown is PvP-only (and only when there are others waiting).
+    if (m.mode === 'pvp' && m.playersInScene > 2) {
       void setBan(loseAddr, BAN_COOLDOWN_MS)
     }
-    const expulsion = getRandomExpulsionLocation()
-    sendTeleport(loseAddr, expulsion.pos, expulsion.cam)
+    const spawn = getSpawnLocation()
+    sendTeleport(loseAddr, spawn.pos, spawn.cam)
   }
 
   if (m.mode === 'pvp' && winAddr) {
