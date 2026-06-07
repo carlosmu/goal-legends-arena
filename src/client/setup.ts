@@ -30,20 +30,27 @@ let loggedSyncReady = false
 let redSpotEntity: Entity | undefined
 let blueSpotEntity: Entity | undefined
 
+/** movePlayerTo places the avatar's feet at the target; lift slightly so it sits on the spot. */
+const SPOT_STAND_Y_OFFSET = 0.5
+
 function tryOccupySpot(team: 'red' | 'blue') {
   if (!isStateSyncronized()) return
   markSpotClickedLocally()
   room.send('occupySpot', { team })
 }
 
+/** Walk the local player onto a spot entity (feet lifted by SPOT_STAND_Y_OFFSET). */
+function movePlayerToSpot(entity: Entity) {
+  if (!Transform.has(entity)) return
+  const p = Transform.get(entity).position
+  void movePlayerTo({ newRelativePosition: Vector3.create(p.x, p.y + SPOT_STAND_Y_OFFSET, p.z) })
+}
+
 /** Take a spot from a UI button (e.g. "Face the winner"): claim it and walk the player onto it. */
 export function takeSpotFromUI(team: 'red' | 'blue') {
   tryOccupySpot(team)
   const entity = team === 'red' ? redSpotEntity : blueSpotEntity
-  if (entity && Transform.has(entity)) {
-    const pos = Transform.get(entity).position
-    void movePlayerTo({ newRelativePosition: pos })
-  }
+  if (entity) movePlayerToSpot(entity)
 }
 
 function registerSpotPointerHandlers(entity: Entity | undefined, team: 'red' | 'blue', hover: string) {
@@ -52,10 +59,7 @@ function registerSpotPointerHandlers(entity: Entity | undefined, team: 'red' | '
     { entity, opts: { button: InputAction.IA_POINTER, hoverText: hover, maxDistance: POINTER_EVENT_MAX_DISTANCE } },
     () => {
       tryOccupySpot(team)
-      if (Transform.has(entity)) {
-        const pos = Transform.get(entity).position
-        void movePlayerTo({ newRelativePosition: pos })
-      }
+      movePlayerToSpot(entity)
     }
   )
 }
