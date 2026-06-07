@@ -52,7 +52,8 @@ import {
   leaveMatchYesButtonBackground,
   goalSaveFrameSliceBackground,
   goalSaveGoalBannerBackground,
-  goalSaveSaveBannerBackground
+  goalSaveSaveBannerBackground,
+  matchEndFrameSliceBackground
 } from './uiAtlasStore'
 
 /**
@@ -105,21 +106,29 @@ function ellipsize(text: string, widthPx: number, fontSizePx: number): string {
   return text.slice(0, keep).trimEnd() + '...'
 }
 
-/** Nine-slice frame from the flag-selector atlas cell (B4), filling its relative parent. */
-function cpNineSliceFrame(slicePx: number, inset: number) {
+type NinthSlice = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+type SliceBg = (ninth: NinthSlice) => ReturnType<typeof countryPickerFrameSliceBackground>
+
+/** Generic nine-slice frame from any atlas cell helper, filling its relative parent. */
+function nineSliceFrame(sliceBg: SliceBg, slicePx: number, inset: number) {
   return (
     <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0, right: 0, bottom: 0 }, zIndex: 0 }}>
-      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0 }, width: slicePx, height: slicePx }} uiBackground={countryPickerFrameSliceBackground(1)} />
-      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, right: 0 }, width: slicePx, height: slicePx }} uiBackground={countryPickerFrameSliceBackground(3)} />
-      <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: 0 }, width: slicePx, height: slicePx }} uiBackground={countryPickerFrameSliceBackground(7)} />
-      <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, right: 0 }, width: slicePx, height: slicePx }} uiBackground={countryPickerFrameSliceBackground(9)} />
-      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: inset, right: inset }, height: slicePx }} uiBackground={countryPickerFrameSliceBackground(2)} />
-      <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: inset, right: inset }, height: slicePx }} uiBackground={countryPickerFrameSliceBackground(8)} />
-      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: inset, bottom: inset, left: 0 }, width: slicePx }} uiBackground={countryPickerFrameSliceBackground(4)} />
-      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: inset, bottom: inset, right: 0 }, width: slicePx }} uiBackground={countryPickerFrameSliceBackground(6)} />
-      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: inset, bottom: inset, left: inset, right: inset } }} uiBackground={countryPickerFrameSliceBackground(5)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0 }, width: slicePx, height: slicePx }} uiBackground={sliceBg(1)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, right: 0 }, width: slicePx, height: slicePx }} uiBackground={sliceBg(3)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: 0 }, width: slicePx, height: slicePx }} uiBackground={sliceBg(7)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, right: 0 }, width: slicePx, height: slicePx }} uiBackground={sliceBg(9)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: inset, right: inset }, height: slicePx }} uiBackground={sliceBg(2)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: inset, right: inset }, height: slicePx }} uiBackground={sliceBg(8)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: inset, bottom: inset, left: 0 }, width: slicePx }} uiBackground={sliceBg(4)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: inset, bottom: inset, right: 0 }, width: slicePx }} uiBackground={sliceBg(6)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: inset, bottom: inset, left: inset, right: inset } }} uiBackground={sliceBg(5)} />
     </UiEntity>
   )
+}
+
+/** Nine-slice frame from the flag-selector atlas cell (B4), filling its relative parent. */
+function cpNineSliceFrame(slicePx: number, inset: number) {
+  return nineSliceFrame(countryPickerFrameSliceBackground, slicePx, inset)
 }
 
 /** Scoreboard pic/flag sizes in px; ×1.5 on mobile (same factor as fs). */
@@ -2024,19 +2033,35 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           ) : (
             <UiEntity
               uiTransform={{
-                padding: 32,
+                positionType: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center'
+                alignItems: 'stretch'
               }}
-              uiBackground={{ color: Color4.create(0.1, 0.08, 0.08, 0.92) }}
             >
-              <Label
-                value={s.winnerName}
-                fontSize={fs(40)}
-                color={Color4.create(0.9, 0.6, 0.6, 1)}
-                textAlign="middle-center"
-              />
+              {nineSliceFrame(matchEndFrameSliceBackground, cpSlicePx, cpInset)}
+              <UiEntity
+                uiTransform={{
+                  positionType: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  padding: {
+                    top: cpSlicePx + 24,
+                    bottom: cpSlicePx + 24,
+                    left: cpSlicePx + 40,
+                    right: cpSlicePx + 40
+                  },
+                  zIndex: 1
+                }}
+              >
+                <Label
+                  value={s.winnerName}
+                  fontSize={fs(40)}
+                  color={Color4.White()}
+                  textAlign="middle-center"
+                />
+              </UiEntity>
             </UiEntity>
           )}
         </UiEntity>

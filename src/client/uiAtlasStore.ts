@@ -222,6 +222,13 @@ export function goalSaveFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 
   return atlasCellFrameSliceBackground(GOAL_SAVE_FRAME_CELL, ninth)
 }
 
+/** Match-end "left the match" / timeout panel frame: cell D5 of 8×8 UI_atlas. */
+export const MATCH_END_FRAME_CELL = 'D5'
+
+export function matchEndFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
+  return atlasCellFrameSliceBackground(MATCH_END_FRAME_CELL, ninth)
+}
+
 /** GOAL — top half of UI_atlas A5–B5. */
 export function goalSaveGoalBannerBackground() {
   return uiAtlasRangeHalfBackground('A5', 'B5', true)

@@ -731,7 +731,7 @@ export function registerServerMessages() {
     if (m.redAddr?.toLowerCase() === addr) leaverName = m.redName
     else if (m.blueAddr?.toLowerCase() === addr) leaverName = m.blueName
     else return
-    endMatchNoWinner(`@${leaverName} abandoned the match`)
+    endMatchNoWinner(`@${leaverName}\nleft the match`)
   })
 
   // Cancel puro durante WaitingOpponent: limpia el spot del jugador, vuelve al lobby
