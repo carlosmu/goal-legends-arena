@@ -92,6 +92,19 @@ function fs(size: number): number {
   return isMobile() ? Math.ceil(size * 1.5) : size
 }
 
+/**
+ * Truncate text with a trailing "..." so it fits on a single line of `widthPx`
+ * at `fontSizePx`. Char width is approximated (proportional font), so we stay a
+ * touch conservative to avoid overflowing the container on mobile.
+ */
+function ellipsize(text: string, widthPx: number, fontSizePx: number): string {
+  const charW = fontSizePx * 0.58
+  const maxChars = Math.floor(widthPx / charW)
+  if (text.length <= maxChars) return text
+  const keep = Math.max(1, maxChars - 2)
+  return text.slice(0, keep).trimEnd() + '...'
+}
+
 /** Nine-slice frame from the flag-selector atlas cell (B4), filling its relative parent. */
 function cpNineSliceFrame(slicePx: number, inset: number) {
   return (
@@ -1478,10 +1491,11 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                         onMouseDown={() => selectCountryFromPicker(c.iso)}
                     />
                     <Label
-                      value={c.name.length > 10 ? c.name.slice(0, 10) + '...' : c.name}
+                      value={ellipsize(c.name, FLAG_PICKER_BTN_W, fs(20))}
                       fontSize={fs(20)}
                       color={Color4.White()}
                       textAlign="middle-center"
+                      textWrap="nowrap"
                       uiTransform={{ width: FLAG_PICKER_BTN_W }}
                     />
                   </UiEntity>
@@ -1652,7 +1666,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             uiTransform={{ margin: { bottom: 2 } }}
           />
           <Label
-            value="has selected"
+            value="selected!"
             fontSize={fs(isMobile() ? 28 : 34)}
             color={Color4.White()}
             textAlign="middle-center"
