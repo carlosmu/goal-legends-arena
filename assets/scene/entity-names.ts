@@ -6,9 +6,13 @@
  */
 export enum EntityNames {
   Admin_Tools = "Admin Tools",
+  Blue = "Blue",
+  Blue2 = "Blue2",
   Blue_Spot = "Blue_Spot",
   Cinematic_Camera_Pivot = "Cinematic_Camera_Pivot",
   Firework_01 = "Firework_01",
+  Firework_10 = "Firework_10",
+  Firework_11 = "Firework_11",
   Firework_2 = "Firework_2",
   Firework_3 = "Firework_3",
   Firework_4 = "Firework_4",
