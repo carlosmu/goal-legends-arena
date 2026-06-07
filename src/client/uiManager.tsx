@@ -8,6 +8,7 @@ import { getLeaderboardRows } from './leaderboardManager'
 import { getLeaderboardFaceUrl, prefetchLeaderboardFaces } from './leaderboardProfileCache'
 import { room } from '../shared/messages'
 import { GameState } from '../shared/gameState'
+import { setSpectatorCameraMode, getSpectatorCameraMode } from './gameplayCamera'
 import {
   COUNTRIES,
   getLocalCountry,
@@ -373,6 +374,10 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const showPick =
     splashDismissed && s.phase === GameState.SelectingDirections && side && (s.mode === 'pvp' || (s.mode === 'pve' && !!side))
 
+  // Spectators (in scene but not playing) get a camera toggle while a match runs.
+  const showCameraSelector = splashDismissed && s.hasActiveMatch === 1 && !side
+  const cameraMode = getSpectatorCameraMode()
+
   const pickMobile = isMobile()
   const pickPanelWidth = pickMobile ? '40vw' : '25vw'
   const pickPanelWidthPx = Math.floor(1920 * (pickMobile ? 0.4 : 0.25))
@@ -577,6 +582,69 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const TOTAL_PAGES = Math.ceil(COUNTRIES.length / PAGE_SIZE)
   const visibleCountries = COUNTRIES.slice(pickerPage * PAGE_SIZE, (pickerPage + 1) * PAGE_SIZE)
   const pickerSelectedName = getCountryByIso(getLocalCountry())?.name ?? '—'
+
+  const cameraBtnW = pickMobile ? 180 : 140
+  const cameraBtnH = pickMobile ? 64 : 48
+  const cameraPanelPadY = cpSlicePx + 12
+  const cameraPanelPadX = cpSlicePx + 18
+  const cameraBtnActive = Color4.create(0.2, 0.55, 0.9, 1)
+  const cameraBtnIdle = Color4.create(0.28, 0.28, 0.34, 1)
+  const cameraSelectorPanel = (
+    <UiEntity
+      uiTransform={{
+        width: pickPanelWidth,
+        margin: { bottom: pickPanelMarginBottom },
+        positionType: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch'
+      }}
+    >
+      {/* Nine-slice frame from the flag selector cell (B4) — no green fill. */}
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0, right: 0, bottom: 0 }, zIndex: 0 }}>
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0 }, width: cpSlicePx, height: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(1)} />
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, right: 0 }, width: cpSlicePx, height: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(3)} />
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: 0 }, width: cpSlicePx, height: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(7)} />
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, right: 0 }, width: cpSlicePx, height: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(9)} />
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: cpInset, right: cpInset }, height: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(2)} />
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: cpInset, right: cpInset }, height: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(8)} />
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: cpInset, bottom: cpInset, left: 0 }, width: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(4)} />
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: cpInset, bottom: cpInset, right: 0 }, width: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(6)} />
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: cpInset, bottom: cpInset, left: cpInset, right: cpInset } }} uiBackground={countryPickerFrameSliceBackground(5)} />
+      </UiEntity>
+      <UiEntity
+        uiTransform={{
+          positionType: 'relative',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: { top: cameraPanelPadY, bottom: cameraPanelPadY, left: cameraPanelPadX, right: cameraPanelPadX },
+          zIndex: 1
+        }}
+      >
+        <Label value="Point of View" fontSize={fs(40)} color={Color4.White()} textAlign="middle-center" uiTransform={{ margin: { bottom: 10 } }} />
+        <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <Button
+            value="Match"
+            fontSize={fs(28)}
+            color={Color4.White()}
+            uiTransform={{ width: cameraBtnW, height: cameraBtnH, margin: { right: 10 } }}
+            uiBackground={{ color: cameraMode === 'match' ? cameraBtnActive : cameraBtnIdle }}
+            onMouseDown={() => setSpectatorCameraMode('match')}
+          />
+          <Button
+            value="Player"
+            fontSize={fs(28)}
+            color={Color4.White()}
+            uiTransform={{ width: cameraBtnW, height: cameraBtnH }}
+            uiBackground={{ color: cameraMode === 'free' ? cameraBtnActive : cameraBtnIdle }}
+            onMouseDown={() => setSpectatorCameraMode('free')}
+          />
+        </UiEntity>
+      </UiEntity>
+    </UiEntity>
+  )
 
   const sb = scoreboardLayout()
   const sbPic = sbProfileSize()
@@ -1767,6 +1835,26 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         >
           {!kicker && pickDirectionPanel(pickDirectionTitleDiveBackground())}
           {kicker && pickDirectionPanel(pickDirectionTitleShootBackground())}
+        </UiEntity>
+      )}
+
+      {/* CAMERA selector: spectators only, same spot as the L/C/R picker */}
+      {showCameraSelector && (
+        <UiEntity
+          uiTransform={{
+            positionType: 'absolute',
+            position: { top: 0, left: 0, right: 0, bottom: 0 },
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            pointerFilter: 'none',
+            zIndex: 1000
+          }}
+        >
+          {cameraSelectorPanel}
         </UiEntity>
       )}
 

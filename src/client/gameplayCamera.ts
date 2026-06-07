@@ -1,4 +1,5 @@
 import { engine, Transform, Entity, MainCamera, VirtualCamera, Name } from '@dcl/sdk/ecs'
+import { getPlayer } from '@dcl/sdk/src/players'
 import { clientSnapshot } from './gameStore'
 
 // ── State ──────────────────────────────────────────────────────────────────────
@@ -6,6 +7,24 @@ import { clientSnapshot } from './gameStore'
 let pivotEntity:  Entity | null = null
 let cameraEntity: Entity | null = null
 let cameraActive  = false
+
+/** Camera choice for spectators (players in scene not in the match). 'match' = cinematic. */
+export type SpectatorCameraMode = 'match' | 'free'
+let spectatorCameraMode: SpectatorCameraMode = 'match'
+
+export function setSpectatorCameraMode(mode: SpectatorCameraMode): void {
+  spectatorCameraMode = mode
+}
+
+export function getSpectatorCameraMode(): SpectatorCameraMode {
+  return spectatorCameraMode
+}
+
+function localIsMatchParticipant(): boolean {
+  const me = (getPlayer()?.userId || '').toLowerCase()
+  if (!me) return false
+  return me === clientSnapshot.redAddr.toLowerCase() || me === clientSnapshot.blueAddr.toLowerCase()
+}
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -58,7 +77,12 @@ export function initGameplayCamera(): void {
 
     if (!cameraEntity) return
 
-    if (clientSnapshot.hasActiveMatch === 1) {
+    // Participants always get the cinematic camera; spectators get it unless they
+    // opted into the free (standard Decentraland) camera.
+    const matchActive = clientSnapshot.hasActiveMatch === 1
+    const wantCinematic =
+      matchActive && (localIsMatchParticipant() || spectatorCameraMode === 'match')
+    if (wantCinematic) {
       activateCamera()
     } else {
       deactivateCamera()
