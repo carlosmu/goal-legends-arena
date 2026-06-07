@@ -2086,32 +2086,62 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       {showStreak && (
         <UiEntity
           uiTransform={{
-            margin: { top: '22vh' },
-            padding: 20,
+            positionType: 'absolute',
+            position: { top: 0, left: 0, right: 0, bottom: 0 },
+            width: '100%',
+            height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center'
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerFilter: 'none',
+            zIndex: 80
           }}
-          uiBackground={{ color: Color4.create(0.1, 0.1, 0.2, 0.9) }}
         >
-          <Label value="Keep playing on this spot?" fontSize={fs(30)} color={Color4.White()} />
-          <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 14 } }}>
-            <Button
-              value="YES"
-              fontSize={fs(30)}
-              color={Color4.White()}
-              uiTransform={{ width: 140, height: 44, margin: { right: 12 } }}
-              uiBackground={{ color: Color4.create(0.1, 0.65, 0.35, 1) }}
-              onMouseDown={() => room.send('streakDecision', { continue: 1 })}
-            />
-            <Button
-              value="NO"
-              fontSize={fs(30)}
-              color={Color4.White()}
-              uiTransform={{ width: 140, height: 44 }}
-              uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
-              onMouseDown={() => room.send('streakDecision', { continue: 0 })}
-            />
+          <UiEntity
+            uiTransform={{
+              positionType: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
+          >
+            {cpNineSliceFrame(cpSlicePx, cpInset)}
+            <UiEntity
+              uiTransform={{
+                positionType: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: {
+                  top: cpSlicePx + 20,
+                  bottom: cpSlicePx + 20,
+                  left: cpSlicePx + 32,
+                  right: cpSlicePx + 32
+                },
+                zIndex: 1
+              }}
+            >
+              <Label value="Keep playing on this spot?" fontSize={fs(30)} color={Color4.White()} textAlign="middle-center" />
+              <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 14 } }}>
+                <Button
+                  value="YES"
+                  fontSize={fs(30)}
+                  color={Color4.White()}
+                  uiTransform={{ width: 140, height: 44, margin: { right: 12 } }}
+                  uiBackground={{ color: Color4.create(0.1, 0.65, 0.35, 1) }}
+                  onMouseDown={() => room.send('streakDecision', { continue: 1 })}
+                />
+                <Button
+                  value="NO"
+                  fontSize={fs(30)}
+                  color={Color4.White()}
+                  uiTransform={{ width: 140, height: 44 }}
+                  uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
+                  onMouseDown={() => room.send('streakDecision', { continue: 0 })}
+                />
+              </UiEntity>
+            </UiEntity>
           </UiEntity>
         </UiEntity>
       )}
@@ -2119,44 +2149,73 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       {showSpectatorChallenge && (
         <UiEntity
           uiTransform={{
-            margin: { top: '30vh' },
-            padding: 20,
-            maxWidth: 640,
+            positionType: 'absolute',
+            position: { top: 0, left: 0, right: 0, bottom: 0 },
+            width: '100%',
+            height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center'
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerFilter: 'none',
+            zIndex: 80
           }}
-          uiBackground={{ color: Color4.create(0.2, 0.05, 0.15, 0.9) }}
         >
-          <Label
-            value={`${s.spectatorWinnerName} is the WINNER! Face the winner?`}
-            fontSize={fs(30)}
-            color={Color4.White()}
-            textAlign="middle-center"
-          />
-          <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 14 } }}>
-            <Button
-              value="YES"
-              fontSize={fs(30)}
-              color={Color4.White()}
-              uiTransform={{ width: 120, height: 40, margin: { right: 10 } }}
-              uiBackground={{ color: Color4.create(0.2, 0.55, 0.9, 1) }}
-              onMouseDown={() => {
-                // Claim the spot the loser just vacated (opposite of the winner's side).
-                const freeTeam = s.winnerSide === 'red' ? 'blue' : 'red'
-                takeSpotHandler?.(freeTeam)
+          <UiEntity
+            uiTransform={{
+              positionType: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
+          >
+            {cpNineSliceFrame(cpSlicePx, cpInset)}
+            <UiEntity
+              uiTransform={{
+                positionType: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: {
+                  top: cpSlicePx + 20,
+                  bottom: cpSlicePx + 20,
+                  left: cpSlicePx + 32,
+                  right: cpSlicePx + 32
+                },
+                zIndex: 1
               }}
-            />
-            <Button
-              value="NO"
-              fontSize={fs(30)}
-              color={Color4.White()}
-              uiTransform={{ width: 120, height: 40 }}
-              uiBackground={{ color: Color4.create(0.35, 0.35, 0.4, 1) }}
-              onMouseDown={() => {
-                spectatorChallengeDismissedFor = s.winnerStreakAddr.toLowerCase()
-              }}
-            />
+            >
+              <Label
+                value="Face the winner?"
+                fontSize={fs(30)}
+                color={Color4.White()}
+                textAlign="middle-center"
+              />
+              <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 14 } }}>
+                <Button
+                  value="YES"
+                  fontSize={fs(30)}
+                  color={Color4.White()}
+                  uiTransform={{ width: 140, height: 44, margin: { right: 12 } }}
+                  uiBackground={{ color: Color4.create(0.1, 0.65, 0.35, 1) }}
+                  onMouseDown={() => {
+                    // Claim the spot the loser just vacated (opposite of the winner's side).
+                    const freeTeam = s.winnerSide === 'red' ? 'blue' : 'red'
+                    takeSpotHandler?.(freeTeam)
+                  }}
+                />
+                <Button
+                  value="NO"
+                  fontSize={fs(30)}
+                  color={Color4.White()}
+                  uiTransform={{ width: 140, height: 44 }}
+                  uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
+                  onMouseDown={() => {
+                    spectatorChallengeDismissedFor = s.winnerStreakAddr.toLowerCase()
+                  }}
+                />
+              </UiEntity>
+            </UiEntity>
           </UiEntity>
         </UiEntity>
       )}
