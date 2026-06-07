@@ -10,28 +10,6 @@ let sfxEntity: ReturnType<typeof engine.addEntity> | null = null
 
 let prevPhase = ''
 let resultSoundPlayed = false
-let crowdFollowRegistered = false
-
-/**
- * AudioSource es 3D/espacial: si el clip está fijo en el centro del campo y el
- * jugador spawnea lejos (p. ej. portería), el volumen cae mucho y parece “mudo”.
- * Seguimos la posición del PlayerEntity para que el ambiente se oiga estable.
- */
-function registerCrowdFollowPlayer() {
-  if (crowdFollowRegistered) return
-  crowdFollowRegistered = true
-  engine.addSystem(() => {
-    if (!Transform.has(engine.PlayerEntity)) return
-    const p = Transform.get(engine.PlayerEntity).position
-    const pos = Vector3.create(p.x, p.y, p.z)
-    if (crowdEntity !== null && Transform.has(crowdEntity)) {
-      Transform.getMutable(crowdEntity).position = pos
-    }
-    if (sfxEntity !== null && Transform.has(sfxEntity)) {
-      Transform.getMutable(sfxEntity).position = pos
-    }
-  })
-}
 
 export function resetAudioManager(): void {
   if (crowdEntity !== null && Transform.has(crowdEntity)) {
@@ -54,9 +32,10 @@ export function initAudioManager() {
     audioClipUrl: AUDIO.crowd,
     playing: true,
     loop: true,
-    volume: 0.65
+    volume: 0.65,
+    // Non-spatial: constant volume, no L/R panning regardless of camera position.
+    global: true
   })
-  registerCrowdFollowPlayer()
 
   // Algunos runtimes arrancan mejor el loop si se re-dispara tras un tick.
   utils.timers.setTimeout(() => {
@@ -72,7 +51,9 @@ export function initAudioManager() {
     audioClipUrl: AUDIO.whistle,
     playing: false,
     loop: false,
-    volume: 0.9
+    volume: 0.9,
+    // Non-spatial: centered feedback SFX (whistle/goal/save/winner), equal in both ears.
+    global: true
   })
 }
 
