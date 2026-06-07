@@ -276,6 +276,15 @@ let leaveMatchConfirmOpen = false
 /** Panel de debug (state, sync, timeout…) abierto con el botón "i". */
 let debugInfoOpen = false
 
+/** Local "NO" dismissal of the current "Face the winner" challenge (per winner). */
+let spectatorChallengeDismissedFor = ''
+
+/** setup.ts registra aquí cómo ocupar un spot + mover al jugador (evita import circular). */
+let takeSpotHandler: ((team: 'red' | 'blue') => void) | null = null
+export function registerTakeSpotHandler(fn: (team: 'red' | 'blue') => void): void {
+  takeSpotHandler = fn
+}
+
 export function markSpotClickedLocally(): void {
   lastSpotClickAt = Date.now()
 }
@@ -493,13 +502,19 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     !!me &&
     !!s.winnerStreakAddr &&
     me.toLowerCase() === s.winnerStreakAddr.toLowerCase()
+  // The match loser is on cooldown only when others are waiting (>2 in scene): they
+  // don't get to challenge. With just 2 players, the loser may rematch immediately.
+  const meIsLoser = !!me && !!s.loserAddr && me.toLowerCase() === s.loserAddr.toLowerCase()
+  const loserOnCooldown = meIsLoser && s.playersInScene > 2
   const showSpectatorChallenge =
     splashDismissed &&
     spotPromptsReady &&
     s.spectatorChallengeActive === 1 &&
     !!me &&
     !!s.winnerStreakAddr &&
-    me.toLowerCase() !== s.winnerStreakAddr.toLowerCase()
+    me.toLowerCase() !== s.winnerStreakAddr.toLowerCase() &&
+    !loserOnCooldown &&
+    spectatorChallengeDismissedFor !== s.winnerStreakAddr.toLowerCase()
 
   // Prefetch scoreboard faces whenever active players change
   if (s.hasActiveMatch === 1) prefetchLeaderboardFaces([s.redAddr, s.blueAddr].filter(Boolean))
@@ -1995,7 +2010,11 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               color={Color4.White()}
               uiTransform={{ width: 120, height: 40, margin: { right: 10 } }}
               uiBackground={{ color: Color4.create(0.2, 0.55, 0.9, 1) }}
-              onMouseDown={() => room.send('spectatorChallenge', { accept: 1 })}
+              onMouseDown={() => {
+                // Claim the spot the loser just vacated (opposite of the winner's side).
+                const freeTeam = s.winnerSide === 'red' ? 'blue' : 'red'
+                takeSpotHandler?.(freeTeam)
+              }}
             />
             <Button
               value="NO"
@@ -2003,7 +2022,9 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               color={Color4.White()}
               uiTransform={{ width: 120, height: 40 }}
               uiBackground={{ color: Color4.create(0.35, 0.35, 0.4, 1) }}
-              onMouseDown={() => room.send('spectatorChallenge', { accept: 0 })}
+              onMouseDown={() => {
+                spectatorChallengeDismissedFor = s.winnerStreakAddr.toLowerCase()
+              }}
             />
           </UiEntity>
         </UiEntity>

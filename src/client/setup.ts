@@ -22,15 +22,28 @@ import { tickAudioManager } from './audioManager'
 import { initAnimationManager, tickAnimationManager } from './animationManager'
 import { tickFireworkManager } from './fireworkManager'
 import { initSpotBillboardManager, tickSpotBillboardManager } from './spotBillboardManager'
-import { markSpotClickedLocally } from './uiManager'
+import { markSpotClickedLocally, registerTakeSpotHandler } from './uiManager'
 
 let syncedPinged = false
 let loggedSyncReady = false
+
+let redSpotEntity: Entity | undefined
+let blueSpotEntity: Entity | undefined
 
 function tryOccupySpot(team: 'red' | 'blue') {
   if (!isStateSyncronized()) return
   markSpotClickedLocally()
   room.send('occupySpot', { team })
+}
+
+/** Take a spot from a UI button (e.g. "Face the winner"): claim it and walk the player onto it. */
+export function takeSpotFromUI(team: 'red' | 'blue') {
+  tryOccupySpot(team)
+  const entity = team === 'red' ? redSpotEntity : blueSpotEntity
+  if (entity && Transform.has(entity)) {
+    const pos = Transform.get(entity).position
+    void movePlayerTo({ newRelativePosition: pos })
+  }
 }
 
 function registerSpotPointerHandlers(entity: Entity | undefined, team: 'red' | 'blue', hover: string) {
@@ -61,6 +74,9 @@ export function initClient() {
 
   const blue = findEntityByName('Blue_Spot')
   const red = findEntityByName('Red_Spot')
+  blueSpotEntity = blue
+  redSpotEntity = red
+  registerTakeSpotHandler(takeSpotFromUI)
   registerSpotPointerHandlers(blue, 'blue', '')
   registerSpotPointerHandlers(red, 'red', '')
   initSpotBillboardManager(red, blue)
