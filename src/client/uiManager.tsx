@@ -428,7 +428,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const pickPanelGapPx = pickMobile ? -20 : -20
   /** Margin inferior del panel dive/shoot — distancia al borde de pantalla. */
   const pickPanelMarginBottom = pickMobile ? '1vh' : '3vh'
-  /** Solo baja el fondo E4–H5; título y picker (L/C/R) no se mueven. */
+  /** Solo baja el fondo nine-slice; título y picker (L/C/R) no se mueven. */
   const pickPanelBgShiftDownPx = pickMobile ? 32 : 24
   /** Alto del contenido (título + picker). */
   const pickPanelContentHeightPx =
@@ -621,7 +621,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const pickerSelectedName = getCountryByIso(getLocalCountry())?.name ?? '—'
 
   const cameraBtnW = pickMobile ? 180 : 140
-  const cameraBtnH = pickMobile ? 64 : 48
+  const cameraBtnH = pickMobile ? 96 : 72
   const cameraPanelPadY = cpSlicePx + 12
   const cameraPanelPadX = cpSlicePx + 18
   const cameraBtnActive = Color4.create(0.2, 0.55, 0.9, 1)
@@ -2128,7 +2128,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   value="YES"
                   fontSize={fs(30)}
                   color={Color4.White()}
-                  uiTransform={{ width: 140, height: 44, margin: { right: 12 } }}
+                  uiTransform={{ width: 140, height: 66, margin: { right: 12 } }}
                   uiBackground={{ color: Color4.create(0.1, 0.65, 0.35, 1) }}
                   onMouseDown={() => room.send('streakDecision', { continue: 1 })}
                 />
@@ -2136,7 +2136,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   value="NO"
                   fontSize={fs(30)}
                   color={Color4.White()}
-                  uiTransform={{ width: 140, height: 44 }}
+                  uiTransform={{ width: 140, height: 66 }}
                   uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
                   onMouseDown={() => room.send('streakDecision', { continue: 0 })}
                 />
@@ -2196,7 +2196,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   value="YES"
                   fontSize={fs(30)}
                   color={Color4.White()}
-                  uiTransform={{ width: 140, height: 44, margin: { right: 12 } }}
+                  uiTransform={{ width: 140, height: 66, margin: { right: 12 } }}
                   uiBackground={{ color: Color4.create(0.1, 0.65, 0.35, 1) }}
                   onMouseDown={() => {
                     // Claim the spot the loser just vacated (opposite of the winner's side).
@@ -2208,7 +2208,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   value="NO"
                   fontSize={fs(30)}
                   color={Color4.White()}
-                  uiTransform={{ width: 140, height: 44 }}
+                  uiTransform={{ width: 140, height: 66 }}
                   uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
                   onMouseDown={() => {
                     spectatorChallengeDismissedFor = s.winnerStreakAddr.toLowerCase()
