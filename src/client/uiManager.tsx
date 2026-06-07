@@ -1996,13 +1996,28 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           {s.winnerSide ? (
             <UiEntity
               uiTransform={{
-                padding: 32,
+                positionType: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center'
+                alignItems: 'stretch'
               }}
-              uiBackground={{ color: Color4.create(0.05, 0.12, 0.08, 0.92) }}
             >
+              {nineSliceFrame(leaderboardFrameSliceBackground, cpSlicePx, cpInset)}
+              <UiEntity
+                uiTransform={{
+                  positionType: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  padding: {
+                    top: cpSlicePx + 28,
+                    bottom: cpSlicePx + 28,
+                    left: cpSlicePx + 44,
+                    right: cpSlicePx + 44
+                  },
+                  zIndex: 1
+                }}
+              >
               <UiEntity
                 uiTransform={{ width: 256, height: 256, margin: { bottom: 16 } }}
                 uiBackground={
@@ -2010,7 +2025,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 }
               />
               <Label
-                value={`Winner: @${scoreboardSideName(s.winnerName, '', winnerEngineSide)}`}
+                value={`${scoreboardSideName(s.winnerName, '', winnerEngineSide)} wins!`}
                 fontSize={fs(50)}
                 color={Color4.create(1, 0.92, 0.35, 1)}
                 textAlign="middle-center"
@@ -2029,6 +2044,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   )}
                 />
               )}
+              </UiEntity>
             </UiEntity>
           ) : (
             <UiEntity
