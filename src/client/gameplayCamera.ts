@@ -106,22 +106,14 @@ export function initGameplayCamera(): void {
     }
     if (!winnerCameraEntity) winnerCameraEntity = createWinnerCamera()
 
-    // Participants always get the cinematic camera; spectators get it unless they
-    // opted into the free (standard Decentraland) camera.
-    const matchActive = clientSnapshot.hasActiveMatch === 1
-    const wantCinematic =
-      matchActive && (localIsMatchParticipant() || spectatorCameraMode === 'match')
-
-    if (!wantCinematic) {
-      setActiveCamera(null)
-      return
-    }
-
-    // Post-match (winner screen + leaderboard, until back to lobby): winner camera,
-    // whose pivot spins continuously in Y for a non-static cinematic shot.
     const phase = clientSnapshot.phase
+    const matchActive = clientSnapshot.hasActiveMatch === 1
+
+    // Post-match (winner screen + leaderboard, until back to lobby): the winner camera
+    // is shown to EVERYONE, regardless of their player/match camera choice. Its pivot
+    // spins continuously in Y for a non-static cinematic shot.
     const isPostMatch =
-      phase === GameState.MatchEnd || phase === GameState.WinnerContinuePrompt
+      matchActive && (phase === GameState.MatchEnd || phase === GameState.WinnerContinuePrompt)
     if (isPostMatch) {
       setActiveCamera(winnerCameraEntity)
       if (winnerPivotEntity) {
@@ -129,9 +121,18 @@ export function initGameplayCamera(): void {
         const yaw = WINNER_CAM_BASE_YAW + WINNER_CAM_SPIN_DEG_PER_SEC * winnerCamSpinT
         Transform.getMutable(winnerPivotEntity).rotation = Quaternion.fromEulerDegrees(0, yaw, 0)
       }
-    } else if (cameraEntity) {
+      return
+    }
+    winnerCamSpinT = 0
+
+    // Otherwise: participants always get the gameplay cinematic; spectators get it
+    // unless they opted into the free (standard Decentraland) camera.
+    const wantCinematic =
+      matchActive && (localIsMatchParticipant() || spectatorCameraMode === 'match')
+    if (wantCinematic && cameraEntity) {
       setActiveCamera(cameraEntity)
-      winnerCamSpinT = 0
+    } else {
+      setActiveCamera(null)
     }
   })
 }
