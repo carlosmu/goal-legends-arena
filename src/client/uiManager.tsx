@@ -35,7 +35,6 @@ import {
 import {
   logoBackground,
   scoreboardBackground,
-  welcomeChooseSpotBackground,
   welcomeChooseSpotOverlayBackground,
   pickDirectionPanelBackground,
   pickDirectionTitleDiveBackground,
@@ -93,6 +92,23 @@ function isKickerView(s: typeof clientSnapshot, side: 'red' | 'blue' | null): bo
 
 function fs(size: number): number {
   return isMobile() ? Math.ceil(size * 1.5) : size
+}
+
+/** Nine-slice frame from the flag-selector atlas cell (B4), filling its relative parent. */
+function cpNineSliceFrame(slicePx: number, inset: number) {
+  return (
+    <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0, right: 0, bottom: 0 }, zIndex: 0 }}>
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0 }, width: slicePx, height: slicePx }} uiBackground={countryPickerFrameSliceBackground(1)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, right: 0 }, width: slicePx, height: slicePx }} uiBackground={countryPickerFrameSliceBackground(3)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: 0 }, width: slicePx, height: slicePx }} uiBackground={countryPickerFrameSliceBackground(7)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, right: 0 }, width: slicePx, height: slicePx }} uiBackground={countryPickerFrameSliceBackground(9)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: inset, right: inset }, height: slicePx }} uiBackground={countryPickerFrameSliceBackground(2)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: inset, right: inset }, height: slicePx }} uiBackground={countryPickerFrameSliceBackground(8)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: inset, bottom: inset, left: 0 }, width: slicePx }} uiBackground={countryPickerFrameSliceBackground(4)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: inset, bottom: inset, right: 0 }, width: slicePx }} uiBackground={countryPickerFrameSliceBackground(6)} />
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: inset, bottom: inset, left: inset, right: inset } }} uiBackground={countryPickerFrameSliceBackground(5)} />
+    </UiEntity>
+  )
 }
 
 /** Scoreboard pic/flag sizes in px; ×1.5 on mobile (same factor as fs). */
@@ -601,17 +617,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       }}
     >
       {/* Nine-slice frame from the flag selector cell (B4) — no green fill. */}
-      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0, right: 0, bottom: 0 }, zIndex: 0 }}>
-        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: 0 }, width: cpSlicePx, height: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(1)} />
-        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, right: 0 }, width: cpSlicePx, height: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(3)} />
-        <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: 0 }, width: cpSlicePx, height: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(7)} />
-        <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, right: 0 }, width: cpSlicePx, height: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(9)} />
-        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 0, left: cpInset, right: cpInset }, height: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(2)} />
-        <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 0, left: cpInset, right: cpInset }, height: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(8)} />
-        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: cpInset, bottom: cpInset, left: 0 }, width: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(4)} />
-        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: cpInset, bottom: cpInset, right: 0 }, width: cpSlicePx }} uiBackground={countryPickerFrameSliceBackground(6)} />
-        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: cpInset, bottom: cpInset, left: cpInset, right: cpInset } }} uiBackground={countryPickerFrameSliceBackground(5)} />
-      </UiEntity>
+      {cpNineSliceFrame(cpSlicePx, cpInset)}
       <UiEntity
         uiTransform={{
           positionType: 'relative',
@@ -1679,15 +1685,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               positionType: 'relative'
             }}
           >
-            <UiEntity
-              uiTransform={{
-                positionType: 'absolute',
-                position: { top: 0, left: 0 },
-                width: '100%',
-                height: '100%'
-              }}
-              uiBackground={welcomeChooseSpotBackground()}
-            />
+            {cpNineSliceFrame(cpSlicePx, cpInset)}
             <UiEntity
               uiTransform={{
                 positionType: 'absolute',
