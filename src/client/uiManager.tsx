@@ -42,7 +42,6 @@ import {
   pickDirectionLeftBackground,
   pickDirectionCenterBackground,
   pickDirectionRightBackground,
-  waitingOpponentBackground,
   waitingOpponentTitleBackground,
   waitingOpponentPvEButtonBackground,
   waitingOpponentCancelButtonBackground,
@@ -1736,16 +1735,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               positionType: 'relative'
             }}
           >
-            <UiEntity
-              uiTransform={{
-                positionType: 'absolute',
-                position: { top: 0, left: 0 },
-                width: '100%',
-                height: '100%',
-                zIndex: 0
-              }}
-              uiBackground={waitingOpponentBackground()}
-            />
+            {cpNineSliceFrame(cpSlicePx, cpInset)}
             <UiEntity
               uiTransform={{
                 positionType: 'relative',
@@ -1784,7 +1774,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: { top: 18 }
+              margin: { top: isMobile() ? 48 : 18 }
             }}
           >
             <Button
