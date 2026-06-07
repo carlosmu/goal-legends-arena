@@ -2010,10 +2010,10 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   flexDirection: 'column',
                   alignItems: 'center',
                   padding: {
-                    top: cpSlicePx + 28,
-                    bottom: cpSlicePx + 28,
-                    left: cpSlicePx + 44,
-                    right: cpSlicePx + 44
+                    top: Math.floor((cpSlicePx + 28) / 2),
+                    bottom: Math.floor((cpSlicePx + 28) / 2),
+                    left: Math.floor((cpSlicePx + 44) / 2),
+                    right: Math.floor((cpSlicePx + 44) / 2)
                   },
                   zIndex: 1
                 }}
