@@ -149,6 +149,8 @@ export const BLUE_PIC_BG_COORD = 'C7'
 export const RED_PIC_BG_COORD = 'D7'
 /** Default avatar when profile face URL is unavailable (mobile, guest, fetch failed). */
 export const DEFAULT_PROFILE_PIC_COORD = 'G7'
+/** Fallback flag when a player's country is unknown/cleared (e.g. after they leave). */
+export const FALLBACK_FLAG_COORD = 'G8'
 /** Extra badges on scoreboard player-B row (flags.png). */
 export const SCOREBOARD_BADGE_F7 = 'F7'
 export const SCOREBOARD_BADGE_H7 = 'H7'
@@ -221,7 +223,7 @@ export function splashStartButtonBackground(hover = false) {
 export function flagBackground(iso: string) {
   const country = getCountryByIso(iso)
   if (!country?.coordinates) {
-    return { color: Color4.create(0, 0, 0, 0) }
+    return atlasCellBackground(FALLBACK_FLAG_COORD)
   }
   return atlasCellBackground(country.coordinates)
 }
