@@ -123,7 +123,7 @@ export function initClient() {
     }
 
     tickAudioManager(s)
-    tickAnimationManager(s.phase)
+    tickAnimationManager(s)
     tickFireworkManager(s.phase)
     tickSpotBillboardManager(s)
     if (!syncedPinged && isStateSyncronized()) {

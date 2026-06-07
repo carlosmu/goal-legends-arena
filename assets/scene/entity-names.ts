@@ -6,7 +6,6 @@
  */
 export enum EntityNames {
   Admin_Tools = "Admin Tools",
-  Ball_glb_2 = "Ball.glb_2",
   Blue_Spot = "Blue_Spot",
   Cinematic_Camera_Pivot = "Cinematic_Camera_Pivot",
   Firework_01 = "Firework_01",

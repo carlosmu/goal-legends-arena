@@ -930,27 +930,6 @@
             "parent": 515
           }
         },
-        "552": {
-          "json": {
-            "position": {
-              "x": 16,
-              "y": 0.030846694484353065,
-              "z": 17.200000762939453
-            },
-            "rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0,
-              "w": 1
-            },
-            "scale": {
-              "x": 0.699999988079071,
-              "y": 0.699999988079071,
-              "z": 0.699999988079071
-            },
-            "parent": 0
-          }
-        },
         "553": {
           "json": {
             "position": {
@@ -1165,14 +1144,14 @@
           "json": {
             "position": {
               "x": 16,
-              "y": 0.30792099237442017,
-              "z": 16
+              "y": 0.2199999988079071,
+              "z": 17.170000076293945
             },
             "rotation": {
               "x": 0,
-              "y": 0,
+              "y": 1,
               "z": 0,
-              "w": 1
+              "w": 0
             },
             "scale": {
               "x": 1,
@@ -1377,13 +1356,6 @@
             "invisibleMeshesCollisionMask": 3
           }
         },
-        "552": {
-          "json": {
-            "src": "assets/models/ball.glb",
-            "visibleMeshesCollisionMask": 0,
-            "invisibleMeshesCollisionMask": 3
-          }
-        },
         "554": {
           "json": {
             "src": "assets/models/stadium_flags.glb",
@@ -1407,7 +1379,7 @@
         },
         "564": {
           "json": {
-            "src": "assets/models/animations/Ball.glb",
+            "src": "assets/models/animations/ball.glb",
             "visibleMeshesCollisionMask": 0,
             "invisibleMeshesCollisionMask": 3
           }
@@ -1808,11 +1780,6 @@
             "value": "Firework_8"
           }
         },
-        "552": {
-          "json": {
-            "value": "ball.glb"
-          }
-        },
         "553": {
           "json": {
             "value": "Sit Spot_2"
@@ -1870,7 +1837,7 @@
         },
         "564": {
           "json": {
-            "value": "Ball.glb_2"
+            "value": "ball.glb"
           }
         }
       }
@@ -2110,14 +2077,14 @@
             "visible": false
           }
         },
-        "552": {
+        "563": {
           "json": {
             "visible": false
           }
         },
-        "563": {
+        "564": {
           "json": {
-            "visible": false
+            "visible": true
           }
         }
       }
@@ -2318,14 +2285,13 @@
                   516,
                   532,
                   542,
+                  564,
                   543,
                   513,
                   515,
-                  552,
                   563,
                   554,
-                  560,
-                  564
+                  560
                 ]
               },
               {
@@ -2540,10 +2506,6 @@
                 "children": []
               },
               {
-                "entity": 552,
-                "children": []
-              },
-              {
                 "entity": 554,
                 "children": []
               },
@@ -2736,9 +2698,6 @@
           "json": {}
         },
         "551": {
-          "json": {}
-        },
-        "552": {
           "json": {}
         },
         "553": {
@@ -4177,10 +4136,6 @@
             "email": "carlos.damian.munoz@gmail.com",
             "tags": [],
             "layout": {
-              "base": {
-                "x": 0,
-                "y": 0
-              },
               "parcels": [
                 {
                   "x": 0,
@@ -4206,8 +4161,14 @@
                   "x": 1,
                   "y": 0
                 }
-              ]
+              ],
+              "base": {
+                "x": 0,
+                "y": 0
+              }
             },
+            "silenceVoiceChat": false,
+            "disablePortableExperiences": false,
             "spawnPoints": [
               {
                 "name": "SpawnArea1",
@@ -4221,8 +4182,11 @@
                     ]
                   },
                   "y": {
-                    "$case": "single",
-                    "value": 1.2899999618530273
+                    "$case": "range",
+                    "value": [
+                      1.2899999618530273,
+                      1.2899999618530273
+                    ]
                   },
                   "z": {
                     "$case": "range",
@@ -4240,7 +4204,8 @@
               }
             ],
             "skyboxConfig": {},
-            "creator": "0x4B538E1E044922aec2F428EC7E17A99f44205fF9"
+            "creator": "0x4B538E1E044922aec2F428EC7E17A99f44205fF9",
+            "disableNearbyVoiceChat": false
           }
         }
       }

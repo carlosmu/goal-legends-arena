@@ -92,9 +92,12 @@ function bootstrapDeferredLoad(): void {
   const toDefer: DeferredEntity[] = []
   for (const [entity] of engine.getEntitiesWith(GltfContainer)) {
     if (!isLiveEntity(entity)) continue
-    const tier = tierForGltfSrc(GltfContainer.get(entity).src)
+    const src = GltfContainer.get(entity).src
+    const tier = tierForGltfSrc(src)
     if (tier === TIER_ARENA) continue
     hideEntity(entity)
+    // The animated ball stays hidden; animationManager toggles it during shots.
+    if (src.includes('animations/ball.glb')) continue
     toDefer.push({ entity, tier })
   }
   deferredVisible.push(...toDefer)
