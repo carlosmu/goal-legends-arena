@@ -8,6 +8,7 @@ import { room } from '../shared/messages'
 import {
   AIM_COLLIDERS,
   BAN_COOLDOWN_MS,
+  GOAL_REVEAL_MS,
   MATCH_END_UI_MS,
   REGULATION_SHOTS,
   ROUND_RESULT_MS,
@@ -188,6 +189,7 @@ export function createStateEntity(): Entity {
     suddenDeath: 0,
     stateEpoch: 0,
     phaseDeadlineMs: 0,
+    revealAtMs: 0,
     inactivityDeadlineMs: 0,
     redCountry: '',
     blueCountry: '',
@@ -303,8 +305,25 @@ function tryEnterResolving() {
   maybeFillAiGk()
   if (!m.kickerPick || !m.gkPick) return
 
+  // Enter ResolvingRound immediately so the shoot animation starts, but defer the
+  // score bump + result banner until GOAL_REVEAL_MS in (see revealRoundResult), so
+  // the UI lands when the ball crosses the line instead of spoiling it at frame 0.
   const goal = m.kickerPick !== m.gkPick
   m.lastRoundWasGoal = goal ? 1 : 0
+  m.resultLine = ''
+  m.phase = GameState.ResolvingRound
+  const t = nowMs()
+  m.revealAtMs = t + GOAL_REVEAL_MS
+  m.phaseDeadlineMs = t + ROUND_RESULT_MS
+  bumpEpoch()
+}
+
+/** Applies the deferred round outcome: bumps the score and fills the result banner. */
+function revealRoundResult() {
+  const m = mut()
+  if (m.revealAtMs === 0) return
+  m.revealAtMs = 0
+  const goal = m.lastRoundWasGoal === 1
   if (goal) {
     if (m.kickerIsRed === 1) m.redScore++
     else m.blueScore++
@@ -314,8 +333,6 @@ function tryEnterResolving() {
   const kickerName = m.kickerIsRed === 1 ? m.redName : m.blueName
   const gkName = m.kickerIsRed === 1 ? m.blueName : m.redName
   m.resultLine = `${goal ? 'GOAL!' : 'SAVE!'}\n${kickerName} chose ${kLab}\n${gkName} chose ${gLab}`
-  m.phase = GameState.ResolvingRound
-  m.phaseDeadlineMs = nowMs() + ROUND_RESULT_MS
   bumpEpoch()
 }
 
@@ -517,12 +534,20 @@ export function serverTick() {
     return
   }
 
+  // Reveal the deferred goal/save result partway through the shoot animation.
+  if (m.phase === GameState.ResolvingRound && m.revealAtMs > 0 && t >= m.revealAtMs) {
+    revealRoundResult()
+  }
+
   if (
     (m.phase === GameState.ResolvingRound || m.phase === GameState.MatchEnd) &&
     m.phaseDeadlineMs > 0 &&
     t >= m.phaseDeadlineMs
   ) {
     if (m.phase === GameState.ResolvingRound) {
+      // Safety: if the deadline somehow arrives before the reveal fired, apply it now
+      // so the score is final before win conditions are evaluated.
+      if (m.revealAtMs > 0) revealRoundResult()
       applyEarlyOrContinueAfterRound()
     } else if (m.phase === GameState.MatchEnd) {
       if (m.mode === 'pvp' && m.winnerSide) {

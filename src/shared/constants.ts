@@ -11,6 +11,12 @@ export const AUDIO = {
 
 export const WAIT_OPPONENT_MS = 30_000
 export const ROUND_RESULT_MS = 4500
+/**
+ * Delay (ms) from entering ResolvingRound until the goal/save result is revealed
+ * (score bump + result banner + result SFX). Matches the moment the ball crosses
+ * the line in the shoot animation (~frame 75 @30fps) so the UI doesn't spoil it.
+ */
+export const GOAL_REVEAL_MS = 2500
 export const MATCH_END_UI_MS = 6500
 export const SHOOT_TIMEOUT_MS = 30_000
 export const BAN_COOLDOWN_MS = 120_000

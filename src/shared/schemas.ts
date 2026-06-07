@@ -57,6 +57,8 @@ export const PenaltyMatchState = engine.defineComponent('gla:penalty-match-state
   stateEpoch: Schemas.Int,
   /** Generic timer for ResolvingRound / MatchEnd transitions. */
   phaseDeadlineMs: Schemas.Number,
+  /** During ResolvingRound, epoch ms when the goal/save result is revealed (score + banner); 0 once revealed. */
+  revealAtMs: Schemas.Number,
   /** Inactivity timeout deadline during SelectingDirections (ms epoch); 0 if no countdown active. */
   inactivityDeadlineMs: Schemas.Number,
   /** ISO flag code for red player (e.g. "ar"); empty if not set. */
