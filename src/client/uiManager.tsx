@@ -231,6 +231,12 @@ const PICK_BTN_TINT_HOVER = 1
 let lbShowUntilMs = 0
 const LEADERBOARD_TOP_N = 10
 const LEADERBOARD_UI_MS = 30_000
+/** How long the leaderboard auto-shows right after a match ends. */
+const LEADERBOARD_MATCH_END_MS = 5000
+/** Small delay after the match-end leaderboard hides before the spot prompts appear. */
+const SPOT_PROMPT_DELAY_MS = 600
+/** Earliest time the "face the winner" / "keep playing" prompts may show. */
+let promptsShowAfterMs = 0
 
 export function openLeaderboard(): void {
   lbShowUntilMs = Date.now() + LEADERBOARD_UI_MS
@@ -307,8 +313,14 @@ const RootUi = () => {
 
 const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
 
+  if (prevPhase !== GameState.MatchEnd && s.phase === GameState.MatchEnd) {
+    // Block the spot prompts while the winner banner + match-end leaderboard show.
+    promptsShowAfterMs = Number.MAX_SAFE_INTEGER
+  }
   if (prevPhase === GameState.MatchEnd && s.phase !== GameState.MatchEnd) {
-    lbShowUntilMs = Date.now() + 5000
+    lbShowUntilMs = Date.now() + LEADERBOARD_MATCH_END_MS
+    // Reveal the prompts a beat after the leaderboard auto-hides.
+    promptsShowAfterMs = lbShowUntilMs + SPOT_PROMPT_DELAY_MS
   }
   prevPhase = s.phase
   const showLeaderboard = Date.now() < lbShowUntilMs
@@ -472,14 +484,18 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   )
   const showResult = splashDismissed && s.phase === GameState.ResolvingRound && !!s.resultLine
   const showMatchEnd = splashDismissed && s.phase === GameState.MatchEnd && !!s.winnerName
+  // Spot prompts wait until the match-end leaderboard has hidden (+ a small delay).
+  const spotPromptsReady = Date.now() >= promptsShowAfterMs
   const showStreak =
     splashDismissed &&
+    spotPromptsReady &&
     s.phase === GameState.WinnerContinuePrompt &&
     !!me &&
     !!s.winnerStreakAddr &&
     me.toLowerCase() === s.winnerStreakAddr.toLowerCase()
   const showSpectatorChallenge =
     splashDismissed &&
+    spotPromptsReady &&
     s.spectatorChallengeActive === 1 &&
     !!me &&
     !!s.winnerStreakAddr &&

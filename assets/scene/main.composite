@@ -934,19 +934,19 @@
           "json": {
             "position": {
               "x": 16,
-              "y": -1.5,
+              "y": 0.030846694484353065,
               "z": 17.200000762939453
-            },
-            "scale": {
-              "x": 0.699999988079071,
-              "y": 0.699999988079071,
-              "z": 0.699999988079071
             },
             "rotation": {
               "x": 0,
               "y": 0,
               "z": 0,
               "w": 1
+            },
+            "scale": {
+              "x": 0.699999988079071,
+              "y": 0.699999988079071,
+              "z": 0.699999988079071
             },
             "parent": 0
           }
@@ -1160,6 +1160,27 @@
             },
             "parent": 0
           }
+        },
+        "564": {
+          "json": {
+            "position": {
+              "x": 16,
+              "y": 0.30792099237442017,
+              "z": 16
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "parent": 0
+          }
         }
       }
     },
@@ -1304,6 +1325,20 @@
               }
             ]
           }
+        },
+        "564": {
+          "json": {
+            "states": [
+              {
+                "clip": "Goal_C",
+                "playing": false,
+                "weight": 1,
+                "speed": 1,
+                "loop": false,
+                "shouldReset": false
+              }
+            ]
+          }
         }
       }
     },
@@ -1366,6 +1401,13 @@
         "563": {
           "json": {
             "src": "assets/models/arrow.glb",
+            "visibleMeshesCollisionMask": 0,
+            "invisibleMeshesCollisionMask": 3
+          }
+        },
+        "564": {
+          "json": {
+            "src": "assets/models/animations/Ball.glb",
             "visibleMeshesCollisionMask": 0,
             "invisibleMeshesCollisionMask": 3
           }
@@ -1825,6 +1867,11 @@
           "json": {
             "value": "arrow.glb"
           }
+        },
+        "564": {
+          "json": {
+            "value": "Ball.glb_2"
+          }
         }
       }
     },
@@ -2208,9 +2255,9 @@
         "serializationType": "map"
       },
       "data": {
-        "1": {
+        "564": {
           "json": {
-            "gizmo": 0
+            "gizmo": 1
           }
         }
       }
@@ -2277,7 +2324,8 @@
                   552,
                   563,
                   554,
-                  560
+                  560,
+                  564
                 ]
               },
               {
@@ -2543,6 +2591,10 @@
               {
                 "entity": 563,
                 "children": []
+              },
+              {
+                "entity": 564,
+                "children": []
               }
             ]
           }
@@ -2720,6 +2772,9 @@
           "json": {}
         },
         "563": {
+          "json": {}
+        },
+        "564": {
           "json": {}
         }
       }
