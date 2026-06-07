@@ -18,7 +18,9 @@ export const ROUND_RESULT_MS = 4500
  */
 export const GOAL_REVEAL_MS = 2500
 export const MATCH_END_UI_MS = 6500
+/** Inactivity timeout to pick a direction; longer on the first shot so newcomers learn the mechanic. */
 export const SHOOT_TIMEOUT_MS = 30_000
+export const FIRST_SHOT_TIMEOUT_MS = 60_000
 export const BAN_COOLDOWN_MS = 120_000
 export const WINNER_STREAK_TIMEOUT_MS = 30_000
 /** Regulation: 5 kicks per player as kicker = 10 alternating shots. */

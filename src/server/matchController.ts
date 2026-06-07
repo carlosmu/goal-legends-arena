@@ -13,6 +13,7 @@ import {
   REGULATION_SHOTS,
   ROUND_RESULT_MS,
   SHOOT_TIMEOUT_MS,
+  FIRST_SHOT_TIMEOUT_MS,
   STANDS_FALLBACK,
   SYNC_STATE_ENTITY_ENUM,
   WAIT_OPPONENT_MS,
@@ -258,7 +259,8 @@ function resetMatchForNewGame(mode: MatchMode, pveHumanIsRed: boolean) {
   m.kickerIsRed = m.firstKickerIsRed
   m.phase = GameState.SelectingDirections
   m.phaseDeadlineMs = 0
-  m.inactivityDeadlineMs = 0
+  // Arm the inactivity timer from the very first shot (longer, so newcomers learn the mechanic).
+  m.inactivityDeadlineMs = nowMs() + FIRST_SHOT_TIMEOUT_MS
   if (isAiKicker()) {
     m.kickerPick = randomDir()
     m.gkPick = ''
@@ -687,8 +689,9 @@ export function registerServerMessages() {
       m.gkPick = dir
     }
 
-    // Reset inactivity timer on every player action
-    m.inactivityDeadlineMs = nowMs() + SHOOT_TIMEOUT_MS
+    // Reset inactivity timer on every player action (first shot keeps the longer grace).
+    const firstShot = m.shotIndex === 0 && m.suddenDeath === 0
+    m.inactivityDeadlineMs = nowMs() + (firstShot ? FIRST_SHOT_TIMEOUT_MS : SHOOT_TIMEOUT_MS)
 
     maybeFillAiGk()
     tryEnterResolving()
