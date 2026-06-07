@@ -5,6 +5,7 @@ import {
   MeshCollider,
   Material,
   Name,
+  PlayerIdentityData,
   pointerEventsSystem,
   InputAction,
   ColliderLayer,
@@ -33,6 +34,21 @@ let blueSpotEntity: Entity | undefined
 /** movePlayerTo places the avatar's feet at the target; lift slightly so it sits on the spot. */
 const SPOT_STAND_Y_OFFSET = 0.5
 
+function localPlayerAddr(): string {
+  if (!PlayerIdentityData.has(engine.PlayerEntity)) return ''
+  return PlayerIdentityData.get(engine.PlayerEntity).address.toLowerCase()
+}
+
+/** While the local player is already in an active match, spots aren't selectable
+ *  (clicking one would teleport them out of their kicker/keeper spot and camera view). */
+function localIsInActiveMatch(): boolean {
+  const s = readPenaltySnapshot()
+  if (s.hasActiveMatch !== 1) return false
+  const me = localPlayerAddr()
+  if (!me) return false
+  return me === s.redAddr.toLowerCase() || me === s.blueAddr.toLowerCase()
+}
+
 function tryOccupySpot(team: 'red' | 'blue') {
   if (!isStateSyncronized()) return
   markSpotClickedLocally()
@@ -58,6 +74,7 @@ function registerSpotPointerHandlers(entity: Entity | undefined, team: 'red' | '
   pointerEventsSystem.onPointerDown(
     { entity, opts: { button: InputAction.IA_POINTER, hoverText: hover, maxDistance: POINTER_EVENT_MAX_DISTANCE } },
     () => {
+      if (localIsInActiveMatch()) return
       tryOccupySpot(team)
       movePlayerToSpot(entity)
     }
