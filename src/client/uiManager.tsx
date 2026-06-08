@@ -174,10 +174,10 @@ function scoreboardLayout(): { width: `${number}vw`; height: `${number}vw` } {
   return { width: '35vw', height: '7vw' }
 }
 
-/** Nombre visible en UI; normaliza legacy "Training Mode" y fuerza "Engine" en PvE. */
+/** Nombre visible en UI; normaliza legacy "Training Mode" y fuerza "GL-Bot" en PvE. */
 function scoreboardSideName(name: string, fallback: string, isEngineSide: boolean): string {
-  if (isEngineSide) return 'Engine'
-  if (name === 'Training Mode' || name === 'Training AI') return 'Engine'
+  if (isEngineSide) return 'GL-Bot'
+  if (name === 'Training Mode' || name === 'Training AI' || name === 'Engine') return 'GL-Bot'
   return (name && name.trim()) || fallback
 }
 
