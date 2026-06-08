@@ -1,8 +1,9 @@
-import { engine, Transform, Entity, PlayerIdentityData, GltfContainer, Animator, InputModifier, executeTask } from '@dcl/sdk/ecs'
+import { engine, Transform, Entity, PlayerIdentityData, GltfContainer, Animator, InputModifier, executeTask, Name } from '@dcl/sdk/ecs'
 import { Vector3 } from '@dcl/sdk/math'
 import { movePlayerTo, triggerSceneEmote } from '~system/RestrictedActions'
 import { clientSnapshot, readPenaltySnapshot } from './gameStore'
 import { GameState, AimDirection } from '../shared/gameState'
+import { EntityNames } from '../../assets/scene/entity-names'
 
 // ── Spawn positions (from assets/scene/main.composite, entities 542 / 543) ────
 
@@ -11,6 +12,31 @@ const GK_POS     = Vector3.create(16,    0.22, 11.03)
 
 const KICKER_ROT = { x: 0, y: 1, z: 0, w: 0 }
 const GK_ROT     = { x: 0, y: 0, z: 0, w: 1 }
+
+type SpawnPose = { pos: Vector3; rot: { x: number; y: number; z: number; w: number } }
+
+function findEntityByName(target: string): Entity | null {
+  for (const [e, nm] of engine.getEntitiesWith(Name)) {
+    if (nm.value === target) return e
+  }
+  return null
+}
+
+/** Read pose (position + rotation) from a scene object (Kicker/Goalkeeper); fall back to defaults. */
+function spawnPose(name: string, fallbackPos: Vector3, fallbackRot: SpawnPose['rot']): SpawnPose {
+  const e = findEntityByName(name)
+  if (e && Transform.has(e)) {
+    const t = Transform.get(e)
+    return { pos: Vector3.create(t.position.x, t.position.y, t.position.z), rot: t.rotation }
+  }
+  return { pos: fallbackPos, rot: fallbackRot }
+}
+
+/** movePlayerTo takes no rotation, so face the player the way the object is rotated. */
+function lookTargetFor(pose: SpawnPose): Vector3 {
+  const forward = Vector3.rotate(Vector3.create(0, 0, 1), pose.rot)
+  return Vector3.add(pose.pos, forward)
+}
 
 const TRAINING_BOT_SRC = 'assets/models/avatar_training.glb'
 
@@ -167,9 +193,13 @@ function repositionPlayers() {
 
   // ── Move local player and freeze locomotion ────────────────────────────────
   lockLocomotion()
-  repositionPromise = localIsKicker
-    ? movePlayerTo({ newRelativePosition: KICKER_POS, cameraTarget: GK_POS }).then(() => {})
-    : movePlayerTo({ newRelativePosition: GK_POS, cameraTarget: KICKER_POS }).then(() => {})
+  const pose = localIsKicker
+    ? spawnPose(EntityNames.Kicker, KICKER_POS, KICKER_ROT)
+    : spawnPose(EntityNames.Goalkeeper, GK_POS, GK_ROT)
+  repositionPromise = movePlayerTo({
+    newRelativePosition: pose.pos,
+    cameraTarget: lookTargetFor(pose),
+  }).then(() => {})
 }
 
 function manageTrainingBot() {
@@ -185,11 +215,10 @@ function manageTrainingBot() {
 
   const kickerIsAI = kickerIsRed !== humanIsRed
   trainingBotIsKicker = kickerIsAI
-  if (kickerIsAI) {
-    showTrainingBot(KICKER_POS, KICKER_ROT)
-  } else {
-    showTrainingBot(GK_POS, GK_ROT)
-  }
+  const pose = kickerIsAI
+    ? spawnPose(EntityNames.Kicker, KICKER_POS, KICKER_ROT)
+    : spawnPose(EntityNames.Goalkeeper, GK_POS, GK_ROT)
+  showTrainingBot(pose.pos, pose.rot)
 }
 
 // ── System ─────────────────────────────────────────────────────────────────────
