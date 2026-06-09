@@ -74,6 +74,7 @@ let trainingBot: Entity | null = null
 
 // Format: `${hasActiveMatch}-${kickerIsRed}`
 let prevRoleKey         = ''
+let prevAtFirstShot     = false
 let prevPhase           = ''
 let trainingBotIsKicker = false
 let repositionPromise: Promise<void> = Promise.resolve()
@@ -232,8 +233,17 @@ export function initPlayerCloneSystem(): void {
     const localIsRed = localAddr === s.redAddr.toLowerCase()
     const localIsBlue = localAddr === s.blueAddr.toLowerCase()
 
+    // A brand-new match always begins at shot 0 in SelectingDirections. Between matches
+    // this is false (MatchEnd / WaitingOpponent / ResolvingRound), so every new match —
+    // including a "Face the winner" rematch where hasActiveMatch never drops to 0 and
+    // kickerIsRed may coincide with the previous round — produces a rising edge here and
+    // forces the instant reposition to the Kicker/Goalkeeper spots.
+    const atFirstShot = active === 1 && phase === GameState.SelectingDirections && s.shotIndex === 0
+    const newMatchStarted = atFirstShot && !prevAtFirstShot
+    prevAtFirstShot = atFirstShot
+
     const roleKey = `${active}-${s.kickerIsRed}`
-    if (roleKey !== prevRoleKey) {
+    if (roleKey !== prevRoleKey || newMatchStarted) {
       prevRoleKey = roleKey
       if (active === 1) {
         repositionPlayers()
