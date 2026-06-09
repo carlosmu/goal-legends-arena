@@ -43,7 +43,15 @@ const TRAINING_BOT_SRC = 'assets/models/avatar_training.glb'
 const ANIMS = 'assets/models/animations/'
 
 const K_INTRO_EMOTE  = ANIMS + 'K_intro_emote.glb'
+const K_IDLE_EMOTE   = ANIMS + 'K_idle_emote.glb'
 const GK_INTRO_EMOTE = ANIMS + 'GK_intro_emote.glb'
+
+/** Play length of K_intro_emote. The kicker intro is one-shot; once it ends the avatar
+ *  reverts to Decentraland's generic idle and the ball (an emote prop) vanishes. After
+ *  this long we loop K_idle_emote to hold the ball until the shot emote takes over.
+ *  Clip is 120f @ 30fps = 4000ms; we start the idle ~200ms early so emote-start latency
+ *  / timer drift can't open a generic-idle gap. */
+const K_INTRO_EMOTE_MS = 3500
 
 /** Kicker shoot emote carries the ball as a baked-in prop, so it depends on the pick +
  *  outcome (Goal_/Save_ L/C/R). The scene ball.glb is no longer shown for human kickers. */
@@ -186,6 +194,16 @@ function triggerLocalEmote(phase: string, gkPick: string) {
     await new Promise<void>((resolve) => setTimeout(() => resolve(), EMOTE_AFTER_MOVE_MS))
     if (token !== localEmoteToken) return
     playSceneEmote(src, loop)
+
+    // Human kicker intro is one-shot: once it ends the avatar reverts to DCL's generic
+    // idle and the ball (an emote prop) vanishes. Loop K_idle_emote after it to hold the
+    // ball until the shot emote replaces it on ResolvingRound (token guard cancels this
+    // if the phase changed in the meantime).
+    if (isKicker && isIntro) {
+      await new Promise<void>((resolve) => setTimeout(() => resolve(), K_INTRO_EMOTE_MS))
+      if (token !== localEmoteToken) return
+      playSceneEmote(K_IDLE_EMOTE, true)
+    }
   })
 }
 
