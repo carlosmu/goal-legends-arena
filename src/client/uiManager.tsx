@@ -30,7 +30,8 @@ import {
   scoreboardBadgeF7Background,
   scoreboardBadgeH7Background,
   scoreboardBadgeE7Background,
-  splashStartButtonBackground
+  splashStartButtonBackground,
+  atlasCellBackground
 } from './countryStore'
 import {
   logoBackground,
@@ -41,6 +42,9 @@ import {
   pickDirectionLeftBackground,
   pickDirectionCenterBackground,
   pickDirectionRightBackground,
+  pickDirectionLeftSelectedBackground,
+  pickDirectionCenterSelectedBackground,
+  pickDirectionRightSelectedBackground,
   waitingOpponentTitleBackground,
   waitingOpponentPvEButtonBackground,
   waitingOpponentCancelButtonBackground,
@@ -264,6 +268,8 @@ const LEADERBOARD_PANEL_WIDTH_MOBILE_VW = 45
 // Pick sizes use isMobile() inside RootUi only — not at module load (Creator Hub loads as desktop).
 const PICK_BTN_TINT_IDLE = 0.72
 const PICK_BTN_TINT_HOVER = 1
+/** flags.png atlas cell for the "selected" badge drawn over the chosen L/C/R button. */
+const PICK_SELECTED_BADGE_COORD = 'H8'
 
 let lbShowUntilMs = 0
 const LEADERBOARD_TOP_N = 10
@@ -295,6 +301,9 @@ let welcomeChooseSpotDismissed = false
 let hoverPickL = false
 let hoverPickC = false
 let hoverPickR = false
+/** Direction the local player picked this round; null until clicked. Drives the H8
+ *  "selected" badge drawn over the chosen L/C/R button. Reset each round. */
+let selectedPickDir: 'L' | 'C' | 'R' | null = null
 let hoverWaitPvE = false
 let hoverWaitCancel = false
 let hoverSplashStart = false
@@ -368,6 +377,9 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     // Reveal the prompts a beat after the leaderboard auto-hides.
     promptsShowAfterMs = lbShowUntilMs + SPOT_PROMPT_DELAY_MS
   }
+  // Clear the picked direction when the pick window closes, so the badge only shows
+  // on the chosen button during SelectingDirections and resets each round.
+  if (s.phase !== GameState.SelectingDirections) selectedPickDir = null
   prevPhase = s.phase
   const showLeaderboard = Date.now() < lbShowUntilMs
   const showCountryPicker = isPickerOpen()
@@ -439,6 +451,21 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     pickBtnHeight
   const pickPanelOuterHeightPx = pickPanelContentHeightPx + pickPanelBgShiftDownPx
 
+  // "Selected" badge (flags.png H8) drawn as a child of the chosen L/C/R button.
+  // For now: centered on X, anchored to the button's bottom (bottom: 0). Tweak here.
+  const pickBadgeSize = Math.floor(pickBtnWidth * 0.45)
+  const pickSelectedBadge = () => (
+    <UiEntity
+      uiTransform={{
+        positionType: 'absolute',
+        position: { bottom: 0, left: Math.floor((pickBtnWidth - pickBadgeSize) / 2) },
+        width: pickBadgeSize,
+        height: pickBadgeSize
+      }}
+      uiBackground={atlasCellBackground(PICK_SELECTED_BADGE_COORD)}
+    />
+  )
+
   const pickDirectionPanel = (titleBg: ReturnType<typeof pickDirectionTitleDiveBackground>) => (
     <UiEntity
       uiTransform={{
@@ -496,39 +523,42 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           alignItems: 'center'
         }}
       >
-        <Button
-          value=""
-          uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
+        <UiEntity
+          uiTransform={{ width: pickBtnWidth, height: pickBtnHeight, positionType: 'relative' }}
           uiBackground={{
-            ...pickDirectionLeftBackground(),
+            ...(selectedPickDir === 'L' ? pickDirectionLeftSelectedBackground() : pickDirectionLeftBackground()),
             color: Color4.create(1, 1, 1, hoverPickL ? PICK_BTN_TINT_HOVER : PICK_BTN_TINT_IDLE)
           }}
-          onMouseDown={() => room.send('submitDirection', { dir: 'L' })}
+          onMouseDown={() => { selectedPickDir = 'L'; room.send('submitDirection', { dir: 'L' }) }}
           onMouseEnter={() => { hoverPickL = true }}
           onMouseLeave={() => { hoverPickL = false }}
-        />
-        <Button
-          value=""
-          uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
+        >
+          {selectedPickDir === 'L' && pickSelectedBadge()}
+        </UiEntity>
+        <UiEntity
+          uiTransform={{ width: pickBtnWidth, height: pickBtnHeight, positionType: 'relative' }}
           uiBackground={{
-            ...pickDirectionCenterBackground(),
+            ...(selectedPickDir === 'C' ? pickDirectionCenterSelectedBackground() : pickDirectionCenterBackground()),
             color: Color4.create(1, 1, 1, hoverPickC ? PICK_BTN_TINT_HOVER : PICK_BTN_TINT_IDLE)
           }}
-          onMouseDown={() => room.send('submitDirection', { dir: 'C' })}
+          onMouseDown={() => { selectedPickDir = 'C'; room.send('submitDirection', { dir: 'C' }) }}
           onMouseEnter={() => { hoverPickC = true }}
           onMouseLeave={() => { hoverPickC = false }}
-        />
-        <Button
-          value=""
-          uiTransform={{ width: pickBtnWidth, height: pickBtnHeight }}
+        >
+          {selectedPickDir === 'C' && pickSelectedBadge()}
+        </UiEntity>
+        <UiEntity
+          uiTransform={{ width: pickBtnWidth, height: pickBtnHeight, positionType: 'relative' }}
           uiBackground={{
-            ...pickDirectionRightBackground(),
+            ...(selectedPickDir === 'R' ? pickDirectionRightSelectedBackground() : pickDirectionRightBackground()),
             color: Color4.create(1, 1, 1, hoverPickR ? PICK_BTN_TINT_HOVER : PICK_BTN_TINT_IDLE)
           }}
-          onMouseDown={() => room.send('submitDirection', { dir: 'R' })}
+          onMouseDown={() => { selectedPickDir = 'R'; room.send('submitDirection', { dir: 'R' }) }}
           onMouseEnter={() => { hoverPickR = true }}
           onMouseLeave={() => { hoverPickR = false }}
-        />
+        >
+          {selectedPickDir === 'R' && pickSelectedBadge()}
+        </UiEntity>
       </UiEntity>
       </UiEntity>
     </UiEntity>

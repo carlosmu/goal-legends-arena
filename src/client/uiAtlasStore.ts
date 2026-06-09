@@ -74,6 +74,19 @@ export function pickDirectionRightBackground() {
   return uiAtlasRangeBackground('G1', 'G1')
 }
 
+/** Selected-state sprites for the L/C/R buttons (E1/F1/G1 → E4/F4/G4). */
+export function pickDirectionLeftSelectedBackground() {
+  return uiAtlasRangeBackground('E4', 'E4')
+}
+
+export function pickDirectionCenterSelectedBackground() {
+  return uiAtlasRangeBackground('F4', 'F4')
+}
+
+export function pickDirectionRightSelectedBackground() {
+  return uiAtlasRangeBackground('G4', 'G4')
+}
+
 function uiAtlasRangeHalfBackground(from: string, to: string, useTopHalf: boolean) {
   const fullUvs = uiAtlasRangeToUvs(from, to)
   const u0 = fullUvs[0]
