@@ -249,9 +249,42 @@ function manageTrainingBot() {
   showTrainingBot(pose.pos, pose.rot)
 }
 
+// ── Emote preloading ─────────────────────────────────────────────────────────────
+
+/** Every shot emote, both roles (K_Goal/K_Save L/C/R + GK_shoot L/C/R), via the same
+ *  naming helpers so this stays in sync with what actually gets triggered. */
+function allShotEmoteSrcs(): string[] {
+  const dirs: AimDirection[] = ['L', 'C', 'R']
+  const out: string[] = []
+  for (const d of dirs) {
+    out.push(kickerShootEmoteSrc(d, true))
+    out.push(kickerShootEmoteSrc(d, false))
+    out.push(gkShootEmoteSrc(d))
+  }
+  return out
+}
+
+let emotesPreloaded = false
+
+/** Warm the asset cache for every kicker/keeper emote at startup. The first time a scene
+ *  emote is triggered its GLB is fetched/parsed on the spot, which lags that one shot and
+ *  desyncs it from the other player's. Loading each GLB once as a hidden GltfContainer
+ *  (scale 0, below ground) primes the same file cache so the first real use is instant. */
+function preloadEmotes(): void {
+  if (emotesPreloaded) return
+  emotesPreloaded = true
+  const srcs = [K_INTRO_EMOTE, K_IDLE_EMOTE, GK_INTRO_EMOTE, ...allShotEmoteSrcs()]
+  for (const src of srcs) {
+    const e = engine.addEntity()
+    Transform.create(e, { position: Vector3.create(0, -50, 0), scale: Vector3.Zero() })
+    GltfContainer.create(e, { src })
+  }
+}
+
 // ── System ─────────────────────────────────────────────────────────────────────
 
 export function initPlayerCloneSystem(): void {
+  preloadEmotes()
   engine.addSystem((_dt: number) => {
     const s       = readPenaltySnapshot()
     const active  = s.hasActiveMatch
