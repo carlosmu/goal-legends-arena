@@ -48,6 +48,15 @@ function ballClipFor(kickerPick: string, goal: boolean): string | null {
   return `${goal ? 'Goal' : 'Save'}_${dir}`
 }
 
+/**
+ * True only when the GL-Bot (not a human) is the current kicker in a PvE match.
+ * Human kickers now carry the ball baked into their shoot/intro emotes, so the scene
+ * ball.glb is only needed for the bot, which is Animator-driven and can't hold a prop.
+ */
+function kickerIsBot(s: ClientSnapshot): boolean {
+  return s.mode === 'pve' && (s.kickerIsRed === 1) !== (s.pveHumanIsRed === 1)
+}
+
 function showAndPlay(e: Entity, clip: string): void {
   VisibilityComponent.createOrReplace(e, { visible: true })
   Animator.stopAllAnimations(e, true)
@@ -80,11 +89,14 @@ export function tickAnimationManager(s: ClientSnapshot): void {
   if (s.phase === prevPhase) return
   prevPhase = s.phase
 
-  if (s.phase === GameState.SelectingDirections) {
-    // Mirrors the kicker's K_intro_emote (human or NPC) at the start of each round.
+  // Only the GL-Bot kicker uses the scene ball; human kickers carry it in their emote.
+  const botKicks = kickerIsBot(s)
+
+  if (s.phase === GameState.SelectingDirections && botKicks) {
+    // Mirrors the GL-Bot kicker's K_intro_emote at the start of the round.
     showAndPlay(e, 'Ball_Intro')
     revealAtMs = 0
-  } else if (s.phase === GameState.ResolvingRound) {
+  } else if (s.phase === GameState.ResolvingRound && botKicks) {
     const clip = ballClipFor(s.kickerPick, s.lastRoundWasGoal === 1)
     if (clip) {
       // Swap to the shot while hidden, reveal after the cross-fade — no float at the cut.

@@ -41,9 +41,15 @@ function lookTargetFor(pose: SpawnPose): Vector3 {
 const TRAINING_BOT_SRC = 'assets/models/avatar_training.glb'
 
 const ANIMS = 'assets/models/animations/'
-const EMOTES = {
-  [GameState.SelectingDirections]: { kicker: ANIMS + 'K_intro_emote.glb', gk: ANIMS + 'GK_intro_emote.glb' },
-  [GameState.ResolvingRound]:      { kicker: ANIMS + 'K_shoot_emote.glb' },
+
+const K_INTRO_EMOTE  = ANIMS + 'K_intro_emote.glb'
+const GK_INTRO_EMOTE = ANIMS + 'GK_intro_emote.glb'
+
+/** Kicker shoot emote carries the ball as a baked-in prop, so it depends on the pick +
+ *  outcome (Goal_/Save_ L/C/R). The scene ball.glb is no longer shown for human kickers. */
+function kickerShootEmoteSrc(pick: string, goal: boolean): string {
+  const dir = pick === 'L' || pick === 'C' || pick === 'R' ? pick : 'C'
+  return ANIMS + `K_${goal ? 'Goal' : 'Save'}_${dir}_emote.glb`
 }
 
 function gkShootEmoteSrc(pick: string): string {
@@ -156,8 +162,9 @@ function playSceneEmote(src: string, loop: boolean): void {
 }
 
 function triggerLocalEmote(phase: string, gkPick: string) {
-  const entry = EMOTES[phase as keyof typeof EMOTES]
-  if (!entry) return
+  const isIntro = phase === GameState.SelectingDirections
+  const isShot  = phase === GameState.ResolvingRound
+  if (!isIntro && !isShot) return
 
   const s           = clientSnapshot
   const kickerIsRed = s.kickerIsRed === 1
@@ -165,10 +172,12 @@ function triggerLocalEmote(phase: string, gkPick: string) {
   const kickerAddr  = (kickerIsRed ? s.redAddr : s.blueAddr).toLowerCase()
   const isKicker    = localAddr === kickerAddr
   const src = isKicker
-    ? entry.kicker
-    : phase === GameState.ResolvingRound
-      ? gkShootEmoteSrc(gkPick)
-      : (entry as { kicker: string; gk: string }).gk
+    ? isIntro
+      ? K_INTRO_EMOTE
+      : kickerShootEmoteSrc(s.kickerPick, s.lastRoundWasGoal === 1)
+    : isIntro
+      ? GK_INTRO_EMOTE
+      : gkShootEmoteSrc(gkPick)
   const loop        = shouldLoopSceneEmote(src, phase)
   const token       = ++localEmoteToken
 
