@@ -1,0 +1,9 @@
+[1m@dcl/sdk-commands sdk-server-logs v7.23.2-25521226778.commit-1828100[22m
+[94minfo: [39mViewing logs for goallegends.dcl.eth
+[94minfo: [39mYou need to sign to access server logs
+2026-06-08T15:44:47.769Z [INFO] (well-known-components/interfaces): Initializing components
+2026-06-08T15:44:47.774Z [INFO] (well-known-components/interfaces): Wiring app
+2026-06-08T15:44:47.775Z [INFO] (well-known-components/interfaces): Starting components
+2026-06-08T15:44:47.775Z [WARN] (well-known-components/interfaces): server.start is deprecated (in server.stop). use IBaseComponent[START_COMPONENT] instead
+2026-06-08T15:44:47.778Z [LOG] (http-server): Listening 0.0.0.0:8002
+[94minfo: [39mApp ready at http://localhost:8002/

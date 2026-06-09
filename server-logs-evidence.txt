@@ -1,0 +1,28 @@
+# Captura sdk-server-logs --world goallegends.dcl.eth (Mon Jun  8 13:04:46     2026)
+# total lineas: 2406 | '[Comms] disposed': 2385 | otras lineas 'data:': 0
+# --- cabecera del stream ---
+
+> dcl-project@1.0.0 server-logs
+> sdk-commands sdk-server-logs
+
+[1m@dcl/sdk-commands sdk-server-logs v7.23.2-25521226778.commit-1828100[22m
+[94minfo: [39mViewing logs for goallegends.dcl.eth
+[94minfo: [39mYou need to sign to access server logs
+2026-06-08T16:03:40.457Z [INFO] (well-known-components/interfaces): Initializing components
+2026-06-08T16:03:40.461Z [INFO] (well-known-components/interfaces): Wiring app
+2026-06-08T16:03:40.461Z [INFO] (well-known-components/interfaces): Starting components
+2026-06-08T16:03:40.462Z [WARN] (well-known-components/interfaces): server.start is deprecated (in server.stop). use IBaseComponent[START_COMPONENT] instead
+2026-06-08T16:03:40.464Z [LOG] (http-server): Listening 0.0.0.0:8002
+[94minfo: [39mApp ready at http://localhost:8002/
+[94minfo: [39mAuthentication successful!
+2026-06-08T16:03:50.185Z [INFO] (well-known-components/interfaces): Stopping component server
+2026-06-08T16:03:50.185Z [WARN] (well-known-components/interfaces): IBaseComponent.stop is deprecated (in server.stop). Use IBaseComponent[STOP_COMPONENT] instead
+# --- muestra del loop (primeras 8 de 911) ---
+data: [STDERR] [📡 Comms] disposed
+data: [STDERR] [📡 Comms] disposed
+data: [STDERR] [📡 Comms] disposed
+data: [STDERR] [📡 Comms] disposed
+data: [STDERR] [📡 Comms] disposed
+data: [STDERR] [📡 Comms] disposed
+data: [STDERR] [📡 Comms] disposed
+data: [STDERR] [📡 Comms] disposed
