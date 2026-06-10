@@ -195,6 +195,11 @@ export function facePicBackground(faceUrl: string | undefined) {
     return {
       textureMode: 'stretch' as const,
       texture: { src: faceUrl },
+      // Always set uvs (full quad). The fallback uses flags.png cell uvs; if this branch
+      // omitted uvs, React-ECS reuses a leaderboard slot and fails to apply the new cell
+      // uvs when swapping in flags.png → the whole atlas shows. Keeping uvs present in
+      // every state makes the reconciler always update them.
+      uvs: [0, 0, 0, 1, 1, 1, 1, 0],
       color: Color4.White()
     }
   }
