@@ -494,11 +494,64 @@ function applyEarlyOrContinueAfterRound(): boolean {
   return true
 }
 
+// Participant addresses we've confirmed present in-scene this match, plus when each one
+// first went missing. Lets us tell a real disconnect (was here, now gone) from an id that
+// never appeared, and adds a short grace so a one-frame blip doesn't end the match.
+const seenPresentAddrs = new Set<string>()
+const participantMissingSince = new Map<string, number>()
+const DISCONNECT_GRACE_MS = 1500
+
+/** Closing the client (desktop or mobile) drops the player's PlayerIdentityData entity.
+ *  If a participant we'd seen present vanishes mid-match, end it exactly like a manual
+ *  leave ("@name left the match") instead of letting the match hang until a timeout. */
+function checkParticipantDisconnects() {
+  const m = mut()
+  if (m.phase === GameState.LobbyIdle || m.phase === GameState.MatchEnd) {
+    seenPresentAddrs.clear()
+    participantMissingSince.clear()
+    return
+  }
+
+  const present = new Set<string>()
+  for (const [, id] of engine.getEntitiesWith(PlayerIdentityData)) {
+    if (id.address) present.add(id.address.toLowerCase())
+  }
+
+  const t = nowMs()
+  const participants: Array<readonly [string, string]> = [
+    [m.redAddr, m.redName],
+    [m.blueAddr, m.blueName]
+  ]
+  for (const [addr, name] of participants) {
+    if (!addr) continue // empty = AI/bot slot, nothing to disconnect
+    const a = addr.toLowerCase()
+    if (present.has(a)) {
+      seenPresentAddrs.add(a)
+      participantMissingSince.delete(a)
+      continue
+    }
+    if (!seenPresentAddrs.has(a)) continue // never showed up (e.g. synthetic id); ignore
+    const since = participantMissingSince.get(a)
+    if (since === undefined) {
+      participantMissingSince.set(a, t)
+    } else if (t - since >= DISCONNECT_GRACE_MS) {
+      m.lastServerEvent = `disconnect from=${addr}`
+      console.log(`[Server] participant disconnected mid-match: ${addr}`)
+      endMatchNoWinner(`@${name}\nleft the match`)
+      seenPresentAddrs.clear()
+      participantMissingSince.clear()
+      return
+    }
+  }
+}
+
 export function serverTick() {
   const m = mut()
   const t = nowMs()
   m.serverTickCounter = (m.serverTickCounter || 0) + 1
   m.serverNowMs = t
+
+  checkParticipantDisconnects()
 
   if (m.phase === GameState.WaitingOpponent && m.waitEndMs > 0 && t >= m.waitEndMs) {
     const hasRed = !!m.redAddr
