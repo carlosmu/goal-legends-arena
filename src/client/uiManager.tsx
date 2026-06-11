@@ -53,6 +53,7 @@ import {
   leaderboardTitleBackground,
   countryPickerFrameSliceBackground,
   leaveMatchTitleBackground,
+  leaveMatchTitleAspect,
   leaveMatchNoButtonBackground,
   leaveMatchYesButtonBackground,
   goalSaveFrameSliceBackground,
@@ -677,7 +678,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const leaveConfirmBtnH = Math.floor((PICKER_PAGE_BTN_W / 2) * 1.3)
   const leaveConfirmPanelW = leaveConfirmBtnW * 2 + 96
   const leaveConfirmTitleW = Math.floor(leaveConfirmPanelW * 0.9)
-  const leaveConfirmTitleH = Math.floor(leaveConfirmTitleW / 4)
+  // Alto derivado del aspect real del sprite para no estirarlo.
+  const leaveConfirmTitleH = Math.floor(leaveConfirmTitleW / leaveMatchTitleAspect())
   const leaveConfirmPadY = cpSlicePx + 8
   const leaveConfirmPadX = cpSlicePx + 36
   const resultIsGoal = s.resultLine.startsWith('GOAL')

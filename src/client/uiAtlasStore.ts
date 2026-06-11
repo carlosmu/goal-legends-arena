@@ -2,14 +2,20 @@ import { Color4 } from '@dcl/sdk/math'
 
 export const UI_ATLAS_SRC = 'assets/images/UI_atlas.png'
 const UI_ATLAS_COLS = 8
-const UI_ATLAS_ROWS = 8
+const UI_ATLAS_ROWS = 16
 
-/** Splash logo sprite on UI_atlas.png (cells A1–D3). */
+/**
+ * UI_atlas.png se referencia como un grid de 8 columnas (A–H) × 16 filas (1–16).
+ * Conversión desde el viejo grid de 8 filas: una celda vieja de fila R ocupa las filas
+ * 2R-1 (mitad superior) y 2R (mitad inferior) en este sistema de 16 filas.
+ */
+
+/** Splash logo sprite on UI_atlas.png (cells A1–D6). */
 export const LOGO_COORD_FROM = 'A1'
-export const LOGO_COORD_TO = 'D3'
+export const LOGO_COORD_TO = 'D6'
 
 function parseAtlasCell(coordinates: string): { col: number; row: number } | null {
-  const m = /^([A-H])([1-8])$/i.exec(coordinates.trim())
+  const m = /^([A-H])(1[0-6]|[1-9])$/i.exec(coordinates.trim())
   if (!m) return null
   return {
     col: m[1].toUpperCase().charCodeAt(0) - 65,
@@ -17,7 +23,7 @@ function parseAtlasCell(coordinates: string): { col: number; row: number } | nul
   }
 }
 
-/** Inclusive range "A1".."D4" → UV quad (8×8 sheet, row 1 = top). */
+/** Inclusive range "A1".."D6" → UV quad (8×16 sheet, row 1 = top). */
 export function uiAtlasRangeToUvs(from: string, to: string): number[] {
   const a = parseAtlasCell(from)
   const b = parseAtlasCell(to)
@@ -46,113 +52,91 @@ export function logoBackground() {
   return uiAtlasRangeBackground(LOGO_COORD_FROM, LOGO_COORD_TO)
 }
 
-/** Scoreboard panel background (UI_atlas A8–F8). */
-export const SCOREBOARD_BG_FROM = 'A8'
-export const SCOREBOARD_BG_TO = 'E8'
+/** Scoreboard panel background (UI_atlas A15–E16). */
+export const SCOREBOARD_BG_FROM = 'A15'
+export const SCOREBOARD_BG_TO = 'E16'
 
 export function scoreboardBackground() {
   return uiAtlasRangeBackground(SCOREBOARD_BG_FROM, SCOREBOARD_BG_TO)
 }
 
-export const WELCOME_SPOT_OVERLAY_FROM = 'G2'
-export const WELCOME_SPOT_OVERLAY_TO = 'H2'
+export const WELCOME_SPOT_OVERLAY_FROM = 'G3'
+export const WELCOME_SPOT_OVERLAY_TO = 'H4'
 
-/** Overlay centered over welcome banner (UI_atlas G2–H2). */
+/** Overlay centered over welcome banner (UI_atlas G3–H4). */
 export function welcomeChooseSpotOverlayBackground() {
   return uiAtlasRangeBackground(WELCOME_SPOT_OVERLAY_FROM, WELCOME_SPOT_OVERLAY_TO)
 }
 
 export function pickDirectionLeftBackground() {
-  return uiAtlasRangeBackground('E1', 'E1')
+  return uiAtlasRangeBackground('E1', 'E2')
 }
 
 export function pickDirectionCenterBackground() {
-  return uiAtlasRangeBackground('F1', 'F1')
+  return uiAtlasRangeBackground('F1', 'F2')
 }
 
 export function pickDirectionRightBackground() {
-  return uiAtlasRangeBackground('G1', 'G1')
+  return uiAtlasRangeBackground('G1', 'G2')
 }
 
-/** Selected-state sprites for the L/C/R buttons (E1/F1/G1 → E4/F4/G4). */
+/** Selected-state sprites for the L/C/R buttons (E1–E2/F1–F2/G1–G2 → E7–E8/F7–F8/G7–G8). */
 export function pickDirectionLeftSelectedBackground() {
-  return uiAtlasRangeBackground('E4', 'E4')
+  return uiAtlasRangeBackground('E7', 'E8')
 }
 
 export function pickDirectionCenterSelectedBackground() {
-  return uiAtlasRangeBackground('F4', 'F4')
+  return uiAtlasRangeBackground('F7', 'F8')
 }
 
 export function pickDirectionRightSelectedBackground() {
-  return uiAtlasRangeBackground('G4', 'G4')
+  return uiAtlasRangeBackground('G7', 'G8')
 }
 
-function uiAtlasRangeHalfBackground(from: string, to: string, useTopHalf: boolean) {
-  const fullUvs = uiAtlasRangeToUvs(from, to)
-  const u0 = fullUvs[0]
-  const v0 = fullUvs[1]
-  const u1 = fullUvs[4]
-  const v1 = fullUvs[5]
-  const vm = (v0 + v1) / 2
-  return {
-    textureMode: 'stretch' as const,
-    texture: { src: UI_ATLAS_SRC },
-    uvs: useTopHalf
-      ? [u0, vm, u0, v1, u1, v1, u1, vm]
-      : [u0, v0, u0, vm, u1, vm, u1, v0],
-    color: Color4.White()
-  }
-}
-
-function pickDirectionTitleHalfBackground(useTopHalf: boolean) {
-  return uiAtlasRangeHalfBackground('G3', 'H3', useTopHalf)
-}
-
+/** Pick title — DIVE on UI_atlas G5–H5, SHOOT on G6–H6. */
 export function pickDirectionTitleDiveBackground() {
-  return pickDirectionTitleHalfBackground(true)
+  return uiAtlasRangeBackground('G5', 'H5')
 }
 
 export function pickDirectionTitleShootBackground() {
-  return pickDirectionTitleHalfBackground(false)
+  return uiAtlasRangeBackground('G6', 'H6')
 }
 
-/** “Waiting for opponent” title — top half of UI_atlas E3–F3. */
+/** “Waiting for opponent” title — UI_atlas E5–F5. */
 export function waitingOpponentTitleBackground() {
-  return uiAtlasRangeHalfBackground('E3', 'F3', true)
+  return uiAtlasRangeBackground('E5', 'F5')
 }
 
-/** Waiting panel: PvE — bottom half of UI_atlas E3. */
+/** Waiting panel: PvE — UI_atlas E6. */
 export function waitingOpponentPvEButtonBackground() {
-  return uiAtlasRangeHalfBackground('E3', 'E3', false)
+  return uiAtlasRangeBackground('E6', 'E6')
 }
 
-/** Waiting panel: Cancel — bottom half of UI_atlas F3. */
+/** Waiting panel: Cancel — UI_atlas F6. */
 export function waitingOpponentCancelButtonBackground() {
-  return uiAtlasRangeHalfBackground('F3', 'F3', false)
+  return uiAtlasRangeBackground('F6', 'F6')
 }
 
-/** Leaderboard title — top half of UI_atlas E2–F2. */
+/** Leaderboard title — UI_atlas E3–F3. */
 export function leaderboardTitleBackground() {
-  return uiAtlasRangeHalfBackground('E2', 'F2', true)
+  return uiAtlasRangeBackground('E3', 'F3')
 }
 
-/** 3D spot billboards (UI_atlas cell A4). */
-export const SPOT_BILLBOARD_CELL = 'A4'
+/** 3D spot billboards (UI_atlas A7–A8). */
+export const SPOT_BILLBOARD_FROM = 'A7'
+export const SPOT_BILLBOARD_TO = 'A8'
 
 export function spotBillboardPlaneUvs(): number[] {
-  return uiAtlasRangeToUvs(SPOT_BILLBOARD_CELL, SPOT_BILLBOARD_CELL)
+  return uiAtlasRangeToUvs(SPOT_BILLBOARD_FROM, SPOT_BILLBOARD_TO)
 }
-
-/** Leaderboard panel frame: cell H1 of 8×8 UI_atlas, split 3×3 (1–9 row-major). */
-export const LEADERBOARD_FRAME_CELL = 'H1'
 
 const UI_ATLAS_PX = 1024
 const HALF_TEXEL_U = 0.5 / UI_ATLAS_PX
 const HALF_TEXEL_V = 0.5 / UI_ATLAS_PX
 
-/** UVs for one ninth of an 8×8 atlas cell (3×3 grid). Insets half-texel on internal edges. */
-function uiAtlasCellNinthUvs(cell: string, ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9): number[] {
-  const full = uiAtlasRangeToUvs(cell, cell)
+/** UVs for one ninth (3×3 grid) of an atlas range. Insets half-texel on internal edges. */
+function uiAtlasRangeNinthUvs(from: string, to: string, ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9): number[] {
+  const full = uiAtlasRangeToUvs(from, to)
   const u0 = full[0]
   const v0 = full[1]
   const u1 = full[4]
@@ -172,82 +156,105 @@ function uiAtlasCellNinthUvs(cell: string, ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 
   return [su0, sv0, su0, sv1, su1, sv1, su1, sv0]
 }
 
-/** One of nine slices from any atlas cell: 1–3 top, 4–6 middle, 7–9 bottom. */
-export function atlasCellFrameSliceBackground(
-  cell: string,
-  ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-) {
+/** One of nine slices from an atlas range: 1–3 top, 4–6 middle, 7–9 bottom. */
+function atlasFrameSlice(from: string, to: string, ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
   return {
     textureMode: 'stretch' as const,
     texture: { src: UI_ATLAS_SRC },
-    uvs: uiAtlasCellNinthUvs(cell, ninth),
+    uvs: uiAtlasRangeNinthUvs(from, to, ninth),
     color: Color4.White()
   }
 }
 
-export function leaderboardFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
-  return atlasCellFrameSliceBackground(LEADERBOARD_FRAME_CELL, ninth)
+/** Backwards-compatible single-cell nine-slice. */
+export function atlasCellFrameSliceBackground(cell: string, ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
+  return atlasFrameSlice(cell, cell, ninth)
 }
 
-/** Country picker panel frame: cell B4 of 8×8 UI_atlas. */
-export const COUNTRY_PICKER_FRAME_CELL = 'B4'
+/** Leaderboard panel frame: UI_atlas H1–H2, split 3×3 (1–9 row-major). */
+export const LEADERBOARD_FRAME_FROM = 'H1'
+export const LEADERBOARD_FRAME_TO = 'H2'
+
+export function leaderboardFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
+  return atlasFrameSlice(LEADERBOARD_FRAME_FROM, LEADERBOARD_FRAME_TO, ninth)
+}
+
+/** Country picker panel frame: UI_atlas B7–B8. */
+export const COUNTRY_PICKER_FRAME_FROM = 'B7'
+export const COUNTRY_PICKER_FRAME_TO = 'B8'
 
 export function countryPickerFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
-  return atlasCellFrameSliceBackground(COUNTRY_PICKER_FRAME_CELL, ninth)
+  return atlasFrameSlice(COUNTRY_PICKER_FRAME_FROM, COUNTRY_PICKER_FRAME_TO, ninth)
 }
 
-/** Leave match dialog title — top half of UI_atlas C4–D4. */
+/** Width/height aspect of an atlas range, from its UVs (grid-agnostic). Use it to size a UI
+ *  box to the sprite's real proportions so `stretch` doesn't distort it. */
+export function uiAtlasRangeAspect(from: string, to: string): number {
+  const uvs = uiAtlasRangeToUvs(from, to)
+  const uW = uvs[4] - uvs[0]
+  const vH = uvs[5] - uvs[1]
+  // UI_atlas is square (1024×1024) so UV-space width/height equals pixel aspect.
+  return vH === 0 ? 1 : uW / vH
+}
+
+/** Leave match dialog title — UI_atlas A14–C14. */
+export const LEAVE_MATCH_TITLE_FROM = 'A14'
+export const LEAVE_MATCH_TITLE_TO = 'C14'
+
 export function leaveMatchTitleBackground() {
-  return uiAtlasRangeHalfBackground('C4', 'D4', true)
+  return uiAtlasRangeBackground(LEAVE_MATCH_TITLE_FROM, LEAVE_MATCH_TITLE_TO)
 }
 
-/** Leave match: No — bottom half of UI_atlas C4. */
+/** Aspect (width / height) of the Leave Match title sprite, to size its box without stretch. */
+export function leaveMatchTitleAspect(): number {
+  return uiAtlasRangeAspect(LEAVE_MATCH_TITLE_FROM, LEAVE_MATCH_TITLE_TO)
+}
+
+/** Leave match: No — UI_atlas C8. */
 export function leaveMatchNoButtonBackground() {
-  return uiAtlasRangeHalfBackground('C4', 'C4', false)
+  return uiAtlasRangeBackground('C8', 'C8')
 }
 
-/** Leave match: Yes — bottom half of UI_atlas D4. */
+/** Leave match: Yes — UI_atlas D8. */
 export function leaveMatchYesButtonBackground() {
-  return uiAtlasRangeHalfBackground('D4', 'D4', false)
+  return uiAtlasRangeBackground('D8', 'D8')
 }
 
-/** Goal/Save result panel frame: cell C5 of 8×8 UI_atlas. */
-export const GOAL_SAVE_FRAME_CELL = 'C5'
+/** Goal/Save result panel frame: UI_atlas C9–C10. */
+export const GOAL_SAVE_FRAME_FROM = 'C9'
+export const GOAL_SAVE_FRAME_TO = 'C10'
 
 export function goalSaveFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
-  return atlasCellFrameSliceBackground(GOAL_SAVE_FRAME_CELL, ninth)
+  return atlasFrameSlice(GOAL_SAVE_FRAME_FROM, GOAL_SAVE_FRAME_TO, ninth)
 }
 
-/** Match-end "left the match" / timeout panel frame: cell D5 of 8×8 UI_atlas. */
-export const MATCH_END_FRAME_CELL = 'D5'
+/** Match-end "left the match" / timeout panel frame: UI_atlas D9–D10. */
+export const MATCH_END_FRAME_FROM = 'D9'
+export const MATCH_END_FRAME_TO = 'D10'
 
 export function matchEndFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
-  return atlasCellFrameSliceBackground(MATCH_END_FRAME_CELL, ninth)
+  return atlasFrameSlice(MATCH_END_FRAME_FROM, MATCH_END_FRAME_TO, ninth)
 }
 
-/** Inactivity-timeout countdown pill frame: cell D5 of 8×8 UI_atlas. */
-export const TIMEOUT_FRAME_CELL = 'D5'
+/** Inactivity-timeout countdown pill frame: UI_atlas D9–D10. */
+export const TIMEOUT_FRAME_FROM = 'D9'
+export const TIMEOUT_FRAME_TO = 'D10'
 
 export function timeoutFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) {
-  return atlasCellFrameSliceBackground(TIMEOUT_FRAME_CELL, ninth)
+  return atlasFrameSlice(TIMEOUT_FRAME_FROM, TIMEOUT_FRAME_TO, ninth)
 }
 
-/** GOAL — top half of UI_atlas A5–B5. */
+/** GOAL — UI_atlas A9–B9. */
 export function goalSaveGoalBannerBackground() {
-  return uiAtlasRangeHalfBackground('A5', 'B5', true)
+  return uiAtlasRangeBackground('A9', 'B9')
 }
 
-/** SAVE — bottom half of UI_atlas A5–B5. */
+/** SAVE — UI_atlas A10–B10. */
 export function goalSaveSaveBannerBackground() {
-  return uiAtlasRangeHalfBackground('A5', 'B5', false)
+  return uiAtlasRangeBackground('A10', 'B10')
 }
 
-/** Width/height of the scoreboard bg sprite (A8–F8 = 6×1 cells). */
+/** Aspect (width / height) of the scoreboard bg sprite (grid-agnostic). */
 export function scoreboardAtlasAspect(): number {
-  const a = parseAtlasCell(SCOREBOARD_BG_FROM)
-  const b = parseAtlasCell(SCOREBOARD_BG_TO)
-  if (!a || !b) return 3
-  const cols = Math.abs(b.col - a.col) + 1
-  const rows = Math.abs(b.row - a.row) + 1
-  return cols / rows
+  return uiAtlasRangeAspect(SCOREBOARD_BG_FROM, SCOREBOARD_BG_TO)
 }
