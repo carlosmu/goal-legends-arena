@@ -1444,6 +1444,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             })}
             </UiEntity>
           )}
+          <Label
+            value="*Only Player vs Player matches count."
+            fontSize={Math.round(fs(14) * (isMobile() ? 1.5 : 1.2))}
+            color={Color4.create(0.7, 0.75, 0.85, 1)}
+            textAlign="middle-center"
+            uiTransform={{ margin: { top: 10 } }}
+          />
           </UiEntity>
         </UiEntity>
       </UiEntity>
