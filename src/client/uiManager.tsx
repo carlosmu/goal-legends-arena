@@ -2482,6 +2482,9 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 flexDirection: 'column',
                 alignItems: 'flex-start',
                 padding: { top: 8, bottom: 8, left: 12, right: 12 },
+                // Ancho mínimo para que entre "server tick: " + 12 dígitos (≈25 chars); de ahí
+                // en más se adapta al contenido hasta maxWidth.
+                minWidth: Math.ceil(('server tick: '.length + 12) * fs(14) * 0.6) + 24,
                 maxWidth: isMobile() ? 340 : 720,
                 margin: { bottom: 8 }
               }}
