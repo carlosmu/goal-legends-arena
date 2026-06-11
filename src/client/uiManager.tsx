@@ -444,6 +444,10 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
       : -1
   // Surface it for the last 20s in every case (both the 60s and 30s budgets).
   const showTimeoutCountdown = showPick && timeoutRemainingSec >= 0 && timeoutRemainingSec <= 20
+  // In the last 10s it blinks once per second (700ms at full, 300ms dimmed to 50%).
+  // opacity on a UiTransform accumulates across children, so it dims the frame + text together.
+  const timeoutBlink = timeoutRemainingSec >= 0 && timeoutRemainingSec <= 10
+  const timeoutOpacity = timeoutBlink && Date.now() % 1000 >= 700 ? 0.5 : 1
 
   // Spectators (in scene but not playing) get a camera toggle while a match runs.
   const showCameraSelector = splashDismissed && s.hasActiveMatch === 1 && !side
@@ -1911,7 +1915,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: { top: timeoutTopMargin }
+              margin: { top: timeoutTopMargin },
+              opacity: timeoutOpacity
             }}
           >
             {nineSliceFrame(timeoutFrameSliceBackground, timeoutSlicePx, timeoutInset)}
