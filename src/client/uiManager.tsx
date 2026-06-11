@@ -2488,7 +2488,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               uiBackground={{ color: Color4.create(0, 0, 0, 0.92) }}
             >
               <Label
-                value={`state: ${s.phase} | sync: ${isStateSyncronized() ? 'ok' : 'no'} | match: ${penaltyStateEntityReady() ? 'ok' : '—'} | mode: ${s.mode} | active: ${s.hasActiveMatch}`}
+                value={`state: ${s.phase}`}
                 fontSize={fs(14)}
                 color={Color4.create(0.75, 1, 0.8, 1)}
               />
@@ -2496,10 +2496,10 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 value={`side: ${side ?? '(none)'} | red: ${s.redName || '—'} | blue: ${s.blueName || '—'}`}
                 fontSize={fs(14)}
                 color={Color4.create(0.85, 0.9, 1, 1)}
-                uiTransform={{ margin: { top: 4 } }}
+                uiTransform={{ display: 'none', margin: { top: 4 } }}
               />
               <Label
-                value={'Timeout in: ' + (typeof s.inactivityDeadlineMs === 'number' && s.inactivityDeadlineMs > 0 ? Math.max(0, Math.ceil((s.inactivityDeadlineMs - serverApproxNow) / 1000)) + 's' : 'off') + ` | server tick: ${s.serverTickCounter}`}
+                value={`server tick: ${s.serverTickCounter}`}
                 fontSize={fs(14)}
                 color={Color4.create(1, 0.7, 0.7, 1)}
                 uiTransform={{ margin: { top: 4 } }}
@@ -2508,7 +2508,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 value={`last server event: ${resolveEventAddrs(s.lastServerEvent, s.redAddr, s.redName, s.blueAddr, s.blueName) || '(none)'}`}
                 fontSize={fs(14)}
                 color={Color4.create(1, 0.9, 0.6, 1)}
-                uiTransform={{ margin: { top: 4 } }}
+                uiTransform={{ display: 'none', margin: { top: 4 } }}
               />
             </UiEntity>
           )}
