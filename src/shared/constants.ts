@@ -18,6 +18,10 @@ export const ROUND_RESULT_MS = 4500
  */
 export const GOAL_REVEAL_MS = 2500
 export const MATCH_END_UI_MS = 6500
+/** How long the leaderboard auto-shows right after a match ends (during WinnerContinuePrompt). */
+export const LEADERBOARD_MATCH_END_MS = 5000
+/** Small delay after the match-end leaderboard hides before the "Face the winner" prompt appears. */
+export const SPOT_PROMPT_DELAY_MS = 600
 /** Inactivity timeout to pick a direction; longer on the first shot so newcomers learn the mechanic. */
 export const SHOOT_TIMEOUT_MS = 30_000
 export const FIRST_SHOT_TIMEOUT_MS = 60_000

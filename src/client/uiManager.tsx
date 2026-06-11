@@ -8,7 +8,7 @@ import { getLeaderboardRows } from './leaderboardManager'
 import { getLeaderboardFaceUrl, prefetchLeaderboardFaces } from './leaderboardProfileCache'
 import { room } from '../shared/messages'
 import { GameState } from '../shared/gameState'
-import { FIRST_SHOT_TIMEOUT_MS, SHOOT_TIMEOUT_MS } from '../shared/constants'
+import { FIRST_SHOT_TIMEOUT_MS, SHOOT_TIMEOUT_MS, LEADERBOARD_MATCH_END_MS, SPOT_PROMPT_DELAY_MS } from '../shared/constants'
 import { setSpectatorCameraMode, getSpectatorCameraMode } from './gameplayCamera'
 import {
   COUNTRIES,
@@ -276,10 +276,6 @@ const PICK_SELECTED_BADGE_COORD = 'H8'
 let lbShowUntilMs = 0
 const LEADERBOARD_TOP_N = 10
 const LEADERBOARD_UI_MS = 30_000
-/** How long the leaderboard auto-shows right after a match ends. */
-const LEADERBOARD_MATCH_END_MS = 5000
-/** Small delay after the match-end leaderboard hides before the spot prompts appear. */
-const SPOT_PROMPT_DELAY_MS = 600
 /** Earliest time the "face the winner" / "keep playing" prompts may show. */
 let promptsShowAfterMs = 0
 
