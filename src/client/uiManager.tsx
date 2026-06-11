@@ -63,7 +63,11 @@ import {
   goalSaveGoalBannerBackground,
   goalSaveSaveBannerBackground,
   matchEndFrameSliceBackground,
-  timeoutFrameSliceBackground
+  timeoutFrameSliceBackground,
+  faceTheWinnerBackground,
+  faceTheWinnerAspect,
+  stayOnSpotBackground,
+  stayOnSpotAspect
 } from './uiAtlasStore'
 
 /**
@@ -2326,7 +2330,10 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 zIndex: 1
               }}
             >
-              <Label value="Keep playing on this spot?" fontSize={fs(30)} color={Color4.White()} textAlign="middle-center" />
+              <UiEntity
+                uiTransform={{ width: fs(320), height: Math.floor(fs(320) / stayOnSpotAspect()) }}
+                uiBackground={stayOnSpotBackground()}
+              />
               <Label
                 value={`${streakDisplayLeft}s`}
                 fontSize={fs(30)}
@@ -2396,11 +2403,9 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 zIndex: 1
               }}
             >
-              <Label
-                value="Face the winner?"
-                fontSize={fs(30)}
-                color={Color4.White()}
-                textAlign="middle-center"
+              <UiEntity
+                uiTransform={{ width: fs(320), height: Math.floor(fs(320) / faceTheWinnerAspect()) }}
+                uiBackground={faceTheWinnerBackground()}
               />
               <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 14 } }}>
                 <Button

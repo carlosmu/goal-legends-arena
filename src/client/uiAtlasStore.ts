@@ -270,6 +270,30 @@ export function timeoutFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
   return atlasFrameSlice(TIMEOUT_FRAME_FROM, TIMEOUT_FRAME_TO, ninth)
 }
 
+/** "Face the winner?" title — UI_atlas A11–D11. */
+export const FACE_WINNER_FROM = 'A11'
+export const FACE_WINNER_TO = 'D11'
+
+export function faceTheWinnerBackground() {
+  return uiAtlasRangeBackground(FACE_WINNER_FROM, FACE_WINNER_TO)
+}
+
+export function faceTheWinnerAspect(): number {
+  return uiAtlasRangeAspect(FACE_WINNER_FROM, FACE_WINNER_TO)
+}
+
+/** "Stay on this spot?" title — UI_atlas A12–D12. */
+export const STAY_ON_SPOT_FROM = 'A12'
+export const STAY_ON_SPOT_TO = 'D12'
+
+export function stayOnSpotBackground() {
+  return uiAtlasRangeBackground(STAY_ON_SPOT_FROM, STAY_ON_SPOT_TO)
+}
+
+export function stayOnSpotAspect(): number {
+  return uiAtlasRangeAspect(STAY_ON_SPOT_FROM, STAY_ON_SPOT_TO)
+}
+
 /** GOAL — UI_atlas A9–B9. */
 export function goalSaveGoalBannerBackground() {
   return uiAtlasRangeBackground('A9', 'B9')
