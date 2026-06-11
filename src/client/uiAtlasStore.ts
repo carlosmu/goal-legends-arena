@@ -102,9 +102,17 @@ export function pickDirectionTitleShootBackground() {
   return uiAtlasRangeBackground('G6', 'H6')
 }
 
-/** “Waiting for opponent” title — UI_atlas E5–F5. */
+/** “Waiting for opponent” title — UI_atlas A12–D12. */
+export const WAITING_TITLE_FROM = 'A12'
+export const WAITING_TITLE_TO = 'D12'
+
 export function waitingOpponentTitleBackground() {
-  return uiAtlasRangeBackground('E5', 'F5')
+  return uiAtlasRangeBackground(WAITING_TITLE_FROM, WAITING_TITLE_TO)
+}
+
+/** Aspect (width / height) of the waiting title sprite, to size its box without stretch. */
+export function waitingOpponentTitleAspect(): number {
+  return uiAtlasRangeAspect(WAITING_TITLE_FROM, WAITING_TITLE_TO)
 }
 
 /** Waiting panel: PvE — UI_atlas E6. */

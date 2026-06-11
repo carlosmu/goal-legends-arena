@@ -47,6 +47,7 @@ import {
   pickDirectionCenterSelectedBackground,
   pickDirectionRightSelectedBackground,
   waitingOpponentTitleBackground,
+  waitingOpponentTitleAspect,
   waitingOpponentPvEButtonBackground,
   waitingOpponentCancelButtonBackground,
   leaderboardFrameSliceBackground,
@@ -795,7 +796,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const waitPanelW = Math.floor((isMobile() ? 680 : 480) * 1.2)
   const waitPanelH = Math.floor(waitPanelW / 2)
   const waitTitleWidth = Math.floor(waitPanelW * 0.85)
-  const waitTitleHeight = Math.floor(waitTitleWidth / 4)
+  // Alto derivado del aspect real del sprite para no estirarlo.
+  const waitTitleHeight = Math.floor(waitTitleWidth / waitingOpponentTitleAspect())
   const waitBtnW = Math.floor((isMobile() ? 220 * 1.3 : 180) * 1.2)
   const waitBtnH = Math.floor(waitBtnW / 2)
 
@@ -1947,7 +1949,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             value={`${waitDisplayLeft}s`}
             fontSize={fs(30)}
             color={Color4.create(1, 0.85, 0.2, 1)}
-            uiTransform={{ margin: { top: -20 } }}
+            uiTransform={{ margin: { top: 4 } }}
           />
           <UiEntity
             uiTransform={{
@@ -1955,7 +1957,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: { top: isMobile() ? 48 : 18 }
+              margin: { top: isMobile() ? 24 : -6 }
             }}
           >
             <Button
