@@ -219,20 +219,20 @@
         "518": {
           "json": {
             "position": {
-              "x": 3.6802103519439697,
+              "x": 3.1155340671539307,
               "y": 0.7976948022842407,
-              "z": 7.971703052520752
-            },
-            "scale": {
-              "x": 0.9999998211860657,
-              "y": 1,
-              "z": 0.9999998211860657
+              "z": 8.167167663574219
             },
             "rotation": {
               "x": 0,
               "y": 0.9776206612586975,
               "z": 0,
               "w": -0.21037550270557404
+            },
+            "scale": {
+              "x": 0.9999998211860657,
+              "y": 1,
+              "z": 0.9999998211860657
             },
             "parent": 517
           }
@@ -345,20 +345,20 @@
         "524": {
           "json": {
             "position": {
-              "x": 24.529775619506836,
+              "x": 24.618337631225586,
               "y": 3.0946435928344727,
-              "z": 8.250042915344238
-            },
-            "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
+              "z": 8.161470413208008
             },
             "rotation": {
               "x": 0,
               "y": -0.3826834261417389,
               "z": 0,
               "w": 0.9238795042037964
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
             },
             "parent": 531
           }
@@ -493,19 +493,19 @@
           "json": {
             "position": {
               "x": 0,
-              "y": 0,
+              "y": -0.6000000238418579,
               "z": 0
-            },
-            "scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
             },
             "rotation": {
               "x": 0,
               "y": 0,
               "z": 0,
               "w": 1
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
             },
             "parent": 0
           }
@@ -954,20 +954,20 @@
         "553": {
           "json": {
             "position": {
-              "x": 2.0315587520599365,
+              "x": 2.0898542404174805,
               "y": 0.7976948022842407,
-              "z": 8.54194164276123
-            },
-            "scale": {
-              "x": 0.9999998211860657,
-              "y": 1,
-              "z": 0.9999998211860657
+              "z": 8.45639419555664
             },
             "rotation": {
               "x": 0,
               "y": 0.9936838150024414,
               "z": 0,
               "w": -0.11221624910831451
+            },
+            "scale": {
+              "x": 0.9999998211860657,
+              "y": 1,
+              "z": 0.9999998211860657
             },
             "parent": 517
           }
@@ -1017,20 +1017,20 @@
         "557": {
           "json": {
             "position": {
-              "x": 2.994750499725342,
+              "x": 3.103336811065674,
               "y": 0.7976948022842407,
-              "z": -7.957180023193359
-            },
-            "scale": {
-              "x": 0.9999998211860657,
-              "y": 1,
-              "z": 0.9999998211860657
+              "z": -7.812302112579346
             },
             "rotation": {
               "x": 0,
               "y": 0.14879173040390015,
               "z": 0,
               "w": -0.9888685345649719
+            },
+            "scale": {
+              "x": 0.9999998211860657,
+              "y": 1,
+              "z": 0.9999998211860657
             },
             "parent": 517
           }
@@ -1038,20 +1038,20 @@
         "558": {
           "json": {
             "position": {
-              "x": 3.6808173656463623,
+              "x": 3.67562198638916,
               "y": 1.4867030382156372,
-              "z": -9.30141830444336
-            },
-            "scale": {
-              "x": 0.9999998211860657,
-              "y": 1,
-              "z": 0.9999998211860657
+              "z": -9.25281047821045
             },
             "rotation": {
               "x": 0,
               "y": 0.14879173040390015,
               "z": 0,
               "w": -0.9888685345649719
+            },
+            "scale": {
+              "x": 0.9999998211860657,
+              "y": 1,
+              "z": 0.9999998211860657
             },
             "parent": 517
           }
@@ -1748,6 +1748,48 @@
             },
             "parent": 515
           }
+        },
+        "592": {
+          "json": {
+            "position": {
+              "x": 2.470355749130249,
+              "y": 1.4867030382156372,
+              "z": -9.552993774414062
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0.14879173040390015,
+              "z": 0,
+              "w": -0.9888685345649719
+            },
+            "scale": {
+              "x": 0.9999998211860657,
+              "y": 1,
+              "z": 0.9999998211860657
+            },
+            "parent": 517
+          }
+        },
+        "593": {
+          "json": {
+            "position": {
+              "x": 4.606923580169678,
+              "y": 1.4867030382156372,
+              "z": -8.783099174499512
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0.14879173040390015,
+              "z": 0,
+              "w": -0.9888685345649719
+            },
+            "scale": {
+              "x": 0.9999998211860657,
+              "y": 1,
+              "z": 0.9999998211860657
+            },
+            "parent": 517
+          }
         }
       }
     },
@@ -1844,6 +1886,18 @@
           "json": {
             "networkId": 0,
             "entityId": 8014
+          }
+        },
+        "592": {
+          "json": {
+            "networkId": 0,
+            "entityId": 8015
+          }
+        },
+        "593": {
+          "json": {
+            "networkId": 0,
+            "entityId": 8016
           }
         }
       }
@@ -2126,6 +2180,24 @@
         "562": {
           "json": {
             "collisionMask": 3,
+            "mesh": {
+              "$case": "box",
+              "box": {}
+            }
+          }
+        },
+        "592": {
+          "json": {
+            "collisionMask": 1,
+            "mesh": {
+              "$case": "box",
+              "box": {}
+            }
+          }
+        },
+        "593": {
+          "json": {
+            "collisionMask": 1,
             "mesh": {
               "$case": "box",
               "box": {}
@@ -2567,6 +2639,16 @@
           "json": {
             "value": "Blue2"
           }
+        },
+        "592": {
+          "json": {
+            "value": "Sit Spot_9"
+          }
+        },
+        "593": {
+          "json": {
+            "value": "Sit Spot_10"
+          }
         }
       }
     },
@@ -2770,6 +2852,20 @@
               2709697014
             ]
           }
+        },
+        "592": {
+          "json": {
+            "componentIds": [
+              2709697014
+            ]
+          }
+        },
+        "593": {
+          "json": {
+            "componentIds": [
+              2709697014
+            ]
+          }
         }
       }
     },
@@ -2950,7 +3046,7 @@
         "serializationType": "map"
       },
       "data": {
-        "0": {
+        "516": {
           "json": {
             "gizmo": 1
           }
@@ -3052,12 +3148,15 @@
               },
               {
                 "entity": 517,
+                "open": true,
                 "children": [
                   555,
                   518,
                   553,
                   557,
-                  558
+                  558,
+                  593,
+                  592
                 ]
               },
               {
@@ -3074,6 +3173,7 @@
               },
               {
                 "entity": 531,
+                "open": true,
                 "children": [
                   526,
                   522,
@@ -3432,6 +3532,14 @@
               {
                 "entity": 583,
                 "children": []
+              },
+              {
+                "entity": 592,
+                "children": []
+              },
+              {
+                "entity": 593,
+                "children": []
               }
             ]
           }
@@ -3693,6 +3801,12 @@
           "json": {}
         },
         "591": {
+          "json": {}
+        },
+        "592": {
+          "json": {}
+        },
+        "593": {
           "json": {}
         }
       }
@@ -4727,6 +4841,50 @@
           }
         },
         "562": {
+          "json": {
+            "isBasicViewEnabled": false,
+            "componentName": "Sit Spot",
+            "fields": [
+              {
+                "name": "Hover Text",
+                "type": "core::PointerEvents"
+              },
+              {
+                "name": "When Clicked",
+                "type": "asset-packs::Triggers",
+                "basicViewId": "trigger-when-clicked"
+              }
+            ],
+            "assetId": "ce374705-d5f6-4837-b9ca-c0744527cfd5",
+            "helpTooltip": {
+              "text": "Configure the sit spot's hover text and actions. Players can click to sit here. The spot tracks whether it's free or taken and shows a message when occupied."
+            },
+            "version": 1
+          }
+        },
+        "592": {
+          "json": {
+            "isBasicViewEnabled": false,
+            "componentName": "Sit Spot",
+            "fields": [
+              {
+                "name": "Hover Text",
+                "type": "core::PointerEvents"
+              },
+              {
+                "name": "When Clicked",
+                "type": "asset-packs::Triggers",
+                "basicViewId": "trigger-when-clicked"
+              }
+            ],
+            "assetId": "ce374705-d5f6-4837-b9ca-c0744527cfd5",
+            "helpTooltip": {
+              "text": "Configure the sit spot's hover text and actions. Players can click to sit here. The spot tracks whether it's free or taken and shows a message when occupied."
+            },
+            "version": 1
+          }
+        },
+        "593": {
           "json": {
             "isBasicViewEnabled": false,
             "componentName": "Sit Spot",
@@ -6148,6 +6306,124 @@
               }
             ]
           }
+        },
+        "592": {
+          "json": {
+            "id": 28,
+            "value": [
+              {
+                "name": "Move here",
+                "type": "move_player_here",
+                "jsonPayload": "{}"
+              },
+              {
+                "name": "Sit anim1",
+                "type": "play_default_emote",
+                "jsonPayload": "{\"emote\":\"sittingChair1\"}"
+              },
+              {
+                "name": "Mark as taken",
+                "type": "set_state",
+                "jsonPayload": "{\"state\":\"Taken\"}"
+              },
+              {
+                "name": "Mark as free",
+                "type": "set_state",
+                "jsonPayload": "{\"state\":\"Free\"}",
+                "allowedInBasicView": true
+              },
+              {
+                "name": "Sit Here",
+                "type": "batch",
+                "jsonPayload": "{\"actions\":[\"Move here\",\"Mark as taken\",\"Delay sit anim\",\"Random sit anim\"]}",
+                "allowedInBasicView": true
+              },
+              {
+                "name": "Sit anim2",
+                "type": "play_default_emote",
+                "jsonPayload": "{\"emote\":\"sittingChair2\"}"
+              },
+              {
+                "name": "Random sit anim",
+                "type": "random",
+                "jsonPayload": "{\"actions\":[\"Sit anim1\",\"Sit anim2\"]}"
+              },
+              {
+                "name": "Print text",
+                "type": "show_text",
+                "jsonPayload": "{\"text\":\"Seat is taken\",\"hideAfterSeconds\":2,\"font\":0,\"fontSize\":40,\"textAlign\":7}"
+              },
+              {
+                "name": "Hide text",
+                "type": "hide_text",
+                "jsonPayload": "{}"
+              },
+              {
+                "name": "Show text",
+                "type": "batch",
+                "jsonPayload": "{\"actions\":[\"Hide text\",\"Print text\"]}"
+              }
+            ]
+          }
+        },
+        "593": {
+          "json": {
+            "id": 30,
+            "value": [
+              {
+                "name": "Move here",
+                "type": "move_player_here",
+                "jsonPayload": "{}"
+              },
+              {
+                "name": "Sit anim1",
+                "type": "play_default_emote",
+                "jsonPayload": "{\"emote\":\"sittingChair1\"}"
+              },
+              {
+                "name": "Mark as taken",
+                "type": "set_state",
+                "jsonPayload": "{\"state\":\"Taken\"}"
+              },
+              {
+                "name": "Mark as free",
+                "type": "set_state",
+                "jsonPayload": "{\"state\":\"Free\"}",
+                "allowedInBasicView": true
+              },
+              {
+                "name": "Sit Here",
+                "type": "batch",
+                "jsonPayload": "{\"actions\":[\"Move here\",\"Mark as taken\",\"Delay sit anim\",\"Random sit anim\"]}",
+                "allowedInBasicView": true
+              },
+              {
+                "name": "Sit anim2",
+                "type": "play_default_emote",
+                "jsonPayload": "{\"emote\":\"sittingChair2\"}"
+              },
+              {
+                "name": "Random sit anim",
+                "type": "random",
+                "jsonPayload": "{\"actions\":[\"Sit anim1\",\"Sit anim2\"]}"
+              },
+              {
+                "name": "Print text",
+                "type": "show_text",
+                "jsonPayload": "{\"text\":\"Seat is taken\",\"hideAfterSeconds\":2,\"font\":0,\"fontSize\":40,\"textAlign\":7}"
+              },
+              {
+                "name": "Hide text",
+                "type": "hide_text",
+                "jsonPayload": "{}"
+              },
+              {
+                "name": "Show text",
+                "type": "batch",
+                "jsonPayload": "{\"actions\":[\"Hide text\",\"Print text\"]}"
+              }
+            ]
+          }
         }
       }
     },
@@ -6171,7 +6447,7 @@
         "0": {
           "json": {
             "id": 0,
-            "value": 27
+            "value": 31
           }
         }
       }
@@ -6770,6 +7046,88 @@
               }
             ]
           }
+        },
+        "592": {
+          "json": {
+            "value": [
+              {
+                "type": "on_player_leaves_area",
+                "conditions": [
+                  {
+                    "id": 29,
+                    "type": "when_state_is",
+                    "value": "Taken"
+                  }
+                ],
+                "operation": "and",
+                "actions": [
+                  {
+                    "id": 28,
+                    "name": "Mark as free"
+                  }
+                ]
+              },
+              {
+                "type": "on_input_action",
+                "conditions": [
+                  {
+                    "id": 29,
+                    "type": "when_state_is",
+                    "value": "Free"
+                  }
+                ],
+                "operation": "and",
+                "actions": [
+                  {
+                    "id": 28,
+                    "name": "Sit Here"
+                  }
+                ],
+                "basicViewId": "trigger-when-clicked"
+              }
+            ]
+          }
+        },
+        "593": {
+          "json": {
+            "value": [
+              {
+                "type": "on_player_leaves_area",
+                "conditions": [
+                  {
+                    "id": 31,
+                    "type": "when_state_is",
+                    "value": "Taken"
+                  }
+                ],
+                "operation": "and",
+                "actions": [
+                  {
+                    "id": 30,
+                    "name": "Mark as free"
+                  }
+                ]
+              },
+              {
+                "type": "on_input_action",
+                "conditions": [
+                  {
+                    "id": 31,
+                    "type": "when_state_is",
+                    "value": "Free"
+                  }
+                ],
+                "operation": "and",
+                "actions": [
+                  {
+                    "id": 30,
+                    "name": "Sit Here"
+                  }
+                ],
+                "basicViewId": "trigger-when-clicked"
+              }
+            ]
+          }
         }
       }
     },
@@ -6911,6 +7269,26 @@
         "562": {
           "json": {
             "id": 27,
+            "value": [
+              "Free",
+              "Taken"
+            ],
+            "defaultValue": "Free"
+          }
+        },
+        "592": {
+          "json": {
+            "id": 29,
+            "value": [
+              "Free",
+              "Taken"
+            ],
+            "defaultValue": "Free"
+          }
+        },
+        "593": {
+          "json": {
+            "id": 31,
             "value": [
               "Free",
               "Taken"
@@ -7162,12 +7540,23 @@
               "disableVideoPlayersSound": false,
               "showAuthorOnVideoPlayers": true,
               "linkAllVideoPlayers": false,
-              "videoPlayers": []
+              "videoPlayers": [
+                {
+                  "entity": 532,
+                  "customName": ""
+                }
+              ]
             },
             "smartItemsControl": {
               "isEnabled": true,
               "linkAllSmartItems": false,
-              "smartItems": []
+              "smartItems": [
+                {
+                  "entity": 0,
+                  "customName": "",
+                  "defaultAction": ""
+                }
+              ]
             },
             "rewardsControl": {
               "isEnabled": true,
@@ -7362,6 +7751,16 @@
           }
         },
         "562": {
+          "json": {
+            "src": "assets/asset-packs/sit_spot/sitting_pose_collider.glb"
+          }
+        },
+        "592": {
+          "json": {
+            "src": "assets/asset-packs/sit_spot/sitting_pose_collider.glb"
+          }
+        },
+        "593": {
           "json": {
             "src": "assets/asset-packs/sit_spot/sitting_pose_collider.glb"
           }
