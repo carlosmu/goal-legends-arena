@@ -61,7 +61,13 @@ export enum EntityNames {
   Video_Screen = "Video Screen",
   arrow_glb = "arrow.glb",
   ball_glb = "ball.glb",
+  door_glb = "door.glb",
+  event_card_bottom_tall_glb = "event_card_bottom_tall.glb",
+  event_card_thumbnail_glb = "event_card_thumbnail.glb",
   futbol_arena_glb = "futbol_arena.glb",
   plaza_glb = "plaza.glb",
+  portalFrame_glb = "portalFrame.glb",
+  portalFrameArrows_glb = "portalFrameArrows.glb",
+  portalLayer2_glb = "portalLayer2.glb",
   stadium_flags_glb = "stadium_flags.glb",
 } 

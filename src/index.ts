@@ -7,6 +7,7 @@ import { initPlayerCloneSystem } from './client/playerCloneManager'
 import { initGameplayCamera } from './client/gameplayCamera'
 import { initSceneLoadManager } from './client/sceneLoadManager'
 import { resetClientSession } from './client/clientSession'
+import { initPortals } from './client/portalManager'
 
 /**
  * Debe ser síncrono: tras el primer await el runtime sella el motor y ya no se pueden
@@ -24,4 +25,5 @@ export function main() {
   initNPCSystem()
   initPlayerCloneSystem()
   initGameplayCamera()
+  initPortals()
 }

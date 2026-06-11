@@ -5,7 +5,8 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "@dcl/asset-packs/*": ["node_modules/@dcl/inspector/node_modules/@dcl/asset-packs/*"]
+      "@dcl/asset-packs/*": ["node_modules/@dcl/inspector/node_modules/@dcl/asset-packs/*"],
+      "@modules/*": ["src/modules/*"]
     }
   },
   "include": [
