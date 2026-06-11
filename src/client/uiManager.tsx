@@ -449,8 +449,11 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const timeoutBlink = timeoutRemainingSec >= 0 && timeoutRemainingSec <= 10
   const timeoutOpacity = timeoutBlink && Date.now() % 1000 >= 700 ? 0.5 : 1
 
-  // Spectators (in scene but not playing) get a camera toggle while a match runs.
-  const showCameraSelector = splashDismissed && s.hasActiveMatch === 1 && !side
+  // Spectators (in scene but not playing) get a camera toggle, but only while the match is
+  // actually being played. It hides the moment the match ends (winner or abandonment, both
+  // → MatchEnd) and comes back when the next match's first pick round starts.
+  const matchInPlay = s.phase === GameState.SelectingDirections || s.phase === GameState.ResolvingRound
+  const showCameraSelector = splashDismissed && matchInPlay && !side
   const cameraMode = getSpectatorCameraMode()
 
   const pickMobile = isMobile()
@@ -692,10 +695,16 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const cameraPanelPadX = cpSlicePx + 18
   const cameraBtnActive = Color4.create(0.2, 0.55, 0.9, 1)
   const cameraBtnIdle = Color4.create(0.28, 0.28, 0.34, 1)
+  // Shrink the panel to its content (widest of the title or the two buttons) + padding,
+  // instead of a fixed 25vw/40vw.
+  const cameraTitle = 'Point of View'
+  const cameraLabelW = Math.ceil(cameraTitle.length * fs(40) * 0.6)
+  const cameraContentW = Math.max(cameraLabelW, cameraBtnW * 2 + 10)
+  const cameraPanelW = cameraContentW + 2 * cameraPanelPadX
   const cameraSelectorPanel = (
     <UiEntity
       uiTransform={{
-        width: pickPanelWidth,
+        width: cameraPanelW,
         margin: { bottom: pickPanelMarginBottom },
         positionType: 'relative',
         display: 'flex',
@@ -716,7 +725,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           zIndex: 1
         }}
       >
-        <Label value="Point of View" fontSize={fs(40)} color={Color4.White()} textAlign="middle-center" uiTransform={{ margin: { bottom: 10 } }} />
+        <Label value={cameraTitle} fontSize={fs(40)} color={Color4.White()} textAlign="middle-center" uiTransform={{ margin: { bottom: 10 } }} />
         <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
           <Button
             value="Match"
