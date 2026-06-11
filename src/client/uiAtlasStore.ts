@@ -117,9 +117,17 @@ export function waitingOpponentCancelButtonBackground() {
   return uiAtlasRangeBackground('F6', 'F6')
 }
 
-/** Leaderboard title — UI_atlas E3–F3. */
+/** Leaderboard title — UI_atlas A13–C13. */
+export const LEADERBOARD_TITLE_FROM = 'A13'
+export const LEADERBOARD_TITLE_TO = 'C13'
+
 export function leaderboardTitleBackground() {
-  return uiAtlasRangeBackground('E3', 'F3')
+  return uiAtlasRangeBackground(LEADERBOARD_TITLE_FROM, LEADERBOARD_TITLE_TO)
+}
+
+/** Aspect (width / height) of the Leaderboard title sprite, to size its box without stretch. */
+export function leaderboardTitleAspect(): number {
+  return uiAtlasRangeAspect(LEADERBOARD_TITLE_FROM, LEADERBOARD_TITLE_TO)
 }
 
 /** 3D spot billboards (UI_atlas A7–A8). */

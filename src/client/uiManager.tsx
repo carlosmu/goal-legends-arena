@@ -51,6 +51,7 @@ import {
   waitingOpponentCancelButtonBackground,
   leaderboardFrameSliceBackground,
   leaderboardTitleBackground,
+  leaderboardTitleAspect,
   countryPickerFrameSliceBackground,
   leaveMatchTitleBackground,
   leaveMatchTitleAspect,
@@ -814,7 +815,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const lbRowOddBg = { color: Color4.create(1, 0.9, 0.3, 0.03) }
   const lbContentWidthPx = lbPanelWidthPx - 2 * (lbSlicePx + 10)
   const lbTitleWidth = Math.floor(lbContentWidthPx * 0.6)
-  const lbTitleHeight = Math.floor(lbTitleWidth / 4)
+  // Alto derivado del aspect real del sprite para no estirarlo.
+  const lbTitleHeight = Math.floor(lbTitleWidth / leaderboardTitleAspect())
 
   return (
     <UiEntity
