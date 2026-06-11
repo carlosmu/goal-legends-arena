@@ -40,6 +40,7 @@ import {
   welcomeChooseSpotOverlayBackground,
   pickDirectionTitleDiveBackground,
   pickDirectionTitleShootBackground,
+  pickDirectionTitleAspect,
   pickDirectionLeftBackground,
   pickDirectionCenterBackground,
   pickDirectionRightBackground,
@@ -465,9 +466,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const pickBtnHeight = pickBtnWidth
   const pickLcrRowWidthPx = Math.floor(pickPanelWidthPx * 0.9)
   const pickTitleWidth = Math.min(pickBtnWidth * 3, pickLcrRowWidthPx)
-  const pickTitleHeight = Math.floor(pickTitleWidth / 4)
+  // Alto derivado del aspect real del sprite para no estirarlo.
+  const pickTitleHeight = Math.floor(pickTitleWidth / pickDirectionTitleAspect())
   const pickPanelPadPx = pickMobile ? 14 : 10
   const pickTitleMarginTopPx = pickMobile ? 16 : 12
+  /** Respiro arriba/abajo del título DIVE/SHOOT (más arriba que abajo). */
+  const pickTitleMarginTopY = pickMobile ? 30 : 21
+  const pickTitleMarginBottomY = pickMobile ? 20 : 14
   const pickPanelGapPx = pickMobile ? -20 : -20
   /** Margin inferior del panel dive/shoot — distancia al borde de pantalla. */
   const pickPanelMarginBottom = pickMobile ? '1vh' : '3vh'
@@ -477,6 +482,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const pickPanelContentHeightPx =
     pickPanelPadPx * 2 +
     pickTitleMarginTopPx +
+    pickTitleMarginTopY +
+    pickTitleMarginBottomY +
     pickTitleHeight +
     pickPanelGapPx +
     pickBtnHeight
@@ -539,7 +546,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         }}
       >
         <UiEntity
-          uiTransform={{ width: pickTitleWidth, height: pickTitleHeight }}
+          uiTransform={{ width: pickTitleWidth, height: pickTitleHeight, margin: { top: pickTitleMarginTopY, bottom: pickTitleMarginBottomY } }}
           uiBackground={titleBg}
         />
       </UiEntity>

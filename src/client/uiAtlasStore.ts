@@ -93,13 +93,23 @@ export function pickDirectionRightSelectedBackground() {
   return uiAtlasRangeBackground('G7', 'G8')
 }
 
-/** Pick title — DIVE on UI_atlas G5–H5, SHOOT on G6–H6. */
+/** Pick title — DIVE on UI_atlas E11–H11, SHOOT on E12–H12. */
+export const PICK_TITLE_DIVE_FROM = 'E11'
+export const PICK_TITLE_DIVE_TO = 'H11'
+export const PICK_TITLE_SHOOT_FROM = 'E12'
+export const PICK_TITLE_SHOOT_TO = 'H12'
+
 export function pickDirectionTitleDiveBackground() {
-  return uiAtlasRangeBackground('G5', 'H5')
+  return uiAtlasRangeBackground(PICK_TITLE_DIVE_FROM, PICK_TITLE_DIVE_TO)
 }
 
 export function pickDirectionTitleShootBackground() {
-  return uiAtlasRangeBackground('G6', 'H6')
+  return uiAtlasRangeBackground(PICK_TITLE_SHOOT_FROM, PICK_TITLE_SHOOT_TO)
+}
+
+/** Aspect (width / height) of the pick title sprites (DIVE and SHOOT share the same shape). */
+export function pickDirectionTitleAspect(): number {
+  return uiAtlasRangeAspect(PICK_TITLE_DIVE_FROM, PICK_TITLE_DIVE_TO)
 }
 
 /** “Waiting for opponent” title — UI_atlas A12–D12. */
