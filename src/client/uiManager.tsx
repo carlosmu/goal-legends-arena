@@ -789,11 +789,11 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     </UiEntity>
   )
 
-  const waitPanelW = Math.floor((isMobile() ? 620 : 480) * 1.2)
+  const waitPanelW = Math.floor((isMobile() ? 680 : 480) * 1.2)
   const waitPanelH = Math.floor(waitPanelW / 2)
   const waitTitleWidth = Math.floor(waitPanelW * 0.85)
   const waitTitleHeight = Math.floor(waitTitleWidth / 4)
-  const waitBtnW = Math.floor((isMobile() ? 220 : 180) * 1.2)
+  const waitBtnW = Math.floor((isMobile() ? 220 * 1.3 : 180) * 1.2)
   const waitBtnH = Math.floor(waitBtnW / 2)
 
   const lbPanelWidthPx = Math.floor(1920 * ((isMobile() ? LEADERBOARD_PANEL_WIDTH_MOBILE_VW : LEADERBOARD_PANEL_WIDTH_VW) / 100))
@@ -1918,7 +1918,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 positionType: 'relative',
                 width: '100%',
                 height: '100%',
-                padding: { top: 22, bottom: 22, left: 24, right: 24 },
+                padding: { top: 22, bottom: 28, left: 34, right: 34 },
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
