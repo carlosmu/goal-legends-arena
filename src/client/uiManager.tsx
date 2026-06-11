@@ -764,6 +764,31 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const sbNameH = Math.ceil(fs(18) * 1.2)
   const sbNameW = scoreboardNameLabelWidth()
 
+  // Shots-taken indicator: one H8 ball per shot each player has kicked. Grows as the game
+  // runs — fewer than 5 if it ends early, more in sudden death. A shot counts once it's been
+  // kicked (ResolvingRound onward); the per-side split comes from shotIndex + who kicked first.
+  const sbBall = sbPx(21)
+  const sbBallGap = sbPx(3)
+  const shotKicked =
+    s.phase === GameState.ResolvingRound ||
+    s.phase === GameState.MatchEnd ||
+    s.phase === GameState.WinnerContinuePrompt
+  const kickedShots = s.shotIndex + (shotKicked ? 1 : 0)
+  const firstKickerIsRed = s.shotIndex % 2 === 0 ? s.kickerIsRed === 1 : s.kickerIsRed === 0
+  const redShotsTaken = firstKickerIsRed ? Math.ceil(kickedShots / 2) : Math.floor(kickedShots / 2)
+  const blueShotsTaken = firstKickerIsRed ? Math.floor(kickedShots / 2) : Math.ceil(kickedShots / 2)
+  const shotBallsRow = (count: number) => (
+    <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+      {Array.from({ length: count }).map((_, i) => (
+        <UiEntity
+          key={i}
+          uiTransform={{ width: sbBall, height: sbBall, margin: { left: i === 0 ? 0 : sbBallGap } }}
+          uiBackground={atlasCellBackground('H8')}
+        />
+      ))}
+    </UiEntity>
+  )
+
   const waitPanelW = Math.floor((isMobile() ? 620 : 480) * 1.2)
   const waitPanelH = Math.floor(waitPanelW / 2)
   const waitTitleWidth = Math.floor(waitPanelW * 0.85)
@@ -997,6 +1022,45 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 />
                 <UiEntity uiTransform={{ width: sbPx(6), height: sbNameH }} />
                 <UiEntity uiTransform={{ width: sbFlagW, height: sbNameH }} />
+              </UiEntity>
+            </UiEntity>
+
+            {/* Fila 3: pelotitas por tiro tomado, misma alineación que los nombres
+                (blue a la derecha, red a la izquierda). */}
+            <UiEntity
+              uiTransform={{
+                width: '100%',
+                height: sbBall,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                margin: { top: sbPx(4) }
+              }}
+            >
+              <UiEntity
+                uiTransform={{
+                  width: '37.5%',
+                  height: sbBall,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end'
+                }}
+              >
+                {shotBallsRow(blueShotsTaken)}
+              </UiEntity>
+              <UiEntity uiTransform={{ width: '25%', height: sbBall }} />
+              <UiEntity
+                uiTransform={{
+                  width: '37.5%',
+                  height: sbBall,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start'
+                }}
+              >
+                {shotBallsRow(redShotsTaken)}
               </UiEntity>
             </UiEntity>
           </UiEntity>
