@@ -822,6 +822,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const waitBtnW = Math.floor((isMobile() ? 220 * 1.3 : 180) * 1.2)
   // Alto derivado del aspect real del sprite para no estirarlo.
   const waitBtnH = Math.floor(waitBtnW / waitingOpponentButtonAspect())
+  // Gap horizontal entre los 2 botones — negativo porque los sprites traen espacio vacío a los lados.
+  const waitBtnGapPx = -Math.floor(waitBtnW * 0.14)
 
   const lbPanelWidthPx = Math.floor(1920 * ((isMobile() ? LEADERBOARD_PANEL_WIDTH_MOBILE_VW : LEADERBOARD_PANEL_WIDTH_VW) / 100))
   const lbSlicePx = isMobile() ? 34 : 28
@@ -1984,7 +1986,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           >
             <Button
               value=""
-              uiTransform={{ width: waitBtnW, height: waitBtnH, margin: { right: 14 } }}
+              uiTransform={{ width: waitBtnW, height: waitBtnH, margin: { right: waitBtnGapPx } }}
               uiBackground={{
                 ...waitingOpponentPvEButtonBackground(),
                 color: Color4.create(1, 1, 1, hoverWaitPvE ? 1 : 0.92)
