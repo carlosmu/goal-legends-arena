@@ -52,6 +52,7 @@ import {
   waitingOpponentTitleAspect,
   waitingOpponentPvEButtonBackground,
   waitingOpponentCancelButtonBackground,
+  waitingOpponentButtonAspect,
   leaderboardFrameSliceBackground,
   leaderboardTitleBackground,
   leaderboardTitleAspect,
@@ -819,7 +820,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const welcomePanelPadY = isMobile() ? 70 : 44
   const welcomePanelH = welcomeOverlayH + welcomePanelPadY * 2
   const waitBtnW = Math.floor((isMobile() ? 220 * 1.3 : 180) * 1.2)
-  const waitBtnH = Math.floor(waitBtnW / 2)
+  // Alto derivado del aspect real del sprite para no estirarlo.
+  const waitBtnH = Math.floor(waitBtnW / waitingOpponentButtonAspect())
 
   const lbPanelWidthPx = Math.floor(1920 * ((isMobile() ? LEADERBOARD_PANEL_WIDTH_MOBILE_VW : LEADERBOARD_PANEL_WIDTH_VW) / 100))
   const lbSlicePx = isMobile() ? 34 : 28
@@ -1977,7 +1979,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: { top: isMobile() ? 24 : -6 }
+              margin: { top: isMobile() ? 44 : 16 }
             }}
           >
             <Button

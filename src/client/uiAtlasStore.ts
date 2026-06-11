@@ -130,14 +130,22 @@ export function waitingOpponentTitleAspect(): number {
   return uiAtlasRangeAspect(WAITING_TITLE_FROM, WAITING_TITLE_TO)
 }
 
-/** Waiting panel: PvE — UI_atlas E6. */
+/** Waiting panel: PvE (single player) — UI_atlas E6–F6. */
+export const WAITING_PVE_FROM = 'E6'
+export const WAITING_PVE_TO = 'F6'
+
 export function waitingOpponentPvEButtonBackground() {
-  return uiAtlasRangeBackground('E6', 'E6')
+  return uiAtlasRangeBackground(WAITING_PVE_FROM, WAITING_PVE_TO)
 }
 
-/** Waiting panel: Cancel — UI_atlas F6. */
+/** Waiting panel: Cancel — UI_atlas G6–H6. */
 export function waitingOpponentCancelButtonBackground() {
-  return uiAtlasRangeBackground('F6', 'F6')
+  return uiAtlasRangeBackground('G6', 'H6')
+}
+
+/** Aspect (width / height) of the waiting panel buttons (both share the same shape). */
+export function waitingOpponentButtonAspect(): number {
+  return uiAtlasRangeAspect(WAITING_PVE_FROM, WAITING_PVE_TO)
 }
 
 /** Leaderboard title — UI_atlas A13–C13. */
