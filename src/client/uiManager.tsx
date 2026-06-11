@@ -442,7 +442,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     pickRoundActive && timeoutEndsAtLocalMs > 0
       ? Math.max(0, Math.ceil((timeoutEndsAtLocalMs - Date.now()) / 1000))
       : -1
-  const showTimeoutCountdown = showPick && timeoutRemainingSec >= 0
+  // Surface it for the last 20s in every case (both the 60s and 30s budgets).
+  const showTimeoutCountdown = showPick && timeoutRemainingSec >= 0 && timeoutRemainingSec <= 20
 
   // Spectators (in scene but not playing) get a camera toggle while a match runs.
   const showCameraSelector = splashDismissed && s.hasActiveMatch === 1 && !side
@@ -644,12 +645,15 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const cpSlicePx = isMobile() ? 34 : 28
   const cpSliceOverlap = 1
   const cpInset = cpSlicePx - cpSliceOverlap
-  // Small "timeout in Ns" countdown pill (A5 nine-slice) shown above the pick panel.
-  const timeoutFsPx = fs(16)
+  // "timeout in Ns" countdown pill (D5 nine-slice), anchored just under the scoreboard.
+  const timeoutFsPx = fs(24)
   const timeoutSlicePx = Math.floor(cpSlicePx / 2)
   const timeoutInset = timeoutSlicePx - cpSliceOverlap
-  const timeoutBoxW = Math.floor(14 * timeoutFsPx * 0.6) + 2 * timeoutSlicePx + 16
+  const timeoutPadX = 4 // L/R padding inside the frame (half of the previous 8/side)
+  const timeoutBoxW = Math.floor(14 * timeoutFsPx * 0.6) + 2 * timeoutSlicePx + 2 * timeoutPadX
   const timeoutBoxH = timeoutSlicePx * 2 + timeoutFsPx + 10
+  // Sits right below the scoreboard (height 7vw desktop / 13vw mobile) with a small gap.
+  const timeoutTopMargin = (isMobile() ? '14vw' : '7.6vw') as `${number}vw`
   const cpPanelWidthPx = pickerGridWidthPx + 2 * (cpSlicePx + 16)
   const PICKER_PAGE_BTN_W = 140
   const PICKER_PAGE_BTN_H = 88
@@ -1886,6 +1890,42 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         </UiEntity>
       )}
 
+      {/* Inactivity countdown pill, anchored just under the scoreboard. */}
+      {showTimeoutCountdown && (
+        <UiEntity
+          uiTransform={{
+            positionType: 'absolute',
+            position: { top: 0, left: 0 },
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            zIndex: 56
+          }}
+        >
+          <UiEntity
+            uiTransform={{
+              width: timeoutBoxW,
+              height: timeoutBoxH,
+              positionType: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: { top: timeoutTopMargin }
+            }}
+          >
+            {nineSliceFrame(timeoutFrameSliceBackground, timeoutSlicePx, timeoutInset)}
+            <Label
+              value={`timeout in ${timeoutRemainingSec}s`}
+              fontSize={timeoutFsPx}
+              color={Color4.White()}
+              textAlign="middle-center"
+              uiTransform={{ width: '100%', height: '100%', zIndex: 1 }}
+            />
+          </UiEntity>
+        </UiEntity>
+      )}
+
       {/* DIVE / SHOOT panels: centrado en pantalla */}
       {showPick && (
         <UiEntity
@@ -1902,28 +1942,6 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             zIndex: 1000
           }}
         >
-          {showTimeoutCountdown && (
-            <UiEntity
-              uiTransform={{
-                width: timeoutBoxW,
-                height: timeoutBoxH,
-                positionType: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: { bottom: 6 }
-              }}
-            >
-              {nineSliceFrame(timeoutFrameSliceBackground, timeoutSlicePx, timeoutInset)}
-              <Label
-                value={`timeout in ${timeoutRemainingSec}s`}
-                fontSize={timeoutFsPx}
-                color={Color4.White()}
-                textAlign="middle-center"
-                uiTransform={{ width: '100%', height: '100%', zIndex: 1 }}
-              />
-            </UiEntity>
-          )}
           {!kicker && pickDirectionPanel(pickDirectionTitleDiveBackground())}
           {kicker && pickDirectionPanel(pickDirectionTitleShootBackground())}
         </UiEntity>
