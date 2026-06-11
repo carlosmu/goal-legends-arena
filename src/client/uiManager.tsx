@@ -38,6 +38,7 @@ import {
   logoBackground,
   scoreboardBackground,
   welcomeChooseSpotOverlayBackground,
+  welcomeChooseSpotOverlayAspect,
   pickDirectionTitleDiveBackground,
   pickDirectionTitleShootBackground,
   pickDirectionTitleAspect,
@@ -809,6 +810,14 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const waitTitleWidth = Math.floor(waitPanelW * 0.85)
   // Alto derivado del aspect real del sprite para no estirarlo.
   const waitTitleHeight = Math.floor(waitTitleWidth / waitingOpponentTitleAspect())
+
+  // Welcome "pick a spot": overlay con aspect real centrado, panel un poco más alto para
+  // dejar padding arriba/abajo (si solo achicara el overlay se estiraría).
+  const welcomePanelW = isMobile() ? 800 : 480
+  const welcomeOverlayW = Math.floor(welcomePanelW * 0.8)
+  const welcomeOverlayH = Math.floor(welcomeOverlayW / welcomeChooseSpotOverlayAspect())
+  const welcomePanelPadY = isMobile() ? 70 : 44
+  const welcomePanelH = welcomeOverlayH + welcomePanelPadY * 2
   const waitBtnW = Math.floor((isMobile() ? 220 * 1.3 : 180) * 1.2)
   const waitBtnH = Math.floor(waitBtnW / 2)
 
@@ -1873,8 +1882,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         >
           <UiEntity
             uiTransform={{
-              width: isMobile() ? 800 : 480,
-              height: isMobile() ? 400 : 240,
+              width: welcomePanelW,
+              height: welcomePanelH,
               positionType: 'relative'
             }}
           >
@@ -1882,16 +1891,16 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             <UiEntity
               uiTransform={{
                 positionType: 'absolute',
-                position: { top: '10%', left: '10%' },
-                width: '80%',
-                height: '80%',
+                position: { top: 0, left: 0 },
+                width: '100%',
+                height: '100%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}
             >
               <UiEntity
-                uiTransform={{ width: '100%', height: '100%' }}
+                uiTransform={{ width: welcomeOverlayW, height: welcomeOverlayH }}
                 uiBackground={welcomeChooseSpotOverlayBackground()}
               />
             </UiEntity>

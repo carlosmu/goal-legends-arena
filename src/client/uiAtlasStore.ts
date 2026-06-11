@@ -60,12 +60,17 @@ export function scoreboardBackground() {
   return uiAtlasRangeBackground(SCOREBOARD_BG_FROM, SCOREBOARD_BG_TO)
 }
 
-export const WELCOME_SPOT_OVERLAY_FROM = 'G3'
-export const WELCOME_SPOT_OVERLAY_TO = 'H4'
+export const WELCOME_SPOT_OVERLAY_FROM = 'E3'
+export const WELCOME_SPOT_OVERLAY_TO = 'H5'
 
-/** Overlay centered over welcome banner (UI_atlas G3–H4). */
+/** Overlay centered over welcome banner (UI_atlas E3–H5). */
 export function welcomeChooseSpotOverlayBackground() {
   return uiAtlasRangeBackground(WELCOME_SPOT_OVERLAY_FROM, WELCOME_SPOT_OVERLAY_TO)
+}
+
+/** Aspect (width / height) of the welcome "pick a spot" overlay, to size its box without stretch. */
+export function welcomeChooseSpotOverlayAspect(): number {
+  return uiAtlasRangeAspect(WELCOME_SPOT_OVERLAY_FROM, WELCOME_SPOT_OVERLAY_TO)
 }
 
 export function pickDirectionLeftBackground() {
