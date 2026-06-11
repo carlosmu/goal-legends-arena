@@ -312,15 +312,29 @@ function maybeFillAiGk() {
   m.gkPick = randomDir()
 }
 
+/** Hold in SelectingDirections this long after BOTH directions are in, so the chosen button
+ *  stays visible (especially for whoever picked second) before the shoot animation runs. */
+const PICK_REVEAL_HOLD_MS = 1000
+let pendingResolveAtMs = 0
+
 function tryEnterResolving() {
   const m = mut()
   if (m.phase !== GameState.SelectingDirections) return
   maybeFillAiGk()
   if (!m.kickerPick || !m.gkPick) return
+  if (pendingResolveAtMs > 0) return // hold already scheduled
 
-  // Enter ResolvingRound immediately so the shoot animation starts, but defer the
-  // score bump + result banner until GOAL_REVEAL_MS in (see revealRoundResult), so
-  // the UI lands when the ball crosses the line instead of spoiling it at frame 0.
+  // Both picked: stay in SelectingDirections briefly (button-reveal hold), then resolve.
+  pendingResolveAtMs = nowMs() + PICK_REVEAL_HOLD_MS
+  m.inactivityDeadlineMs = 0 // both acted; don't let the inactivity timer fire during the hold
+  bumpEpoch()
+}
+
+/** Transition into ResolvingRound (starts the shoot animation). The score bump + result banner
+ *  are deferred GOAL_REVEAL_MS in (see revealRoundResult) so the UI doesn't spoil it at frame 0. */
+function enterResolvingRound() {
+  const m = mut()
+  if (m.phase !== GameState.SelectingDirections || !m.kickerPick || !m.gkPick) return
   const goal = m.kickerPick !== m.gkPick
   m.lastRoundWasGoal = goal ? 1 : 0
   m.resultLine = ''
@@ -563,6 +577,17 @@ export function serverTick() {
 
   checkParticipantDisconnects()
 
+  // Button-reveal hold: both picked, wait PICK_REVEAL_HOLD_MS, then start the shot. Clears
+  // itself if the round ended some other way (e.g. abandonment) during the hold.
+  if (pendingResolveAtMs > 0) {
+    if (m.phase !== GameState.SelectingDirections) {
+      pendingResolveAtMs = 0
+    } else if (t >= pendingResolveAtMs) {
+      pendingResolveAtMs = 0
+      enterResolvingRound()
+    }
+  }
+
   if (m.phase === GameState.WaitingOpponent && m.waitEndMs > 0 && t >= m.waitEndMs) {
     const hasRed = !!m.redAddr
     const hasBlue = !!m.blueAddr
@@ -745,6 +770,7 @@ export function registerServerMessages() {
     if (!dir) return
     const m = mut()
     if (m.phase !== GameState.SelectingDirections) return
+    if (pendingResolveAtMs > 0) return // both already committed; locked during the reveal hold
 
     const role = roleForAddress(addr)
     if (!role) return
