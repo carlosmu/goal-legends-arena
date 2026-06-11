@@ -234,6 +234,14 @@ function isAiGk(): boolean {
   return !isAiKicker()
 }
 
+/** Inactivity grace for the round that's about to start. Each player's FIRST kick gets the
+ *  longer window so newcomers can learn the mechanic: shotIndex 0 (player A kicks) and 1
+ *  (player B kicks). From each player's second kick on (shotIndex ≥ 2, or sudden death) it's
+ *  the regular 30s. */
+function inactivityTimeoutMs(shotIndex: number, suddenDeath: number): number {
+  return suddenDeath === 0 && shotIndex <= 1 ? FIRST_SHOT_TIMEOUT_MS : SHOOT_TIMEOUT_MS
+}
+
 function resetMatchForNewGame(mode: MatchMode, pveHumanIsRed: boolean) {
   const m = mut()
   m.mode = mode
@@ -259,8 +267,8 @@ function resetMatchForNewGame(mode: MatchMode, pveHumanIsRed: boolean) {
   m.kickerIsRed = m.firstKickerIsRed
   m.phase = GameState.SelectingDirections
   m.phaseDeadlineMs = 0
-  // Arm the inactivity timer from the very first shot (longer, so newcomers learn the mechanic).
-  m.inactivityDeadlineMs = nowMs() + FIRST_SHOT_TIMEOUT_MS
+  // Arm the inactivity timer for shot 0 (60s — first kick of the match).
+  m.inactivityDeadlineMs = nowMs() + inactivityTimeoutMs(m.shotIndex, m.suddenDeath)
   if (isAiKicker()) {
     m.kickerPick = randomDir()
     m.gkPick = ''
@@ -465,7 +473,7 @@ function applyEarlyOrContinueAfterRound(): boolean {
       m.kickerIsRed = m.shotIndex % 2 === 0 ? fk : fk === 1 ? 0 : 1
       m.phase = GameState.SelectingDirections
       m.phaseDeadlineMs = 0
-      m.inactivityDeadlineMs = nowMs() + SHOOT_TIMEOUT_MS
+      m.inactivityDeadlineMs = nowMs() + inactivityTimeoutMs(m.shotIndex, m.suddenDeath)
       if (isAiKicker()) m.kickerPick = randomDir()
       bumpEpoch()
       return true
@@ -488,7 +496,7 @@ function applyEarlyOrContinueAfterRound(): boolean {
   m.kickerIsRed = m.shotIndex % 2 === 0 ? fk : fk === 1 ? 0 : 1
   m.phase = GameState.SelectingDirections
   m.phaseDeadlineMs = 0
-  m.inactivityDeadlineMs = nowMs() + SHOOT_TIMEOUT_MS
+  m.inactivityDeadlineMs = nowMs() + inactivityTimeoutMs(m.shotIndex, m.suddenDeath)
   if (isAiKicker()) m.kickerPick = randomDir()
   bumpEpoch()
   return true
@@ -742,10 +750,8 @@ export function registerServerMessages() {
       m.gkPick = dir
     }
 
-    // Reset inactivity timer on every player action (first shot keeps the longer grace).
-    const firstShot = m.shotIndex === 0 && m.suddenDeath === 0
-    m.inactivityDeadlineMs = nowMs() + (firstShot ? FIRST_SHOT_TIMEOUT_MS : SHOOT_TIMEOUT_MS)
-
+    // Note: the inactivity timer is armed once per round (see inactivityTimeoutMs), not
+    // reset on each pick — so the round counts down cleanly from its 60s/30s budget.
     maybeFillAiGk()
     tryEnterResolving()
     bumpEpoch()

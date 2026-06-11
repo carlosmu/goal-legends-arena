@@ -8,6 +8,7 @@ import { getLeaderboardRows } from './leaderboardManager'
 import { getLeaderboardFaceUrl, prefetchLeaderboardFaces } from './leaderboardProfileCache'
 import { room } from '../shared/messages'
 import { GameState } from '../shared/gameState'
+import { FIRST_SHOT_TIMEOUT_MS, SHOOT_TIMEOUT_MS } from '../shared/constants'
 import { setSpectatorCameraMode, getSpectatorCameraMode } from './gameplayCamera'
 import {
   COUNTRIES,
@@ -57,7 +58,8 @@ import {
   goalSaveFrameSliceBackground,
   goalSaveGoalBannerBackground,
   goalSaveSaveBannerBackground,
-  matchEndFrameSliceBackground
+  matchEndFrameSliceBackground,
+  timeoutFrameSliceBackground
 } from './uiAtlasStore'
 
 /**
@@ -293,6 +295,11 @@ export function closeLeaderboard(): void {
 }
 
 let prevPhase = ''
+/** Local countdown for the inactivity timeout: re-anchored at the start of every pick round
+ *  (rising edge of SelectingDirections). Counting down with the local clock from a fixed
+ *  per-shot budget sidesteps clock skew / sync lag and resets cleanly each shot. */
+let prevPickRoundActive = false
+let timeoutEndsAtLocalMs = 0
 let pickerPage = 0
 let prevPickerOpen = false
 let splashDismissed = false
@@ -421,6 +428,21 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     : WAIT_DISPLAY_TOTAL_S
   const showPick =
     splashDismissed && s.phase === GameState.SelectingDirections && side && (s.mode === 'pvp' || (s.mode === 'pve' && !!side))
+
+  // Inactivity countdown above the pick panel. Reset to the FULL budget at the start of
+  // every pick round (rising edge of SelectingDirections) and count down with the local
+  // clock — each shot starts fresh at 60s (shots 0/1) or 30s (shot 2+), leftover ignored.
+  const pickRoundActive = s.phase === GameState.SelectingDirections
+  if (pickRoundActive && !prevPickRoundActive) {
+    const budgetMs = s.suddenDeath === 0 && s.shotIndex <= 1 ? FIRST_SHOT_TIMEOUT_MS : SHOOT_TIMEOUT_MS
+    timeoutEndsAtLocalMs = Date.now() + budgetMs
+  }
+  prevPickRoundActive = pickRoundActive
+  const timeoutRemainingSec =
+    pickRoundActive && timeoutEndsAtLocalMs > 0
+      ? Math.max(0, Math.ceil((timeoutEndsAtLocalMs - Date.now()) / 1000))
+      : -1
+  const showTimeoutCountdown = showPick && timeoutRemainingSec >= 0
 
   // Spectators (in scene but not playing) get a camera toggle while a match runs.
   const showCameraSelector = splashDismissed && s.hasActiveMatch === 1 && !side
@@ -622,6 +644,12 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const cpSlicePx = isMobile() ? 34 : 28
   const cpSliceOverlap = 1
   const cpInset = cpSlicePx - cpSliceOverlap
+  // Small "timeout in Ns" countdown pill (A5 nine-slice) shown above the pick panel.
+  const timeoutFsPx = fs(16)
+  const timeoutSlicePx = Math.floor(cpSlicePx / 2)
+  const timeoutInset = timeoutSlicePx - cpSliceOverlap
+  const timeoutBoxW = Math.floor(14 * timeoutFsPx * 0.6) + 2 * timeoutSlicePx + 16
+  const timeoutBoxH = timeoutSlicePx * 2 + timeoutFsPx + 10
   const cpPanelWidthPx = pickerGridWidthPx + 2 * (cpSlicePx + 16)
   const PICKER_PAGE_BTN_W = 140
   const PICKER_PAGE_BTN_H = 88
@@ -1874,6 +1902,28 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             zIndex: 1000
           }}
         >
+          {showTimeoutCountdown && (
+            <UiEntity
+              uiTransform={{
+                width: timeoutBoxW,
+                height: timeoutBoxH,
+                positionType: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: { bottom: 6 }
+              }}
+            >
+              {nineSliceFrame(timeoutFrameSliceBackground, timeoutSlicePx, timeoutInset)}
+              <Label
+                value={`timeout in ${timeoutRemainingSec}s`}
+                fontSize={timeoutFsPx}
+                color={Color4.White()}
+                textAlign="middle-center"
+                uiTransform={{ width: '100%', height: '100%', zIndex: 1 }}
+              />
+            </UiEntity>
+          )}
           {!kicker && pickDirectionPanel(pickDirectionTitleDiveBackground())}
           {kicker && pickDirectionPanel(pickDirectionTitleShootBackground())}
         </UiEntity>
