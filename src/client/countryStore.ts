@@ -147,8 +147,13 @@ export const ENGINE_FLAG_COORD = 'A7'
 export const ENGINE_PIC_COORD = 'B7'
 export const BLUE_PIC_BG_COORD = 'C7'
 export const RED_PIC_BG_COORD = 'D7'
-/** Default avatar when profile face URL is unavailable (mobile, guest, fetch failed). */
-export const DEFAULT_PROFILE_PIC_COORD = 'G7'
+/**
+ * Default avatar when profile face URL is unavailable (mobile, guest, fetch failed).
+ * Standalone full-size image — NOT an atlas cell. Using a dedicated texture with a
+ * full quad UV avoids the React-ECS reconciler bug where swapping a face texture for
+ * an atlas cell kept the old full-quad UVs and showed the whole sheet.
+ */
+export const FALLBACK_PROFILE_PIC_SRC = 'assets/images/fallback_profile_pic.png'
 /** Fallback flag when a player's country is unknown/cleared (e.g. after they leave). */
 export const FALLBACK_FLAG_COORD = 'G8'
 /** Extra badges on scoreboard player-B row (flags.png). */
@@ -186,19 +191,24 @@ export function redPicBgBackground() {
 }
 
 export function defaultProfilePicBackground() {
-  return atlasCellBackground(DEFAULT_PROFILE_PIC_COORD)
+  return {
+    textureMode: 'stretch' as const,
+    texture: { src: FALLBACK_PROFILE_PIC_SRC },
+    uvs: [0, 0, 0, 1, 1, 1, 1, 0],
+    color: Color4.White()
+  }
 }
 
-/** Profile face from lambdas, or flags.png G7 if missing / loading / failed. */
+/** Profile face from lambdas, or the standalone fallback image if missing / loading / failed. */
 export function facePicBackground(faceUrl: string | undefined) {
   if (faceUrl) {
     return {
       textureMode: 'stretch' as const,
       texture: { src: faceUrl },
-      // Always set uvs (full quad). The fallback uses flags.png cell uvs; if this branch
-      // omitted uvs, React-ECS reuses a leaderboard slot and fails to apply the new cell
-      // uvs when swapping in flags.png → the whole atlas shows. Keeping uvs present in
-      // every state makes the reconciler always update them.
+      // Full quad UVs. The fallback also uses a standalone full-size texture with the same
+      // full quad UVs, so both states are identical except for `src`. Even if React-ECS
+      // reuses a slot and keeps stale UVs when swapping textures, the image still renders
+      // correctly (the whole texture IS the picture) — no atlas bleed possible.
       uvs: [0, 0, 0, 1, 1, 1, 1, 0],
       color: Color4.White()
     }
