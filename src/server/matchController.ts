@@ -9,6 +9,8 @@ import {
   AIM_COLLIDERS,
   BAN_COOLDOWN_MS,
   GOAL_REVEAL_MS,
+  LEADERBOARD_MATCH_END_MS,
+  SPOT_PROMPT_DELAY_MS,
   MATCH_END_UI_MS,
   REGULATION_SHOTS,
   ROUND_RESULT_MS,
@@ -570,9 +572,10 @@ export function serverTick() {
     }
   }
 
-  // Check if winner waiting for streak timed out (didn't play another match within 30s)
+  // Winner timed out: either sat on the "Keep playing?" prompt unchallenged, or chose to
+  // continue and then no opponent joined within 30s. Either way, expel them to the lobby.
   if (
-    m.phase === GameState.WaitingOpponent &&
+    (m.phase === GameState.WaitingOpponent || m.phase === GameState.WinnerContinuePrompt) &&
     m.winnerStreakAddr &&
     m.winnerStreakDeadlineMs > 0 &&
     t >= m.winnerStreakDeadlineMs
@@ -620,6 +623,11 @@ export function serverTick() {
         clearSpotsLoserOnly(loseSide as 'red' | 'blue')
         m.phase = GameState.WinnerContinuePrompt
         m.phaseDeadlineMs = 0
+        // Limit how long the winner can sit on the "Keep playing?" prompt unchallenged.
+        // The prompt only appears after the match-end leaderboard, so add that window to the
+        // 30s the winner actually gets (keeps it aligned with the client countdown).
+        m.winnerStreakDeadlineMs =
+          nowMs() + LEADERBOARD_MATCH_END_MS + SPOT_PROMPT_DELAY_MS + WINNER_STREAK_TIMEOUT_MS
       } else {
         goLobbyIdle()
       }

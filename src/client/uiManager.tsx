@@ -319,6 +319,8 @@ const LOCAL_WAIT_MIN_MS = 3000
 /** Ancla local del countdown cosmético de waiting. Arranca cuando la UI se vuelve visible y baja 30→0. */
 let waitDisplayAnchorMs = 0
 const WAIT_DISPLAY_TOTAL_S = 30
+/** Ancla local del countdown del cartel "Keep playing?" (mismo estilo que waiting, 30→0). */
+let streakDisplayAnchorMs = 0
 /** Oculta scoreboard local tras abandonar; se resetea cuando no hay partida activa. */
 let hideScoreboardAfterLeave = false
 let leaveMatchConfirmOpen = false
@@ -600,6 +602,16 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     !!me &&
     !!s.winnerStreakAddr &&
     me.toLowerCase() === s.winnerStreakAddr.toLowerCase()
+  // Cosmetic 30→0 countdown for the "Keep playing?" prompt, anchored when it appears
+  // (same style as the waiting countdown). The server enforces the matching 30s limit.
+  if (showStreak) {
+    if (streakDisplayAnchorMs === 0) streakDisplayAnchorMs = Date.now()
+  } else {
+    streakDisplayAnchorMs = 0
+  }
+  const streakDisplayLeft = streakDisplayAnchorMs > 0
+    ? Math.max(0, WAIT_DISPLAY_TOTAL_S - Math.floor((Date.now() - streakDisplayAnchorMs) / 1000))
+    : WAIT_DISPLAY_TOTAL_S
   // The match loser is on cooldown only when others are waiting (>2 in scene): they
   // don't get to challenge. With just 2 players, the loser may rematch immediately.
   const meIsLoser = !!me && !!s.loserAddr && me.toLowerCase() === s.loserAddr.toLowerCase()
@@ -2223,7 +2235,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 alignItems: 'center',
                 padding: {
                   top: cpSlicePx + 20,
-                  bottom: cpSlicePx + 20,
+                  bottom: cpSlicePx + 12,
                   left: cpSlicePx + 32,
                   right: cpSlicePx + 32
                 },
@@ -2231,6 +2243,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               }}
             >
               <Label value="Keep playing on this spot?" fontSize={fs(30)} color={Color4.White()} textAlign="middle-center" />
+              <Label
+                value={`${streakDisplayLeft}s`}
+                fontSize={fs(30)}
+                color={Color4.create(1, 0.85, 0.2, 1)}
+                textAlign="middle-center"
+                uiTransform={{ margin: { top: 6 } }}
+              />
               <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 14 } }}>
                 <Button
                   value="YES"
