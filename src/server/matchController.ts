@@ -499,10 +499,17 @@ function applyEarlyOrContinueAfterRound(): boolean {
   }
 
   if (m.suddenDeath === 1) {
-    const sd = suddenDeathWinner(m.redScore, m.blueScore)
-    if (sd) {
-      finishMatch(sd)
-      return true
+    // A sudden-death round only resolves once BOTH players have kicked. By convention an even
+    // shotIndex is the first kicker of the round and an odd one is the second, so the round is
+    // complete (and a winner can be decided) only when the just-finished shot had an odd index.
+    // Otherwise the first kicker scoring would end the match before the other gets their attempt.
+    const roundComplete = m.shotIndex % 2 === 1
+    if (roundComplete) {
+      const sd = suddenDeathWinner(m.redScore, m.blueScore)
+      if (sd) {
+        finishMatch(sd)
+        return true
+      }
     }
   }
 
