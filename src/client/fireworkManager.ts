@@ -67,11 +67,13 @@ function deactivateFireworks(): void {
   }
 }
 
-export function tickFireworkManager(phase: string): void {
+export function tickFireworkManager(phase: string, hasWinner: boolean): void {
   // Lazy discovery: keep trying until at least one Firework_ entity is found
   if (fireworkEntities.length === 0) findFireworks()
 
-  if (prevPhase !== GameState.MatchEnd && phase === GameState.MatchEnd) {
+  // Only a real win lights the fireworks — an abandonment / leave / disconnect ends the match
+  // with no winner and must stay dark.
+  if (prevPhase !== GameState.MatchEnd && phase === GameState.MatchEnd && hasWinner) {
     activateFireworks()
   } else if (prevPhase === GameState.MatchEnd && phase !== GameState.MatchEnd) {
     deactivateFireworks()

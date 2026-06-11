@@ -124,11 +124,15 @@ export function initGameplayCamera(): void {
     }
     prevCamPhase = phase
 
+    // Only a real win triggers the celebration — an abandonment / leave / disconnect ends the
+    // match with no winnerSide and must NOT show the winner cinematic.
+    const hasWinner = clientSnapshot.winnerSide !== ''
+
     // Winner celebration: the spinning winner camera is shown to EVERYONE during the winner
     // banner (MatchEnd) AND the match-end leaderboard window at the start of WinnerContinuePrompt.
     const inLeaderboardWindow =
       phase === GameState.WinnerContinuePrompt && Date.now() - winnerPromptStartMs < POST_MATCH_CINEMATIC_MS
-    const isWinnerCinematic = matchActive && (phase === GameState.MatchEnd || inLeaderboardWindow)
+    const isWinnerCinematic = matchActive && hasWinner && (phase === GameState.MatchEnd || inLeaderboardWindow)
     if (isWinnerCinematic) {
       setActiveCamera(winnerCameraEntity)
       if (winnerPivotEntity) {
@@ -140,9 +144,10 @@ export function initGameplayCamera(): void {
     }
     winnerCamSpinT = 0
 
-    // After the leaderboard, once "Face the winner" is up, release EVERYONE from any cinematic
-    // back to the standard Decentraland camera so they can look around freely.
-    if (matchActive && phase === GameState.WinnerContinuePrompt) {
+    // Match over with no celebration: the "Face the winner" prompt (WinnerContinuePrompt) or a
+    // winner-less end (abandonment / leave / disconnect at MatchEnd). Release EVERYONE to the
+    // standard Decentraland camera so they can look around freely.
+    if (matchActive && (phase === GameState.WinnerContinuePrompt || (phase === GameState.MatchEnd && !hasWinner))) {
       setActiveCamera(null)
       return
     }

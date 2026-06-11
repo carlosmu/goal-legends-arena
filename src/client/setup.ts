@@ -145,7 +145,7 @@ export function initClient() {
 
     tickAudioManager(s)
     tickAnimationManager(s)
-    tickFireworkManager(s.phase)
+    tickFireworkManager(s.phase, s.winnerSide !== '')
     tickSpotBillboardManager(s)
     if (!syncedPinged && isStateSyncronized()) {
       syncedPinged = true
