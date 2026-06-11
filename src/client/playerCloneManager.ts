@@ -90,6 +90,7 @@ let trainingBot: Entity | null = null
 let prevRoleKey         = ''
 let prevAtFirstShot     = false
 let prevPhase           = ''
+let prevLocalIsLoser    = false
 let trainingBotIsKicker = false
 let repositionPromise: Promise<void> = Promise.resolve()
 let localEmoteToken     = 0
@@ -316,6 +317,15 @@ export function initPlayerCloneSystem(): void {
         repositionPromise = Promise.resolve()
       }
     }
+
+    // The PvP loser is teleported to the plaza on match end but stays locomotion-locked from
+    // the match. Free their movement once they become the loser (the winner stays locked on
+    // the field on purpose). loserAddr is pvp-only and persists until the next match resets it.
+    const localIsLoser = !!s.loserAddr && localAddr === s.loserAddr.toLowerCase()
+    if (localIsLoser && !prevLocalIsLoser) {
+      unlockLocomotion()
+    }
+    prevLocalIsLoser = localIsLoser
 
     if (active === 1 && phase !== prevPhase) {
       prevPhase = phase
