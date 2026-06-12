@@ -80,7 +80,10 @@ import {
   faceTheWinnerBackground,
   faceTheWinnerAspect,
   stayOnSpotBackground,
-  stayOnSpotAspect
+  stayOnSpotAspect,
+  promptYesBackground,
+  promptNoBackground,
+  promptButtonAspect
 } from './uiAtlasStore'
 
 /**
@@ -728,14 +731,20 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const cpPanelWidthPx = pickerGridWidthPx + 2 * (cpSlicePx + 16)
   const PICKER_PAGE_BTN_W = 140
   const PICKER_PAGE_BTN_H = 88
-  // Alto de los botones prev/next derivado del aspect real del sprite para no estirarlo.
-  const pickerNavBtnH = Math.floor(PICKER_PAGE_BTN_W / flagPickerNavAspect())
+  // Botones prev/next 50% más grandes; alto derivado del aspect real del sprite para no estirarlo.
+  const pickerNavBtnW = Math.floor(PICKER_PAGE_BTN_W * 1.5)
+  const pickerNavBtnH = Math.floor(pickerNavBtnW / flagPickerNavAspect())
   const PICKER_ACCENT = Color4.create(0.898, 0.333, 0.98, 1)
   const leaveConfirmBtnW = Math.floor(PICKER_PAGE_BTN_W * 1.3 * 1.2)
   // Alto derivado del aspect real del sprite para no estirarlo.
   const leaveConfirmBtnH = Math.floor(leaveConfirmBtnW / leaveMatchButtonAspect())
   // Gap negativo entre Yes/No — los sprites ya traen espacio vacío a los lados.
   const leaveConfirmBtnGapPx = -Math.floor(leaveConfirmBtnW * 0.14)
+  // Botones Yes/No de los prompts (Face the winner / Keep playing), +20% desktop / +40% mobile.
+  const promptBtnW = Math.floor(fs(170) * (isMobile() ? 1.4 : 1.2))
+  const promptBtnH = Math.floor(promptBtnW / promptButtonAspect())
+  // Gap negativo entre Yes/No — los sprites ya traen espacio vacío a los lados.
+  const promptBtnGapPx = -Math.floor(promptBtnW * 0.14)
   const leaveConfirmPanelW = leaveConfirmBtnW * 2 + 96
   const leaveConfirmTitleW = Math.floor(leaveConfirmPanelW * 0.9)
   // Alto derivado del aspect real del sprite para no estirarlo.
@@ -852,7 +861,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     </UiEntity>
   )
 
-  const waitPanelW = Math.floor((isMobile() ? 680 : 480) * 1.2)
+  const waitPanelW = Math.floor((isMobile() ? 820 : 480) * 1.2)
   const waitPanelH = Math.floor(waitPanelW / 2)
   const waitTitleWidth = Math.floor(waitPanelW * 0.85)
   // Alto derivado del aspect real del sprite para no estirarlo.
@@ -865,7 +874,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const welcomeOverlayH = Math.floor(welcomeOverlayW / welcomeChooseSpotOverlayAspect())
   const welcomePanelPadY = isMobile() ? 70 : 44
   const welcomePanelH = welcomeOverlayH + welcomePanelPadY * 2
-  const waitBtnW = Math.floor((isMobile() ? 220 * 1.3 : 180) * 1.2)
+  const waitBtnW = Math.floor((isMobile() ? 220 * 1.3 * 1.4 : 180) * 1.2)
   // Alto derivado del aspect real del sprite para no estirarlo.
   const waitBtnH = Math.floor(waitBtnW / waitingOpponentButtonAspect())
   // Gap horizontal entre los 2 botones — negativo porque los sprites traen espacio vacío a los lados.
@@ -1318,7 +1327,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 50,
+          zIndex: 2000,
           pointerFilter: 'none'
         }}
       >
@@ -1757,12 +1766,12 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             {pickerPage > 0 ? (
               <Button
                 value=""
-                uiTransform={{ width: PICKER_PAGE_BTN_W, height: pickerNavBtnH }}
+                uiTransform={{ width: pickerNavBtnW, height: pickerNavBtnH }}
                 uiBackground={flagPickerPrevBackground()}
                 onMouseDown={() => { pickerPage-- }}
               />
             ) : (
-              <UiEntity uiTransform={{ width: PICKER_PAGE_BTN_W, height: pickerNavBtnH }} />
+              <UiEntity uiTransform={{ width: pickerNavBtnW, height: pickerNavBtnH }} />
             )}
             <Label
               value={`${pickerPage + 1} / ${TOTAL_PAGES}`}
@@ -1774,12 +1783,12 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             {pickerPage < TOTAL_PAGES - 1 ? (
               <Button
                 value=""
-                uiTransform={{ width: PICKER_PAGE_BTN_W, height: pickerNavBtnH }}
+                uiTransform={{ width: pickerNavBtnW, height: pickerNavBtnH }}
                 uiBackground={flagPickerNextBackground()}
                 onMouseDown={() => { pickerPage++ }}
               />
             ) : (
-              <UiEntity uiTransform={{ width: PICKER_PAGE_BTN_W, height: pickerNavBtnH }} />
+              <UiEntity uiTransform={{ width: pickerNavBtnW, height: pickerNavBtnH }} />
             )}
           </UiEntity>
             </UiEntity>
@@ -2398,19 +2407,15 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               />
               <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 14 } }}>
                 <Button
-                  value="YES"
-                  fontSize={fs(30)}
-                  color={Color4.White()}
-                  uiTransform={{ width: 140, height: 66, margin: { right: 12 } }}
-                  uiBackground={{ color: Color4.create(0.1, 0.65, 0.35, 1) }}
+                  value=""
+                  uiTransform={{ width: promptBtnW, height: promptBtnH, margin: { right: promptBtnGapPx } }}
+                  uiBackground={promptYesBackground()}
                   onMouseDown={() => room.send('streakDecision', { continue: 1 })}
                 />
                 <Button
-                  value="NO"
-                  fontSize={fs(30)}
-                  color={Color4.White()}
-                  uiTransform={{ width: 140, height: 66 }}
-                  uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
+                  value=""
+                  uiTransform={{ width: promptBtnW, height: promptBtnH }}
+                  uiBackground={promptNoBackground()}
                   onMouseDown={() => room.send('streakDecision', { continue: 0 })}
                 />
               </UiEntity>
@@ -2459,16 +2464,14 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               }}
             >
               <UiEntity
-                uiTransform={{ width: fs(320), height: Math.floor(fs(320) / faceTheWinnerAspect()) }}
+                uiTransform={{ width: fs(384), height: Math.floor((fs(384) / faceTheWinnerAspect()) * 1.2) }}
                 uiBackground={faceTheWinnerBackground()}
               />
               <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', margin: { top: 14 } }}>
                 <Button
-                  value="YES"
-                  fontSize={fs(30)}
-                  color={Color4.White()}
-                  uiTransform={{ width: 140, height: 66, margin: { right: 12 } }}
-                  uiBackground={{ color: Color4.create(0.1, 0.65, 0.35, 1) }}
+                  value=""
+                  uiTransform={{ width: promptBtnW, height: promptBtnH, margin: { right: promptBtnGapPx } }}
+                  uiBackground={promptYesBackground()}
                   onMouseDown={() => {
                     // Claim the spot the loser just vacated (opposite of the winner's side).
                     const freeTeam = s.winnerSide === 'red' ? 'blue' : 'red'
@@ -2476,11 +2479,9 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   }}
                 />
                 <Button
-                  value="NO"
-                  fontSize={fs(30)}
-                  color={Color4.White()}
-                  uiTransform={{ width: 140, height: 66 }}
-                  uiBackground={{ color: Color4.create(0.55, 0.15, 0.2, 1) }}
+                  value=""
+                  uiTransform={{ width: promptBtnW, height: promptBtnH }}
+                  uiBackground={promptNoBackground()}
                   onMouseDown={() => {
                     spectatorChallengeDismissedFor = s.winnerStreakAddr.toLowerCase()
                   }}

@@ -321,8 +321,8 @@ export function worldCup2026Aspect(): number {
 }
 
 /** "Select your flag" title — UI_atlas E13–H13. */
-export const SELECT_FLAG_FROM = 'D13'
-export const SELECT_FLAG_TO = 'G13'
+export const SELECT_FLAG_FROM = 'A11'
+export const SELECT_FLAG_TO = 'D11'
 
 export function selectYourFlagBackground() {
   return uiAtlasRangeBackground(SELECT_FLAG_FROM, SELECT_FLAG_TO)
@@ -330,6 +330,23 @@ export function selectYourFlagBackground() {
 
 export function selectYourFlagAspect(): number {
   return uiAtlasRangeAspect(SELECT_FLAG_FROM, SELECT_FLAG_TO)
+}
+
+/** Prompt Yes/No buttons (Face the winner / Keep playing) — Yes E9–F9, No E10–F10. */
+export const PROMPT_YES_FROM = 'E9'
+export const PROMPT_YES_TO = 'F9'
+
+export function promptYesBackground() {
+  return uiAtlasRangeBackground(PROMPT_YES_FROM, PROMPT_YES_TO)
+}
+
+export function promptNoBackground() {
+  return uiAtlasRangeBackground('E10', 'F10')
+}
+
+/** Aspect (width / height) of the prompt Yes/No buttons (both share the same shape). */
+export function promptButtonAspect(): number {
+  return uiAtlasRangeAspect(PROMPT_YES_FROM, PROMPT_YES_TO)
 }
 
 /** Match-end (no winner: timeout / left / disconnect) message — UI_atlas D14–E14. */
@@ -344,9 +361,9 @@ export function matchEndMessageAspect(): number {
   return uiAtlasRangeAspect(MATCH_END_MSG_FROM, MATCH_END_MSG_TO)
 }
 
-/** "Face the winner?" title — UI_atlas A11–D11. */
-export const FACE_WINNER_FROM = 'A11'
-export const FACE_WINNER_TO = 'D11'
+/** "Challenge the winner" title — UI_atlas D13–H13. */
+export const FACE_WINNER_FROM = 'D13'
+export const FACE_WINNER_TO = 'H13'
 
 export function faceTheWinnerBackground() {
   return uiAtlasRangeBackground(FACE_WINNER_FROM, FACE_WINNER_TO)
