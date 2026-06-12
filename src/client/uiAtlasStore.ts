@@ -332,6 +332,18 @@ export function selectYourFlagAspect(): number {
   return uiAtlasRangeAspect(SELECT_FLAG_FROM, SELECT_FLAG_TO)
 }
 
+/** Match-end (no winner: timeout / left / disconnect) message — UI_atlas D14–E14. */
+export const MATCH_END_MSG_FROM = 'D14'
+export const MATCH_END_MSG_TO = 'E14'
+
+export function matchEndMessageBackground() {
+  return uiAtlasRangeBackground(MATCH_END_MSG_FROM, MATCH_END_MSG_TO)
+}
+
+export function matchEndMessageAspect(): number {
+  return uiAtlasRangeAspect(MATCH_END_MSG_FROM, MATCH_END_MSG_TO)
+}
+
 /** "Face the winner?" title — UI_atlas A11–D11. */
 export const FACE_WINNER_FROM = 'A11'
 export const FACE_WINNER_TO = 'D11'

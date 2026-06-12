@@ -66,6 +66,8 @@ import {
   goalSaveGoalBannerBackground,
   goalSaveSaveBannerBackground,
   matchEndFrameSliceBackground,
+  matchEndMessageBackground,
+  matchEndMessageAspect,
   timeoutFrameSliceBackground,
   selectYourFlagBackground,
   selectYourFlagAspect,
@@ -685,8 +687,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const cpSliceOverlap = 1
   const cpInset = cpSlicePx - cpSliceOverlap
   // "timeout in Ns" countdown pill (D5 nine-slice), anchored just under the scoreboard.
-  const timeoutFsPx = fs(24)
-  const timeoutSlicePx = Math.floor(cpSlicePx / 2)
+  const timeoutFsPx = Math.floor(fs(24) * 0.8)
+  const timeoutSlicePx = Math.floor((cpSlicePx / 2) * 0.8)
   const timeoutInset = timeoutSlicePx - cpSliceOverlap
   const timeoutPadX = 4 // L/R padding inside the frame (half of the previous 8/side)
   const timeoutBoxW = Math.floor(14 * timeoutFsPx * 0.6) + 2 * timeoutSlicePx + 2 * timeoutPadX
@@ -2295,19 +2297,17 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   flexDirection: 'column',
                   alignItems: 'center',
                   padding: {
-                    top: cpSlicePx + 24,
-                    bottom: cpSlicePx + 24,
-                    left: cpSlicePx + 40,
-                    right: cpSlicePx + 40
+                    top: cpSlicePx + 14,
+                    bottom: cpSlicePx + 2,
+                    left: cpSlicePx + 30,
+                    right: cpSlicePx + 30
                   },
                   zIndex: 1
                 }}
               >
-                <Label
-                  value={s.winnerName}
-                  fontSize={fs(40)}
-                  color={Color4.White()}
-                  textAlign="middle-center"
+                <UiEntity
+                  uiTransform={{ width: fs(400), height: Math.floor(fs(400) / matchEndMessageAspect()) }}
+                  uiBackground={matchEndMessageBackground()}
                 />
               </UiEntity>
             </UiEntity>
