@@ -731,8 +731,9 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const cpPanelWidthPx = pickerGridWidthPx + 2 * (cpSlicePx + 16)
   const PICKER_PAGE_BTN_W = 140
   const PICKER_PAGE_BTN_H = 88
-  // Botones prev/next 50% más grandes; alto derivado del aspect real del sprite para no estirarlo.
-  const pickerNavBtnW = Math.floor(PICKER_PAGE_BTN_W * 1.5)
+  // Botones prev/next 50% más grandes solo en mobile (en desktop, tamaño original);
+  // alto derivado del aspect real del sprite para no estirarlo.
+  const pickerNavBtnW = isMobile() ? Math.floor(PICKER_PAGE_BTN_W * 1.5) : PICKER_PAGE_BTN_W
   const pickerNavBtnH = Math.floor(pickerNavBtnW / flagPickerNavAspect())
   const PICKER_ACCENT = Color4.create(0.898, 0.333, 0.98, 1)
   const leaveConfirmBtnW = Math.floor(PICKER_PAGE_BTN_W * 1.3 * 1.2)
