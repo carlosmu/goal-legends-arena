@@ -687,8 +687,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const cpSliceOverlap = 1
   const cpInset = cpSlicePx - cpSliceOverlap
   // "timeout in Ns" countdown pill (D5 nine-slice), anchored just under the scoreboard.
-  const timeoutFsPx = Math.floor(fs(24) * 0.8)
-  const timeoutSlicePx = Math.floor((cpSlicePx / 2) * 0.8)
+  const timeoutFsPx = Math.floor(fs(24) * 1.2)
+  const timeoutSlicePx = Math.floor((cpSlicePx / 2) * 1.2)
   const timeoutInset = timeoutSlicePx - cpSliceOverlap
   const timeoutPadX = 4 // L/R padding inside the frame (half of the previous 8/side)
   const timeoutBoxW = Math.floor(14 * timeoutFsPx * 0.6) + 2 * timeoutSlicePx + 2 * timeoutPadX
@@ -2306,7 +2306,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 }}
               >
                 <UiEntity
-                  uiTransform={{ width: fs(400), height: Math.floor(fs(400) / matchEndMessageAspect()) }}
+                  uiTransform={{ width: fs(300), height: Math.floor(fs(300) / matchEndMessageAspect()) }}
                   uiBackground={matchEndMessageBackground()}
                 />
               </UiEntity>
