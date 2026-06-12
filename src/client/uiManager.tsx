@@ -1497,7 +1497,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                     justifyContent: 'space-between',
                     width: '100%',
                     height: lbRowH,
-                    margin: { top: 3 }
+                    margin: { top: isMobile() ? 5 : 3, bottom: isMobile() ? 5 : 0 }
                   }}
                   uiBackground={row.rank % 2 === 1 ? lbRowOddBg : undefined}
                 >
