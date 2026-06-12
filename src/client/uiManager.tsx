@@ -61,6 +61,7 @@ import {
   leaveMatchTitleAspect,
   leaveMatchNoButtonBackground,
   leaveMatchYesButtonBackground,
+  leaveMatchButtonAspect,
   goalSaveFrameSliceBackground,
   goalSaveGoalBannerBackground,
   goalSaveSaveBannerBackground,
@@ -698,8 +699,11 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   // Alto de los botones prev/next derivado del aspect real del sprite para no estirarlo.
   const pickerNavBtnH = Math.floor(PICKER_PAGE_BTN_W / flagPickerNavAspect())
   const PICKER_ACCENT = Color4.create(0.898, 0.333, 0.98, 1)
-  const leaveConfirmBtnW = Math.floor(PICKER_PAGE_BTN_W * 1.3)
-  const leaveConfirmBtnH = Math.floor((PICKER_PAGE_BTN_W / 2) * 1.3)
+  const leaveConfirmBtnW = Math.floor(PICKER_PAGE_BTN_W * 1.3 * 1.2)
+  // Alto derivado del aspect real del sprite para no estirarlo.
+  const leaveConfirmBtnH = Math.floor(leaveConfirmBtnW / leaveMatchButtonAspect())
+  // Gap negativo entre Yes/No — los sprites ya traen espacio vacío a los lados.
+  const leaveConfirmBtnGapPx = -Math.floor(leaveConfirmBtnW * 0.14)
   const leaveConfirmPanelW = leaveConfirmBtnW * 2 + 96
   const leaveConfirmTitleW = Math.floor(leaveConfirmPanelW * 0.9)
   // Alto derivado del aspect real del sprite para no estirarlo.
@@ -1253,13 +1257,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               >
                 <Button
                   value=""
-                  uiTransform={{ width: leaveConfirmBtnW, height: leaveConfirmBtnH, margin: { right: 8 } }}
+                  uiTransform={{ width: leaveConfirmBtnW, height: leaveConfirmBtnH, margin: { right: leaveConfirmBtnGapPx } }}
                   uiBackground={leaveMatchNoButtonBackground()}
                   onMouseDown={() => { leaveMatchConfirmOpen = false }}
                 />
                 <Button
                   value=""
-                  uiTransform={{ width: leaveConfirmBtnW, height: leaveConfirmBtnH, margin: { left: 8 } }}
+                  uiTransform={{ width: leaveConfirmBtnW, height: leaveConfirmBtnH }}
                   uiBackground={leaveMatchYesButtonBackground()}
                   onMouseDown={() => executeLeaveMatch()}
                 />

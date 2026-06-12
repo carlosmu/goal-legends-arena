@@ -249,14 +249,22 @@ export function leaveMatchTitleAspect(): number {
   return uiAtlasRangeAspect(LEAVE_MATCH_TITLE_FROM, LEAVE_MATCH_TITLE_TO)
 }
 
-/** Leave match: No — UI_atlas C8. */
+/** Leave match: No — UI_atlas E10–F10. */
+export const LEAVE_MATCH_NO_FROM = 'E10'
+export const LEAVE_MATCH_NO_TO = 'F10'
+
 export function leaveMatchNoButtonBackground() {
-  return uiAtlasRangeBackground('C8', 'C8')
+  return uiAtlasRangeBackground(LEAVE_MATCH_NO_FROM, LEAVE_MATCH_NO_TO)
 }
 
-/** Leave match: Yes — UI_atlas D8. */
+/** Leave match: Yes — UI_atlas G10–H10. */
 export function leaveMatchYesButtonBackground() {
-  return uiAtlasRangeBackground('D8', 'D8')
+  return uiAtlasRangeBackground('G10', 'H10')
+}
+
+/** Aspect (width / height) of the Leave Match Yes/No buttons (both share the same shape). */
+export function leaveMatchButtonAspect(): number {
+  return uiAtlasRangeAspect(LEAVE_MATCH_NO_FROM, LEAVE_MATCH_NO_TO)
 }
 
 /** Goal/Save result panel frame: UI_atlas C9–C10. */
