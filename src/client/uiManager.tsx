@@ -2345,10 +2345,19 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   zIndex: 1
                 }}
               >
-                <UiEntity
-                  uiTransform={{ width: fs(300), height: Math.floor(fs(300) / matchEndMessageAspect()) }}
-                  uiBackground={matchEndMessageBackground()}
-                />
+                {s.winnerName === 'Timeout' ? (
+                  <UiEntity
+                    uiTransform={{ width: fs(300), height: Math.floor(fs(300) / matchEndMessageAspect()) }}
+                    uiBackground={matchEndMessageBackground()}
+                  />
+                ) : (
+                  <Label
+                    value={s.winnerName}
+                    fontSize={fs(40)}
+                    color={Color4.White()}
+                    textAlign="middle-center"
+                  />
+                )}
               </UiEntity>
             </UiEntity>
           )}
