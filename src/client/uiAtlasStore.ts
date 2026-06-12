@@ -283,6 +283,30 @@ export function timeoutFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
   return atlasFrameSlice(TIMEOUT_FRAME_FROM, TIMEOUT_FRAME_TO, ninth)
 }
 
+/** "World Cup 2026" subtitle — UI_atlas C7–D7. */
+export const WORLD_CUP_FROM = 'C7'
+export const WORLD_CUP_TO = 'D7'
+
+export function worldCup2026Background() {
+  return uiAtlasRangeBackground(WORLD_CUP_FROM, WORLD_CUP_TO)
+}
+
+export function worldCup2026Aspect(): number {
+  return uiAtlasRangeAspect(WORLD_CUP_FROM, WORLD_CUP_TO)
+}
+
+/** "Select your flag" title — UI_atlas E13–H13. */
+export const SELECT_FLAG_FROM = 'E13'
+export const SELECT_FLAG_TO = 'H13'
+
+export function selectYourFlagBackground() {
+  return uiAtlasRangeBackground(SELECT_FLAG_FROM, SELECT_FLAG_TO)
+}
+
+export function selectYourFlagAspect(): number {
+  return uiAtlasRangeAspect(SELECT_FLAG_FROM, SELECT_FLAG_TO)
+}
+
 /** "Face the winner?" title — UI_atlas A11–D11. */
 export const FACE_WINNER_FROM = 'A11'
 export const FACE_WINNER_TO = 'D11'

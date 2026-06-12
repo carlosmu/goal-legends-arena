@@ -66,6 +66,10 @@ import {
   goalSaveSaveBannerBackground,
   matchEndFrameSliceBackground,
   timeoutFrameSliceBackground,
+  selectYourFlagBackground,
+  selectYourFlagAspect,
+  worldCup2026Background,
+  worldCup2026Aspect,
   faceTheWinnerBackground,
   faceTheWinnerAspect,
   stayOnSpotBackground,
@@ -1603,19 +1607,21 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                 zIndex: 1
               }}
             >
-          <Label
-            value="Select your flag"
-            fontSize={fs(50)}
-            color={Color4.White()}
-            textAlign="middle-center"
-            uiTransform={{ margin: { bottom: 4 } }}
+          <UiEntity
+            uiTransform={{
+              width: fs(400),
+              height: Math.floor(fs(400) / selectYourFlagAspect()),
+              margin: { bottom: 4 }
+            }}
+            uiBackground={selectYourFlagBackground()}
           />
-          <Label
-            value="World Cup 2026"
-            fontSize={fs(35)}
-            color={Color4.create(1, 0.85, 0.1, 1)}
-            textAlign="middle-center"
-            uiTransform={{ margin: { bottom: 20 } }}
+          <UiEntity
+            uiTransform={{
+              width: fs(220),
+              height: Math.floor(fs(220) / worldCup2026Aspect()),
+              margin: { bottom: 20 }
+            }}
+            uiBackground={worldCup2026Background()}
           />
           <UiEntity
             uiTransform={{
