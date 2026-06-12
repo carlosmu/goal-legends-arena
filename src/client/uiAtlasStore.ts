@@ -349,6 +349,18 @@ export function promptButtonAspect(): number {
   return uiAtlasRangeAspect(PROMPT_YES_FROM, PROMPT_YES_TO)
 }
 
+/** Loser cooldown panel title — UI_atlas F14–H14. */
+export const COOLDOWN_TITLE_FROM = 'F14'
+export const COOLDOWN_TITLE_TO = 'H14'
+
+export function cooldownTitleBackground() {
+  return uiAtlasRangeBackground(COOLDOWN_TITLE_FROM, COOLDOWN_TITLE_TO)
+}
+
+export function cooldownTitleAspect(): number {
+  return uiAtlasRangeAspect(COOLDOWN_TITLE_FROM, COOLDOWN_TITLE_TO)
+}
+
 /** Match-end (no winner: timeout / left / disconnect) message — UI_atlas D14–E14. */
 export const MATCH_END_MSG_FROM = 'D14'
 export const MATCH_END_MSG_TO = 'E14'

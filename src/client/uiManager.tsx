@@ -8,7 +8,7 @@ import { getLeaderboardRows } from './leaderboardManager'
 import { getLeaderboardFaceUrl, prefetchLeaderboardFaces } from './leaderboardProfileCache'
 import { room } from '../shared/messages'
 import { GameState } from '../shared/gameState'
-import { FIRST_SHOT_TIMEOUT_MS, SHOOT_TIMEOUT_MS, LEADERBOARD_MATCH_END_MS, SPOT_PROMPT_DELAY_MS } from '../shared/constants'
+import { FIRST_SHOT_TIMEOUT_MS, SHOOT_TIMEOUT_MS, LEADERBOARD_MATCH_END_MS, SPOT_PROMPT_DELAY_MS, BAN_COOLDOWN_MS } from '../shared/constants'
 import { setSpectatorCameraMode, getSpectatorCameraMode } from './gameplayCamera'
 import {
   COUNTRIES,
@@ -81,6 +81,8 @@ import {
   faceTheWinnerAspect,
   stayOnSpotBackground,
   stayOnSpotAspect,
+  cooldownTitleBackground,
+  cooldownTitleAspect,
   promptYesBackground,
   promptNoBackground,
   promptButtonAspect
@@ -357,6 +359,9 @@ let waitDisplayAnchorMs = 0
 const WAIT_DISPLAY_TOTAL_S = 30
 /** Ancla local del countdown del cartel "Keep playing?" (mismo estilo que waiting, 30→0). */
 let streakDisplayAnchorMs = 0
+/** Cooldown del perdedor: ancla local del countdown N→0 antes de poder retar al ganador. */
+let loserCooldownAnchorMs = 0
+const LOSER_COOLDOWN_S = Math.round(BAN_COOLDOWN_MS / 1000)
 /** Oculta scoreboard local tras abandonar; se resetea cuando no hay partida activa. */
 let hideScoreboardAfterLeave = false
 let leaveMatchConfirmOpen = false
@@ -671,19 +676,30 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const streakDisplayLeft = streakDisplayAnchorMs > 0
     ? Math.max(0, WAIT_DISPLAY_TOTAL_S - Math.floor((Date.now() - streakDisplayAnchorMs) / 1000))
     : WAIT_DISPLAY_TOTAL_S
-  // The match loser is on cooldown only when others are waiting (>2 in scene): they
-  // don't get to challenge. With just 2 players, the loser may rematch immediately.
+  // The match loser must wait out a short cooldown before they may challenge — but only when
+  // others are waiting (>2 in scene). With just 2 players, the loser may rematch immediately.
   const meIsLoser = !!me && !!s.loserAddr && me.toLowerCase() === s.loserAddr.toLowerCase()
-  const loserOnCooldown = meIsLoser && s.playersInScene > 2
-  const showSpectatorChallenge =
+  const challengeBase =
     splashDismissed &&
     spotPromptsReady &&
     s.spectatorChallengeActive === 1 &&
     !!me &&
     !!s.winnerStreakAddr &&
     me.toLowerCase() !== s.winnerStreakAddr.toLowerCase() &&
-    !loserOnCooldown &&
     spectatorChallengeDismissedFor !== s.winnerStreakAddr.toLowerCase()
+  // Cooldown gate for the loser: local N→0 countdown (matches the server ban). Anchored when the
+  // panel first becomes eligible; once it hits 0 the normal "challenge the winner" prompt shows.
+  const loserCooldownEligible = challengeBase && meIsLoser && s.playersInScene > 2
+  if (loserCooldownEligible) {
+    if (loserCooldownAnchorMs === 0) loserCooldownAnchorMs = Date.now()
+  } else {
+    loserCooldownAnchorMs = 0
+  }
+  const loserCooldownLeft = loserCooldownAnchorMs > 0
+    ? Math.max(0, LOSER_COOLDOWN_S - Math.floor((Date.now() - loserCooldownAnchorMs) / 1000))
+    : LOSER_COOLDOWN_S
+  const showLoserCooldown = loserCooldownEligible && loserCooldownLeft > 0
+  const showSpectatorChallenge = challengeBase && !showLoserCooldown
 
   // Prefetch scoreboard faces whenever active players change
   if (s.hasActiveMatch === 1) prefetchLeaderboardFaces([s.redAddr, s.blueAddr].filter(Boolean))
@@ -2429,6 +2445,61 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   onMouseDown={() => room.send('streakDecision', { continue: 0 })}
                 />
               </UiEntity>
+            </UiEntity>
+          </UiEntity>
+        </UiEntity>
+      )}
+
+      {showLoserCooldown && (
+        <UiEntity
+          uiTransform={{
+            positionType: 'absolute',
+            position: { top: 0, left: 0, right: 0, bottom: 0 },
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerFilter: 'none',
+            zIndex: 80
+          }}
+        >
+          <UiEntity
+            uiTransform={{
+              positionType: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
+          >
+            {cpNineSliceFrame(cpSlicePx, cpInset)}
+            <UiEntity
+              uiTransform={{
+                positionType: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: {
+                  top: cpSlicePx + 20,
+                  bottom: cpSlicePx + 16,
+                  left: cpSlicePx + 32,
+                  right: cpSlicePx + 32
+                },
+                zIndex: 1
+              }}
+            >
+              <UiEntity
+                uiTransform={{ width: fs(300), height: Math.floor(fs(300) / cooldownTitleAspect()) }}
+                uiBackground={cooldownTitleBackground()}
+              />
+              <Label
+                value={`${loserCooldownLeft}s`}
+                fontSize={fs(40)}
+                color={Color4.create(1, 0.85, 0.2, 1)}
+                textAlign="middle-center"
+                uiTransform={{ margin: { top: 10 } }}
+              />
             </UiEntity>
           </UiEntity>
         </UiEntity>

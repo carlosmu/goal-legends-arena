@@ -25,7 +25,7 @@ export const SPOT_PROMPT_DELAY_MS = 600
 /** Inactivity timeout to pick a direction; longer on the first shot so newcomers learn the mechanic. */
 export const SHOOT_TIMEOUT_MS = 30_000
 export const FIRST_SHOT_TIMEOUT_MS = 60_000
-export const BAN_COOLDOWN_MS = 120_000
+export const BAN_COOLDOWN_MS = 10_000
 export const WINNER_STREAK_TIMEOUT_MS = 30_000
 /** Regulation: 5 kicks per player as kicker = 10 alternating shots. */
 export const REGULATION_SHOTS = 10
