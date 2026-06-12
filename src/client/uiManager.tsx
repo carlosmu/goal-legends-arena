@@ -312,6 +312,18 @@ export function closeLeaderboard(): void {
 }
 
 let prevPhase = ''
+
+/**
+ * Per-kick result history for the scoreboard ball icons (goal=1 / save=0), in shot order per side.
+ * Filled client-side when each shot's result is revealed (≈ when the Goal/Save screen shows);
+ * "no absolute sync" by design. Reset when a new match/game starts.
+ */
+let shotResultsRed: number[] = []
+let shotResultsBlue: number[] = []
+let lastRecordedShotIndex = -1
+let prevShotIndexForBalls = 0
+let prevHadActiveMatchForBalls = false
+
 /** Local countdown for the inactivity timeout: re-anchored at the start of every pick round
  *  (rising edge of SelectingDirections). Counting down with the local clock from a fixed
  *  per-shot budget sidesteps clock skew / sync lag and resets cleanly each shot. */
@@ -406,6 +418,23 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   // Clear the picked direction when the pick window closes, so the badge only shows
   // on the chosen button during SelectingDirections and resets each round.
   if (s.phase !== GameState.SelectingDirections) selectedPickDir = null
+  // ── Scoreboard shot history (goal/save per kick) ──────────────────────────────
+  // Reset on a fresh match (hasActiveMatch rising edge) or a new game (shotIndex back to 0).
+  if ((s.hasActiveMatch === 1 && !prevHadActiveMatchForBalls) || s.shotIndex < prevShotIndexForBalls) {
+    shotResultsRed = []
+    shotResultsBlue = []
+    lastRecordedShotIndex = -1
+  }
+  // Record each shot's outcome once, when its result is revealed (Goal/Save screen appears).
+  if (s.phase === GameState.ResolvingRound && !!s.resultLine && s.shotIndex !== lastRecordedShotIndex) {
+    lastRecordedShotIndex = s.shotIndex
+    const goal = s.lastRoundWasGoal === 1 ? 1 : 0
+    if (s.kickerIsRed === 1) shotResultsRed.push(goal)
+    else shotResultsBlue.push(goal)
+  }
+  prevShotIndexForBalls = s.shotIndex
+  prevHadActiveMatchForBalls = s.hasActiveMatch === 1
+
   prevPhase = s.phase
   const showLeaderboard = Date.now() < lbShowUntilMs
   const showCountryPicker = isPickerOpen()
@@ -797,26 +826,27 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const sbNameH = Math.ceil(fs(18) * 1.2)
   const sbNameW = scoreboardNameLabelWidth()
 
-  // Shots-taken indicator: one H8 ball per shot each player has kicked. Grows as the game
-  // runs — fewer than 5 if it ends early, more in sudden death. A shot counts once it's been
-  // kicked (ResolvingRound onward); the per-side split comes from shotIndex + who kicked first.
-  const sbBall = sbPx(21)
+  // Shots indicator: one sprite per kick under each name — F8 (goal) or G7 (save). Each appears
+  // when that shot's result is revealed (≈ when the Goal/Save screen shows). History is tracked
+  // client-side above (shotResultsRed/Blue), in shot order, and grows through sudden death.
+  const sbBall = isMobile() ? 26 : 16
   const sbBallGap = sbPx(3)
-  const shotKicked =
-    s.phase === GameState.ResolvingRound ||
-    s.phase === GameState.MatchEnd ||
-    s.phase === GameState.WinnerContinuePrompt
-  const kickedShots = s.shotIndex + (shotKicked ? 1 : 0)
-  const firstKickerIsRed = s.shotIndex % 2 === 0 ? s.kickerIsRed === 1 : s.kickerIsRed === 0
-  const redShotsTaken = firstKickerIsRed ? Math.ceil(kickedShots / 2) : Math.floor(kickedShots / 2)
-  const blueShotsTaken = firstKickerIsRed ? Math.floor(kickedShots / 2) : Math.ceil(kickedShots / 2)
-  const shotBallsRow = (count: number) => (
-    <UiEntity uiTransform={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-      {Array.from({ length: count }).map((_, i) => (
+  // reverse=true (blue, right-aligned): row-reverse lays shot 1 on the right and grows each new
+  // shot toward the left → reads 5,4,3,2,1. (Array stays in natural order to keep keys stable.)
+  const shotBallsRow = (results: number[], reverse = false) => (
+    <UiEntity
+      uiTransform={{ display: 'flex', flexDirection: reverse ? 'row-reverse' : 'row', alignItems: 'center' }}
+    >
+      {results.map((r, i) => (
         <UiEntity
           key={i}
-          uiTransform={{ width: sbBall, height: sbBall, margin: { left: i === 0 ? 0 : sbBallGap } }}
-          uiBackground={atlasCellBackground('H8')}
+          uiTransform={{
+            width: sbBall,
+            height: sbBall,
+            // Gap entre ítems: del lado opuesto al avance según la dirección.
+            margin: reverse ? { right: i === 0 ? 0 : sbBallGap } : { left: i === 0 ? 0 : sbBallGap }
+          }}
+          uiBackground={atlasCellBackground(r === 1 ? 'F8' : 'G7')}
         />
       ))}
     </UiEntity>
@@ -1093,7 +1123,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   justifyContent: 'flex-end'
                 }}
               >
-                {shotBallsRow(blueShotsTaken)}
+                {shotBallsRow(shotResultsBlue, true)}
               </UiEntity>
               <UiEntity uiTransform={{ width: '25%', height: sbBall }} />
               <UiEntity
@@ -1106,7 +1136,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   justifyContent: 'flex-start'
                 }}
               >
-                {shotBallsRow(redShotsTaken)}
+                {shotBallsRow(shotResultsRed)}
               </UiEntity>
             </UiEntity>
           </UiEntity>
