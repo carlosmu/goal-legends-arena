@@ -878,7 +878,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
     </UiEntity>
   )
 
-  const waitPanelW = Math.floor((isMobile() ? 820 : 480) * 1.2)
+  const waitPanelW = Math.floor((isMobile() ? 920 : 480) * 1.2)
   const waitPanelH = Math.floor(waitPanelW / 2)
   const waitTitleWidth = Math.floor(waitPanelW * 0.85)
   // Alto derivado del aspect real del sprite para no estirarlo.
@@ -894,8 +894,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const waitBtnW = Math.floor((isMobile() ? 220 * 1.3 * 1.4 : 180) * 1.2)
   // Alto derivado del aspect real del sprite para no estirarlo.
   const waitBtnH = Math.floor(waitBtnW / waitingOpponentButtonAspect())
-  // Gap horizontal entre los 2 botones — negativo porque los sprites traen espacio vacío a los lados.
-  const waitBtnGapPx = -Math.floor(waitBtnW * 0.14)
+  // Gap horizontal entre los 2 botones (0 = pegados; las imágenes nuevas no traen espacio extra).
+  const waitBtnGapPx = 0
 
   const lbPanelWidthPx = Math.floor(1920 * ((isMobile() ? LEADERBOARD_PANEL_WIDTH_MOBILE_VW : LEADERBOARD_PANEL_WIDTH_VW) / 100))
   const lbSlicePx = isMobile() ? 34 : 28
@@ -1997,10 +1997,12 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
-            position: { top: '17vh', left: 0 },
+            position: { top: isMobile() ? 0 : '17vh', left: 0 },
             width: '100%',
+            height: isMobile() ? '100%' : undefined,
             display: 'flex',
             flexDirection: 'row',
+            alignItems: isMobile() ? 'center' : undefined,
             justifyContent: 'center',
             zIndex: 48
           }}
@@ -2041,7 +2043,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           </UiEntity>
           <Label
             value={`${waitDisplayLeft}s`}
-            fontSize={fs(30)}
+            fontSize={isMobile() ? Math.floor(fs(30) * 1.7) : fs(30)}
             color={Color4.create(1, 0.85, 0.2, 1)}
             uiTransform={{ margin: { top: 4 } }}
           />
