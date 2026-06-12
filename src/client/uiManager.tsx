@@ -752,7 +752,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const pickerNavBtnW = isMobile() ? Math.floor(PICKER_PAGE_BTN_W * 1.5) : PICKER_PAGE_BTN_W
   const pickerNavBtnH = Math.floor(pickerNavBtnW / flagPickerNavAspect())
   const PICKER_ACCENT = Color4.create(0.898, 0.333, 0.98, 1)
-  const leaveConfirmBtnW = Math.floor(PICKER_PAGE_BTN_W * 1.3 * 1.2)
+  const leaveConfirmBtnW = Math.floor(PICKER_PAGE_BTN_W * 1.3 * 1.2 * (isMobile() ? 1.5 : 1))
   // Alto derivado del aspect real del sprite para no estirarlo.
   const leaveConfirmBtnH = Math.floor(leaveConfirmBtnW / leaveMatchButtonAspect())
   // Gap negativo entre Yes/No — los sprites ya traen espacio vacío a los lados.
@@ -763,7 +763,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   // Gap negativo entre Yes/No — los sprites ya traen espacio vacío a los lados.
   const promptBtnGapPx = -Math.floor(promptBtnW * 0.14)
   const leaveConfirmPanelW = leaveConfirmBtnW * 2 + 96
-  const leaveConfirmTitleW = Math.floor(leaveConfirmPanelW * 0.9)
+  const leaveConfirmTitleW = Math.floor(leaveConfirmPanelW * 0.9 * (isMobile() ? 1 : 0.8))
   // Alto derivado del aspect real del sprite para no estirarlo.
   const leaveConfirmTitleH = Math.floor(leaveConfirmTitleW / leaveMatchTitleAspect())
   const leaveConfirmPadY = cpSlicePx + 8
