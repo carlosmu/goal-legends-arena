@@ -283,6 +283,23 @@ export function timeoutFrameSliceBackground(ninth: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
   return atlasFrameSlice(TIMEOUT_FRAME_FROM, TIMEOUT_FRAME_TO, ninth)
 }
 
+/** Flag selector nav — Prev on UI_atlas C8, Next on C9. */
+export const PICKER_PREV_CELL = 'C8'
+export const PICKER_NEXT_CELL = 'D8'
+
+export function flagPickerPrevBackground() {
+  return uiAtlasRangeBackground(PICKER_PREV_CELL, PICKER_PREV_CELL)
+}
+
+export function flagPickerNextBackground() {
+  return uiAtlasRangeBackground(PICKER_NEXT_CELL, PICKER_NEXT_CELL)
+}
+
+/** Aspect (width / height) of the flag selector nav buttons (single cell, shared shape). */
+export function flagPickerNavAspect(): number {
+  return uiAtlasRangeAspect(PICKER_PREV_CELL, PICKER_PREV_CELL)
+}
+
 /** "World Cup 2026" subtitle — UI_atlas C7–D7. */
 export const WORLD_CUP_FROM = 'C7'
 export const WORLD_CUP_TO = 'D7'
@@ -296,8 +313,8 @@ export function worldCup2026Aspect(): number {
 }
 
 /** "Select your flag" title — UI_atlas E13–H13. */
-export const SELECT_FLAG_FROM = 'E13'
-export const SELECT_FLAG_TO = 'H13'
+export const SELECT_FLAG_FROM = 'D13'
+export const SELECT_FLAG_TO = 'G13'
 
 export function selectYourFlagBackground() {
   return uiAtlasRangeBackground(SELECT_FLAG_FROM, SELECT_FLAG_TO)

@@ -70,6 +70,9 @@ import {
   selectYourFlagAspect,
   worldCup2026Background,
   worldCup2026Aspect,
+  flagPickerPrevBackground,
+  flagPickerNextBackground,
+  flagPickerNavAspect,
   faceTheWinnerBackground,
   faceTheWinnerAspect,
   stayOnSpotBackground,
@@ -176,9 +179,9 @@ function welcomeScreenOverlayBackground() {
   return { color: Color4.create(0.03, 0.2, 0.05, isMobile() ? 0.7 : 0.88) }
 }
 
-/** Selector de banderas — alpha un poco mayor en desktop. */
+/** Selector de banderas — negro, alpha un poco mayor en desktop. */
 function countryPickerOverlayBackground() {
-  return { color: Color4.create(0.03, 0.2, 0.05, isMobile() ? 0.7 : 0.98) }
+  return { color: Color4.create(0, 0, 0, isMobile() ? 0.7 : 0.98) }
 }
 
 /** Splash logo (UI_atlas A1–D3 = 4×3 celdas → 4:3). */
@@ -692,6 +695,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const cpPanelWidthPx = pickerGridWidthPx + 2 * (cpSlicePx + 16)
   const PICKER_PAGE_BTN_W = 140
   const PICKER_PAGE_BTN_H = 88
+  // Alto de los botones prev/next derivado del aspect real del sprite para no estirarlo.
+  const pickerNavBtnH = Math.floor(PICKER_PAGE_BTN_W / flagPickerNavAspect())
   const PICKER_ACCENT = Color4.create(0.898, 0.333, 0.98, 1)
   const leaveConfirmBtnW = Math.floor(PICKER_PAGE_BTN_W * 1.3)
   const leaveConfirmBtnH = Math.floor((PICKER_PAGE_BTN_W / 2) * 1.3)
@@ -1609,8 +1614,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             >
           <UiEntity
             uiTransform={{
-              width: fs(400),
-              height: Math.floor(fs(400) / selectYourFlagAspect()),
+              width: fs(520),
+              height: Math.floor(fs(520) / selectYourFlagAspect()),
               margin: { bottom: 4 }
             }}
             uiBackground={selectYourFlagBackground()}
@@ -1714,15 +1719,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           >
             {pickerPage > 0 ? (
               <Button
-                value="← Prev"
-                fontSize={fs(20)}
-                color={Color4.White()}
-                uiTransform={{ width: PICKER_PAGE_BTN_W, height: PICKER_PAGE_BTN_H }}
-                uiBackground={{ color: PICKER_ACCENT }}
+                value=""
+                uiTransform={{ width: PICKER_PAGE_BTN_W, height: pickerNavBtnH }}
+                uiBackground={flagPickerPrevBackground()}
                 onMouseDown={() => { pickerPage-- }}
               />
             ) : (
-              <UiEntity uiTransform={{ width: PICKER_PAGE_BTN_W, height: PICKER_PAGE_BTN_H }} />
+              <UiEntity uiTransform={{ width: PICKER_PAGE_BTN_W, height: pickerNavBtnH }} />
             )}
             <Label
               value={`${pickerPage + 1} / ${TOTAL_PAGES}`}
@@ -1733,15 +1736,13 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
             />
             {pickerPage < TOTAL_PAGES - 1 ? (
               <Button
-                value="Next →"
-                fontSize={fs(20)}
-                color={Color4.White()}
-                uiTransform={{ width: PICKER_PAGE_BTN_W, height: PICKER_PAGE_BTN_H }}
-                uiBackground={{ color: PICKER_ACCENT }}
+                value=""
+                uiTransform={{ width: PICKER_PAGE_BTN_W, height: pickerNavBtnH }}
+                uiBackground={flagPickerNextBackground()}
                 onMouseDown={() => { pickerPage++ }}
               />
             ) : (
-              <UiEntity uiTransform={{ width: PICKER_PAGE_BTN_W, height: PICKER_PAGE_BTN_H }} />
+              <UiEntity uiTransform={{ width: PICKER_PAGE_BTN_W, height: pickerNavBtnH }} />
             )}
           </UiEntity>
             </UiEntity>
