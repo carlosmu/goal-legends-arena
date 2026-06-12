@@ -160,9 +160,13 @@ export const FALLBACK_FLAG_COORD = 'G8'
 export const SCOREBOARD_BADGE_F7 = 'F7'
 export const SCOREBOARD_BADGE_H7 = 'H7'
 export const SCOREBOARD_BADGE_E7 = 'E7'
-/** Splash "Start" button on flags.png (normal / hover, row 8). */
-export const SPLASH_START_NORMAL = ['A8', 'B8', 'C8'] as const
-export const SPLASH_START_HOVER = ['D8', 'E8', 'F8'] as const
+/**
+ * Splash "Start" button on flags.png row 8 — 2.5 cells per state (saves atlas space):
+ * normal = A8 + B8 + left half of C8 (cols 0→2.5); hover = right half of C8 + D8 + E8 (cols 2.5→5).
+ */
+const SPLASH_START_ROW = 8
+const SPLASH_START_NORMAL_COLS: [number, number] = [0, 2.5]
+const SPLASH_START_HOVER_COLS: [number, number] = [2.5, 5]
 
 /** uiBackground for a cell on flags.png (e.g. "A7"). */
 export function atlasCellBackground(coordinates: string) {
@@ -228,10 +232,30 @@ export function scoreboardBadgeE7Background() {
   return atlasCellBackground(SCOREBOARD_BADGE_E7)
 }
 
-/** Splash Start: A8+B8+C8 normal, D8+E8+F8 hover (single texture, no Button children). */
+/** flags.png background for a fractional column span on a given row (cols may be half-cells). */
+function flagsRowSpanBackground(rowOneBased: number, colStart: number, colEnd: number) {
+  const row = rowOneBased - 1
+  const u0 = colStart / FLAG_GRID_COLS
+  const u1 = colEnd / FLAG_GRID_COLS
+  const v0 = (FLAG_GRID_ROWS - row - 1) / FLAG_GRID_ROWS
+  const v1 = (FLAG_GRID_ROWS - row) / FLAG_GRID_ROWS
+  return {
+    textureMode: 'stretch' as const,
+    texture: { src: FLAGS_SHEET_SRC },
+    uvs: [u0, v0, u0, v1, u1, v1, u1, v0],
+    color: Color4.White()
+  }
+}
+
+/** Splash Start: 2.5 cells per state (single texture, no Button children). */
 export function splashStartButtonBackground(hover = false) {
-  const coords = hover ? [...SPLASH_START_HOVER] : [...SPLASH_START_NORMAL]
-  return atlasCellsHorizontalBackground(coords)
+  const [c0, c1] = hover ? SPLASH_START_HOVER_COLS : SPLASH_START_NORMAL_COLS
+  return flagsRowSpanBackground(SPLASH_START_ROW, c0, c1)
+}
+
+/** Aspect (width / height) of the splash Start button sprite (2.5 cols × 1 square row). */
+export function splashStartButtonAspect(): number {
+  return SPLASH_START_NORMAL_COLS[1] - SPLASH_START_NORMAL_COLS[0]
 }
 
 /** uiBackground for a country flag sprite (flags.png atlas). */

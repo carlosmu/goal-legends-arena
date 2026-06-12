@@ -32,6 +32,7 @@ import {
   scoreboardBadgeH7Background,
   scoreboardBadgeE7Background,
   splashStartButtonBackground,
+  splashStartButtonAspect,
   atlasCellBackground
 } from './countryStore'
 import {
@@ -2488,7 +2489,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
           <UiEntity
             uiTransform={{
               width: isMobile() ? 330 : 240,
-              height: isMobile() ? 110 : 80,
+              // Alto derivado del aspect real del sprite (2.5:1) para no estirarlo.
+              height: Math.floor((isMobile() ? 330 : 240) / splashStartButtonAspect()),
               positionType: 'relative',
               zIndex: 1,
             }}
