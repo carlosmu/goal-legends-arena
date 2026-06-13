@@ -1,7 +1,14 @@
+/** Which win tally to rank by: cumulative ('all') or current UTC day ('day'). */
+export type LeaderboardScope = 'all' | 'day'
+
 export type ParsedLeaderboard = {
   wins: Record<string, number>
   names: Record<string, string>
   countries: Record<string, string>
+  /** UTC day (YYYY-MM-DD) the `dayWins` bucket belongs to; '' if unset. */
+  dayKey: string
+  /** Wins within the current UTC day only. */
+  dayWins: Record<string, number>
 }
 
 /** One row for UI (rank 1-based, wallet key = `addr`). */
@@ -15,19 +22,27 @@ export type LeaderboardRow = {
 
 export function parseLeaderboardJson(json: string): ParsedLeaderboard {
   try {
-    const o = JSON.parse(json) as ParsedLeaderboard & { sessionMax?: Record<string, number> }
+    const o = JSON.parse(json) as Partial<ParsedLeaderboard>
     return {
       wins: o.wins || {},
       names: o.names || {},
-      countries: o.countries || {}
+      countries: o.countries || {},
+      dayKey: o.dayKey || '',
+      dayWins: o.dayWins || {}
     }
   } catch {
-    return { wins: {}, names: {}, countries: {} }
+    return { wins: {}, names: {}, countries: {}, dayKey: '', dayWins: {} }
   }
 }
 
-export function getLeaderboardRows(json: string, maxLines: number): LeaderboardRow[] {
-  const { wins, names, countries } = parseLeaderboardJson(json)
+export function getLeaderboardRows(
+  json: string,
+  maxLines: number,
+  scope: LeaderboardScope = 'all'
+): LeaderboardRow[] {
+  const parsed = parseLeaderboardJson(json)
+  const { names, countries } = parsed
+  const wins = scope === 'day' ? parsed.dayWins : parsed.wins
   const sorted = Object.keys(wins).sort((a, b) => {
     const wDiff = (wins[b] || 0) - (wins[a] || 0)
     if (wDiff !== 0) return wDiff

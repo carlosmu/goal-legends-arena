@@ -31,6 +31,10 @@ type LeaderboardFile = {
   wins: Record<string, number>
   names?: Record<string, string>
   countries?: Record<string, string>
+  /** UTC day (YYYY-MM-DD) the `dayWins` bucket belongs to; '' if never set. */
+  dayKey?: string
+  /** Wins counted only within the current UTC day. */
+  dayWins?: Record<string, number>
 }
 
 let stateEntity: Entity = 0 as Entity
@@ -38,9 +42,36 @@ let stateEntity: Entity = 0 as Entity
 let lbWins: Record<string, number> = {}
 let lbDisplayNames: Record<string, string> = {}
 let lbCountries: Record<string, string> = {}
+/** "Daily UTC" bucket: wins for the current UTC calendar day only. */
+let lbDayWins: Record<string, number> = {}
+let lbDayKey = ''
+/** True once the initial Storage load finished; gates tick writes to avoid a startup race. */
+let lbLoaded = false
 
 function nowMs(): number {
   return Date.now()
+}
+
+/** Current UTC calendar day as `YYYY-MM-DD` (00:00–23:59:59 UTC). */
+function utcDayKey(t: number): string {
+  const d = new Date(t)
+  const y = d.getUTCFullYear()
+  const m = String(d.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(d.getUTCDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+/**
+ * Reset the daily bucket when the UTC day changes. Returns true if it rolled over,
+ * so callers can re-sync/persist. Called both on each win (lazy) and on the server
+ * tick, so the bucket empties at UTC midnight even if nobody plays.
+ */
+function rolloverDailyIfNeeded(): boolean {
+  const key = utcDayKey(nowMs())
+  if (lbDayKey === key) return false
+  lbDayKey = key
+  lbDayWins = {}
+  return true
 }
 
 function mut() {
@@ -53,7 +84,13 @@ function bumpEpoch() {
 }
 
 function packLeaderboardJson(): string {
-  return JSON.stringify({ wins: lbWins, names: lbDisplayNames, countries: lbCountries })
+  return JSON.stringify({
+    wins: lbWins,
+    names: lbDisplayNames,
+    countries: lbCountries,
+    dayKey: lbDayKey,
+    dayWins: lbDayWins
+  })
 }
 
 function syncLbToState() {
@@ -72,25 +109,40 @@ export async function loadPersistentLeaderboard() {
         lbWins = j.wins || {}
         lbDisplayNames = j.names || {}
         lbCountries = j.countries || {}
+        lbDayKey = j.dayKey || ''
+        lbDayWins = j.dayWins || {}
       } catch {
         lbWins = {}
         lbDisplayNames = {}
         lbCountries = {}
+        lbDayKey = ''
+        lbDayWins = {}
       }
     } else if (typeof raw === 'object' && raw.wins) {
       lbWins = raw.wins || {}
       lbDisplayNames = raw.names || {}
       lbCountries = raw.countries || {}
+      lbDayKey = raw.dayKey || ''
+      lbDayWins = raw.dayWins || {}
     }
   } catch (e) {
     console.log('[Server] leaderboard load failed', e)
   }
+  // Drop a stale daily bucket if the server was offline across a UTC day boundary.
+  rolloverDailyIfNeeded()
+  lbLoaded = true
   syncLbToState()
 }
 
 async function persistWins() {
   try {
-    await Storage.set(LB_KEY, { wins: lbWins, names: lbDisplayNames, countries: lbCountries })
+    await Storage.set(LB_KEY, {
+      wins: lbWins,
+      names: lbDisplayNames,
+      countries: lbCountries,
+      dayKey: lbDayKey,
+      dayWins: lbDayWins
+    })
   } catch (e) {
     console.log('[Server] leaderboard save failed', e)
   }
@@ -379,7 +431,9 @@ function finishMatch(side: 'red' | 'blue') {
     m.spectatorWinnerName = winName
     m.spectatorChallengeActive = 1
     if (winAddr) {
+      rolloverDailyIfNeeded()
       lbWins[winAddr] = (lbWins[winAddr] || 0) + 1
+      lbDayWins[winAddr] = (lbDayWins[winAddr] || 0) + 1
       lbDisplayNames[winAddr] = (winName && winName.trim()) || displayNameFor(winAddr)
       const winCountry = (side === 'red' ? m.redCountry : m.blueCountry) || ''
       if (winCountry) lbCountries[winAddr.toLowerCase()] = winCountry
@@ -581,6 +635,14 @@ export function serverTick() {
   const t = nowMs()
   m.serverTickCounter = (m.serverTickCounter || 0) + 1
   m.serverNowMs = t
+
+  // Clear the "Daily UTC" bucket at UTC midnight even with no matches, so clients
+  // never see yesterday's wins labelled as today's. Gated on the initial load so a
+  // first-frame rollover can't persist an empty bucket over real stored data.
+  if (lbLoaded && rolloverDailyIfNeeded()) {
+    syncLbToState()
+    void persistWins()
+  }
 
   checkParticipantDisconnects()
 

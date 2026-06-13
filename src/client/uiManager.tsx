@@ -4,7 +4,7 @@ import { Color4 } from '@dcl/sdk/math'
 import { isStateSyncronized } from '@dcl/sdk/network'
 import { getPlayer } from '@dcl/sdk/src/players'
 import { readPenaltySnapshot, clientSnapshot, penaltyStateEntityReady } from './gameStore'
-import { getLeaderboardRows } from './leaderboardManager'
+import { getLeaderboardRows, type LeaderboardScope } from './leaderboardManager'
 import { getLeaderboardFaceUrl, prefetchLeaderboardFaces } from './leaderboardProfileCache'
 import { room } from '../shared/messages'
 import { GameState } from '../shared/gameState'
@@ -301,15 +301,20 @@ const PICK_SELECTED_BADGE_COORD = 'H8'
 
 let lbShowUntilMs = 0
 const LEADERBOARD_TOP_N = 10
+/** Active leaderboard filter: cumulative ('all') vs current UTC day ('day'). */
+let lbScope: LeaderboardScope = 'all'
 const LEADERBOARD_UI_MS = 30_000
 /** Earliest time the "face the winner" / "keep playing" prompts may show. */
 let promptsShowAfterMs = 0
 
 export function openLeaderboard(): void {
   lbShowUntilMs = Date.now() + LEADERBOARD_UI_MS
-  prefetchLeaderboardFaces(
-    getLeaderboardRows(readPenaltySnapshot().leaderboardJson, LEADERBOARD_TOP_N).map((r) => r.addr)
-  )
+  // Prefetch faces for both filters so switching to "Daily UTC" shows them instantly.
+  const lj = readPenaltySnapshot().leaderboardJson
+  prefetchLeaderboardFaces([
+    ...getLeaderboardRows(lj, LEADERBOARD_TOP_N, 'all').map((r) => r.addr),
+    ...getLeaderboardRows(lj, LEADERBOARD_TOP_N, 'day').map((r) => r.addr)
+  ])
 }
 
 export function closeLeaderboard(): void {
@@ -412,7 +417,7 @@ const RootUi = () => {
   }
   const serverApproxNow = Date.now() + (serverClockOffset ?? 0)
 
-const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
+const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbScope)
 
   if (prevPhase !== GameState.MatchEnd && s.phase === GameState.MatchEnd) {
     // Block the spot prompts while the winner banner + match-end leaderboard show.
@@ -915,6 +920,14 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
   const lbTitleWidth = Math.floor(lbContentWidthPx * 0.6)
   // Alto derivado del aspect real del sprite para no estirarlo.
   const lbTitleHeight = Math.floor(lbTitleWidth / leaderboardTitleAspect())
+  // "All-time" / "Daily UTC" filter pills (text buttons, solid color — no atlas sprite).
+  const lbFilterBtnW = vw(8)
+  const lbFilterBtnH = vw(2.4)
+  const lbFilterFs = fs(18)
+  const lbFilterActiveBg = { color: Color4.create(1, 0.9, 0.3, 0.9) }
+  const lbFilterIdleBg = { color: Color4.create(1, 1, 1, 0.08) }
+  const lbFilterActiveTextColor = Color4.create(0.12, 0.1, 0.04, 1)
+  const lbFilterIdleTextColor = Color4.create(0.9, 0.95, 1, 1)
 
   return (
     <UiEntity
@@ -1463,9 +1476,36 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
               uiBackground={leaderboardTitleBackground()}
             />
           </UiEntity>
+          {/* Filtro All-time / Daily UTC */}
+          <UiEntity
+            uiTransform={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              margin: { top: 28, bottom: 6 }
+            }}
+          >
+            <Button
+              value="All-time"
+              fontSize={lbFilterFs}
+              color={lbScope === 'all' ? lbFilterActiveTextColor : lbFilterIdleTextColor}
+              uiTransform={{ width: lbFilterBtnW, height: lbFilterBtnH, margin: { right: 8 } }}
+              uiBackground={lbScope === 'all' ? lbFilterActiveBg : lbFilterIdleBg}
+              onMouseDown={() => { lbScope = 'all' }}
+            />
+            <Button
+              value="Daily UTC"
+              fontSize={lbFilterFs}
+              color={lbScope === 'day' ? lbFilterActiveTextColor : lbFilterIdleTextColor}
+              uiTransform={{ width: lbFilterBtnW, height: lbFilterBtnH }}
+              uiBackground={lbScope === 'day' ? lbFilterActiveBg : lbFilterIdleBg}
+              onMouseDown={() => { lbScope = 'day' }}
+            />
+          </UiEntity>
           {lbRows.length === 0 ? (
             <Label
-              value="(no wins yet)"
+              value={lbScope === 'day' ? '(no wins today)' : '(no wins yet)'}
               fontSize={fs(20)}
               color={Color4.create(0.9, 0.95, 1, 1)}
               uiTransform={{ margin: { top: 6 } }}
