@@ -729,6 +729,14 @@ export function registerServerMessages() {
       return
     }
 
+    // Don't let anyone grab a spot during the brief match-end banner: an abandoned/finished
+    // match is still cleaning up (goLobbyIdle resets hasActiveMatch after MATCH_END_UI_MS).
+    // Occupying here flips the phase to WaitingOpponent, so that cleanup never fires and
+    // hasActiveMatch stays stuck at 1 — leaving the next player camera-locked. Wait for LobbyIdle.
+    if (m.phase === GameState.MatchEnd) {
+      return
+    }
+
     const pveClaimFreeSlotDuringSelect =
       m.mode === 'pve' &&
       m.phase === GameState.SelectingDirections &&
