@@ -93,6 +93,8 @@ let prevPhase           = ''
 let prevLocalIsLoser    = false
 let trainingBotIsKicker = false
 let repositionPromise: Promise<void> = Promise.resolve()
+/** Bumped on every reposition so stale re-apply retries (see repositionPlayers) are ignored. */
+let repositionToken = 0
 let localEmoteToken     = 0
 
 const EMOTE_AFTER_MOVE_MS = 150
@@ -229,6 +231,18 @@ function repositionPlayers() {
     newRelativePosition: pose.pos,
     cameraTarget: lookTargetFor(pose),
   }).then(() => {})
+
+  // On the very first shot the player has just teleported onto the red/blue spot (the spot-click
+  // movePlayerTo). That async move can settle *after* this one, leaving the avatar stuck at the
+  // spot for shot 0. Re-apply the target position a couple of times to win that race; the token
+  // cancels these if a newer reposition (next role/shot) supersedes them.
+  const token = ++repositionToken
+  const reapply = () => {
+    if (token !== repositionToken) return
+    void movePlayerTo({ newRelativePosition: pose.pos })
+  }
+  setTimeout(reapply, 150)
+  setTimeout(reapply, 400)
 }
 
 function manageTrainingBot() {
@@ -315,6 +329,7 @@ export function initPlayerCloneSystem(): void {
         prevPhase = ''
         localEmoteToken++
         repositionPromise = Promise.resolve()
+        repositionToken++ // cancel any pending reposition retries; the player is free now
       }
     }
 
@@ -324,6 +339,7 @@ export function initPlayerCloneSystem(): void {
     const localIsLoser = !!s.loserAddr && localAddr === s.loserAddr.toLowerCase()
     if (localIsLoser && !prevLocalIsLoser) {
       unlockLocomotion()
+      repositionToken++ // cancel pending reposition retries so the loser isn't snapped back
     }
     prevLocalIsLoser = localIsLoser
 
