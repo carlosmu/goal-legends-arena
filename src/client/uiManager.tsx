@@ -2311,32 +2311,47 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N)
                   zIndex: 1
                 }}
               >
+              {/* Bandera 170x170 de fondo + profilepic 128x128 superpuesto y centrado (las face256
+                  de DCL son transparentes, así que la bandera se ve detrás del avatar). */}
               <UiEntity
-                uiTransform={{ width: 256, height: 256, margin: { bottom: 16 } }}
+                uiTransform={{
+                  width: 170,
+                  height: 170,
+                  positionType: 'relative',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: { bottom: -15 }
+                }}
                 uiBackground={
-                  winnerEngineSide ? enginePicBackground() : facePicBackground(winnerFaceUrl)
+                  winnerEngineSide
+                    ? engineFlagBackground()
+                    : flagBackgroundForPlayer(
+                        s.winnerSide === 'red' ? s.redCountry : s.blueCountry,
+                        winnerWinAddr
+                      )
                 }
+              >
+                <UiEntity
+                  uiTransform={{ width: 128, height: 128 }}
+                  uiBackground={
+                    winnerEngineSide ? enginePicBackground() : facePicBackground(winnerFaceUrl)
+                  }
+                />
+              </UiEntity>
+              <Label
+                value="winner:"
+                fontSize={fs(35)}
+                color={Color4.White()}
+                textAlign="middle-center"
               />
               <Label
-                value={`${scoreboardSideName(s.winnerName, '', winnerEngineSide)} wins!`}
+                value={scoreboardSideName(s.winnerName, '', winnerEngineSide)}
                 fontSize={fs(50)}
                 color={Color4.create(1, 0.92, 0.35, 1)}
                 textAlign="middle-center"
+                uiTransform={{ margin: { top: -fs(12) } }}
               />
-              {winnerEngineSide ? (
-                <UiEntity
-                  uiTransform={{ width: 96, height: 72, margin: { top: 16 } }}
-                  uiBackground={engineFlagBackground()}
-                />
-              ) : (
-                <UiEntity
-                  uiTransform={{ width: 96, height: 72, margin: { top: 16 } }}
-                  uiBackground={flagBackgroundForPlayer(
-                    s.winnerSide === 'red' ? s.redCountry : s.blueCountry,
-                    winnerWinAddr
-                  )}
-                />
-              )}
               </UiEntity>
             </UiEntity>
           ) : (
