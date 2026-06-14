@@ -52,9 +52,13 @@ function nowMs(): number {
   return Date.now()
 }
 
-/** Current UTC calendar day as `YYYY-MM-DD` (00:00–23:59:59 UTC). */
+/** Daily bucket boundary: the day rolls over at this UTC hour (not midnight). */
+const DAILY_RESET_HOUR_UTC = 9
+
+/** Current "daily" day as `YYYY-MM-DD`, where each day runs 09:00 UTC → 09:00 UTC next day. */
 function utcDayKey(t: number): string {
-  const d = new Date(t)
+  // Shift back by the reset hour so the calendar-day rollover lands at 09:00 UTC.
+  const d = new Date(t - DAILY_RESET_HOUR_UTC * 3_600_000)
   const y = d.getUTCFullYear()
   const m = String(d.getUTCMonth() + 1).padStart(2, '0')
   const day = String(d.getUTCDate()).padStart(2, '0')
@@ -636,7 +640,7 @@ export function serverTick() {
   m.serverTickCounter = (m.serverTickCounter || 0) + 1
   m.serverNowMs = t
 
-  // Clear the "Daily UTC" bucket at UTC midnight even with no matches, so clients
+  // Clear the daily bucket at the 09:00 UTC rollover even with no matches, so clients
   // never see yesterday's wins labelled as today's. Gated on the initial load so a
   // first-frame rollover can't persist an empty bucket over real stored data.
   if (lbLoaded && rolloverDailyIfNeeded()) {

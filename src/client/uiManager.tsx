@@ -1495,7 +1495,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbScope)
               onMouseDown={() => { lbScope = 'all' }}
             />
             <Button
-              value="Daily UTC"
+              value="Daily"
               fontSize={lbFilterFs}
               color={lbScope === 'day' ? lbFilterActiveTextColor : lbFilterIdleTextColor}
               uiTransform={{ width: lbFilterBtnW, height: lbFilterBtnH }}
@@ -1587,12 +1587,21 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbScope)
             </UiEntity>
           )}
           <Label
-            value="*Only Player vs Player matches count."
+            value="*Only Player vs Player matches count"
             fontSize={Math.round(fs(14) * (isMobile() ? 1.5 : 1.2))}
             color={Color4.create(0.7, 0.75, 0.85, 1)}
             textAlign="middle-center"
             uiTransform={{ margin: { top: 10 } }}
           />
+          {lbScope === 'day' && (
+            <Label
+              value="*Daily reset at 9AM UTC"
+              fontSize={Math.round(fs(14) * (isMobile() ? 1.5 : 1.2))}
+              color={Color4.create(0.7, 0.75, 0.85, 1)}
+              textAlign="middle-center"
+              uiTransform={{ margin: { top: 4 } }}
+            />
+          )}
           </UiEntity>
         </UiEntity>
       </UiEntity>
