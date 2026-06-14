@@ -1513,35 +1513,6 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbScope)
           ) : (
             <UiEntity uiTransform={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
               {/* Header row — mismas columnas que las filas de jugadores */}
-              <UiEntity
-                uiTransform={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  height: lbRowH,
-                  margin: { bottom: 2 }
-                }}
-              >
-                <UiEntity
-                  uiTransform={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
-                >
-                  <UiEntity uiTransform={{ width: lbRankW, height: lbRowH, margin: { right: lbColGap } }} />
-                  <UiEntity uiTransform={{ width: lbFaceSz, height: lbRowH, margin: { right: lbColGap } }} />
-                  <UiEntity uiTransform={{ width: lbFlagColW, height: lbRowH, margin: { right: lbColGap } }} />
-                  <UiEntity uiTransform={{ width: lbNameW, height: lbRowH }} />
-                </UiEntity>
-                <UiEntity uiTransform={{ width: lbWinsW, height: lbRowH }}>
-                  <Label
-                    value="wins"
-                    fontSize={fs(20)}
-                    color={lbWinsTextColor}
-                    textAlign="middle-center"
-                    uiTransform={{ width: '100%', height: lbRowH }}
-                  />
-                </UiEntity>
-              </UiEntity>
             {lbRows.map((row) => {
               const face = getLeaderboardFaceUrl(row.addr)
               return (
@@ -1586,13 +1557,15 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbScope)
             })}
             </UiEntity>
           )}
-          <Label
-            value="*Only Player vs Player matches count"
-            fontSize={Math.round(fs(14) * (isMobile() ? 1.5 : 1.2))}
-            color={Color4.create(0.7, 0.75, 0.85, 1)}
-            textAlign="middle-center"
-            uiTransform={{ margin: { top: 10 } }}
-          />
+          {lbScope !== 'day' && (
+            <Label
+              value="*Only Player vs Player matches count"
+              fontSize={Math.round(fs(14) * (isMobile() ? 1.5 : 1.2))}
+              color={Color4.create(0.7, 0.75, 0.85, 1)}
+              textAlign="middle-center"
+              uiTransform={{ margin: { top: 10 } }}
+            />
+          )}
           {lbScope === 'day' && (
             <Label
               value="*Daily reset at 9AM UTC"
