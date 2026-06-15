@@ -1,14 +1,17 @@
-/** Which win tally to rank by: cumulative ('all') or current UTC day ('day'). */
-export type LeaderboardScope = 'all' | 'day'
+/** Which match type to rank by. */
+export type LeaderboardMode = 'pvp' | 'pve'
+/** Which win tally to rank by: cumulative ('all') or current daily bucket ('day'). */
+export type LeaderboardPeriod = 'all' | 'day'
 
 export type ParsedLeaderboard = {
-  wins: Record<string, number>
+  pvpWins: Record<string, number>
+  pvpDayWins: Record<string, number>
+  pveWins: Record<string, number>
+  pveDayWins: Record<string, number>
   names: Record<string, string>
   countries: Record<string, string>
-  /** UTC day (YYYY-MM-DD) the `dayWins` bucket belongs to; '' if unset. */
+  /** Day key (YYYY-MM-DD, 09:00 UTC boundary) the `*DayWins` buckets belong to; '' if unset. */
   dayKey: string
-  /** Wins within the current UTC day only. */
-  dayWins: Record<string, number>
 }
 
 /** One row for UI (rank 1-based, wallet key = `addr`). */
@@ -22,27 +25,40 @@ export type LeaderboardRow = {
 
 export function parseLeaderboardJson(json: string): ParsedLeaderboard {
   try {
-    const o = JSON.parse(json) as Partial<ParsedLeaderboard>
+    const o = JSON.parse(json) as Record<string, unknown>
+    const rec = (v: unknown): Record<string, number> =>
+      v && typeof v === 'object' ? (v as Record<string, number>) : {}
+    const recS = (v: unknown): Record<string, string> =>
+      v && typeof v === 'object' ? (v as Record<string, string>) : {}
     return {
-      wins: o.wins || {},
-      names: o.names || {},
-      countries: o.countries || {},
-      dayKey: o.dayKey || '',
-      dayWins: o.dayWins || {}
+      // Fall back to the legacy `wins`/`dayWins` keys (pre-PvE leaderboard).
+      pvpWins: rec(o.pvpWins ?? o.wins),
+      pvpDayWins: rec(o.pvpDayWins ?? o.dayWins),
+      pveWins: rec(o.pveWins),
+      pveDayWins: rec(o.pveDayWins),
+      names: recS(o.names),
+      countries: recS(o.countries),
+      dayKey: typeof o.dayKey === 'string' ? o.dayKey : ''
     }
   } catch {
-    return { wins: {}, names: {}, countries: {}, dayKey: '', dayWins: {} }
+    return { pvpWins: {}, pvpDayWins: {}, pveWins: {}, pveDayWins: {}, names: {}, countries: {}, dayKey: '' }
   }
+}
+
+function bucketFor(p: ParsedLeaderboard, mode: LeaderboardMode, period: LeaderboardPeriod): Record<string, number> {
+  if (mode === 'pve') return period === 'day' ? p.pveDayWins : p.pveWins
+  return period === 'day' ? p.pvpDayWins : p.pvpWins
 }
 
 export function getLeaderboardRows(
   json: string,
   maxLines: number,
-  scope: LeaderboardScope = 'all'
+  mode: LeaderboardMode = 'pvp',
+  period: LeaderboardPeriod = 'all'
 ): LeaderboardRow[] {
   const parsed = parseLeaderboardJson(json)
   const { names, countries } = parsed
-  const wins = scope === 'day' ? parsed.dayWins : parsed.wins
+  const wins = bucketFor(parsed, mode, period)
   const sorted = Object.keys(wins).sort((a, b) => {
     const wDiff = (wins[b] || 0) - (wins[a] || 0)
     if (wDiff !== 0) return wDiff

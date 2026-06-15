@@ -28,13 +28,18 @@ import { parseDir, randomDir, regulationEarlyWinner, suddenDeathWinner } from '.
 const LB_KEY = 'gla_leaderboard_v1'
 
 type LeaderboardFile = {
+  /** PvP all-time wins (legacy key name kept for backward compat). */
   wins: Record<string, number>
   names?: Record<string, string>
   countries?: Record<string, string>
-  /** UTC day (YYYY-MM-DD) the `dayWins` bucket belongs to; '' if never set. */
+  /** Day key (YYYY-MM-DD, 09:00 UTC boundary) the `*dayWins` buckets belong to; '' if never set. */
   dayKey?: string
-  /** Wins counted only within the current UTC day. */
+  /** PvP wins within the current daily bucket (legacy key name). */
   dayWins?: Record<string, number>
+  /** PvE all-time wins. */
+  pveWins?: Record<string, number>
+  /** PvE wins within the current daily bucket. */
+  pveDayWins?: Record<string, number>
 }
 
 let stateEntity: Entity = 0 as Entity
@@ -42,9 +47,12 @@ let stateEntity: Entity = 0 as Entity
 let lbWins: Record<string, number> = {}
 let lbDisplayNames: Record<string, string> = {}
 let lbCountries: Record<string, string> = {}
-/** "Daily UTC" bucket: wins for the current UTC calendar day only. */
+/** PvP daily bucket: wins for the current daily window only. */
 let lbDayWins: Record<string, number> = {}
 let lbDayKey = ''
+/** PvE buckets (all-time + current daily window). */
+let lbPveWins: Record<string, number> = {}
+let lbPveDayWins: Record<string, number> = {}
 /** True once the initial Storage load finished; gates tick writes to avoid a startup race. */
 let lbLoaded = false
 
@@ -75,6 +83,7 @@ function rolloverDailyIfNeeded(): boolean {
   if (lbDayKey === key) return false
   lbDayKey = key
   lbDayWins = {}
+  lbPveDayWins = {}
   return true
 }
 
@@ -87,14 +96,42 @@ function bumpEpoch() {
   m.stateEpoch = (m.stateEpoch || 0) + 1
 }
 
+/** Only the top N entries of a wins bucket are synced to clients (the rest never display).
+ *  Keeps the synced payload bounded regardless of how many total players exist. */
+const LEADERBOARD_SYNC_TOP_N = 10
+
+function topNWins(bucket: Record<string, number>): Record<string, number> {
+  const out: Record<string, number> = {}
+  Object.keys(bucket)
+    .sort((a, b) => (bucket[b] || 0) - (bucket[a] || 0))
+    .slice(0, LEADERBOARD_SYNC_TOP_N)
+    .forEach((addr) => { out[addr] = bucket[addr] })
+  return out
+}
+
 function packLeaderboardJson(): string {
-  return JSON.stringify({
-    wins: lbWins,
-    names: lbDisplayNames,
-    countries: lbCountries,
-    dayKey: lbDayKey,
-    dayWins: lbDayWins
-  })
+  const pvpWins = topNWins(lbWins)
+  const pvpDayWins = topNWins(lbDayWins)
+  const pveWins = topNWins(lbPveWins)
+  const pveDayWins = topNWins(lbPveDayWins)
+
+  // Ship names/countries only for the addresses that actually appear in a top-N bucket, so the
+  // payload stays bounded (otherwise these maps would still grow with total player count).
+  const shown = new Set<string>([
+    ...Object.keys(pvpWins),
+    ...Object.keys(pvpDayWins),
+    ...Object.keys(pveWins),
+    ...Object.keys(pveDayWins)
+  ])
+  const names: Record<string, string> = {}
+  const countries: Record<string, string> = {}
+  for (const addr of shown) {
+    if (lbDisplayNames[addr]) names[addr] = lbDisplayNames[addr]
+    const c = lbCountries[addr] || lbCountries[addr.toLowerCase()]
+    if (c) countries[addr] = c
+  }
+
+  return JSON.stringify({ pvpWins, pvpDayWins, pveWins, pveDayWins, names, countries, dayKey: lbDayKey })
 }
 
 function syncLbToState() {
@@ -115,12 +152,16 @@ export async function loadPersistentLeaderboard() {
         lbCountries = j.countries || {}
         lbDayKey = j.dayKey || ''
         lbDayWins = j.dayWins || {}
+        lbPveWins = j.pveWins || {}
+        lbPveDayWins = j.pveDayWins || {}
       } catch {
         lbWins = {}
         lbDisplayNames = {}
         lbCountries = {}
         lbDayKey = ''
         lbDayWins = {}
+        lbPveWins = {}
+        lbPveDayWins = {}
       }
     } else if (typeof raw === 'object' && raw.wins) {
       lbWins = raw.wins || {}
@@ -128,6 +169,8 @@ export async function loadPersistentLeaderboard() {
       lbCountries = raw.countries || {}
       lbDayKey = raw.dayKey || ''
       lbDayWins = raw.dayWins || {}
+      lbPveWins = raw.pveWins || {}
+      lbPveDayWins = raw.pveDayWins || {}
     }
   } catch (e) {
     console.log('[Server] leaderboard load failed', e)
@@ -145,7 +188,9 @@ async function persistWins() {
       names: lbDisplayNames,
       countries: lbCountries,
       dayKey: lbDayKey,
-      dayWins: lbDayWins
+      dayWins: lbDayWins,
+      pveWins: lbPveWins,
+      pveDayWins: lbPveDayWins
     })
   } catch (e) {
     console.log('[Server] leaderboard save failed', e)
@@ -438,6 +483,17 @@ function finishMatch(side: 'red' | 'blue') {
       rolloverDailyIfNeeded()
       lbWins[winAddr] = (lbWins[winAddr] || 0) + 1
       lbDayWins[winAddr] = (lbDayWins[winAddr] || 0) + 1
+      lbDisplayNames[winAddr] = (winName && winName.trim()) || displayNameFor(winAddr)
+      const winCountry = (side === 'red' ? m.redCountry : m.blueCountry) || ''
+      if (winCountry) lbCountries[winAddr.toLowerCase()] = winCountry
+      void persistWins()
+    }
+  } else if (m.mode === 'pve') {
+    // Only the human's win counts (the GL-Bot slot has no address → winAddr is empty).
+    if (winAddr) {
+      rolloverDailyIfNeeded()
+      lbPveWins[winAddr] = (lbPveWins[winAddr] || 0) + 1
+      lbPveDayWins[winAddr] = (lbPveDayWins[winAddr] || 0) + 1
       lbDisplayNames[winAddr] = (winName && winName.trim()) || displayNameFor(winAddr)
       const winCountry = (side === 'red' ? m.redCountry : m.blueCountry) || ''
       if (winCountry) lbCountries[winAddr.toLowerCase()] = winCountry

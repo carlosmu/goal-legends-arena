@@ -4,7 +4,7 @@ import { Color4 } from '@dcl/sdk/math'
 import { isStateSyncronized } from '@dcl/sdk/network'
 import { getPlayer } from '@dcl/sdk/src/players'
 import { readPenaltySnapshot, clientSnapshot, penaltyStateEntityReady } from './gameStore'
-import { getLeaderboardRows, type LeaderboardScope } from './leaderboardManager'
+import { getLeaderboardRows, type LeaderboardMode, type LeaderboardPeriod } from './leaderboardManager'
 import { getLeaderboardFaceUrl, prefetchLeaderboardFaces } from './leaderboardProfileCache'
 import { room } from '../shared/messages'
 import { GameState } from '../shared/gameState'
@@ -301,19 +301,22 @@ const PICK_SELECTED_BADGE_COORD = 'H8'
 
 let lbShowUntilMs = 0
 const LEADERBOARD_TOP_N = 10
-/** Active leaderboard filter: cumulative ('all') vs current UTC day ('day'). */
-let lbScope: LeaderboardScope = 'all'
+/** Active leaderboard tab: match type (PvP/PvE) × period (all-time / daily). */
+let lbMode: LeaderboardMode = 'pvp'
+let lbPeriod: LeaderboardPeriod = 'all'
 const LEADERBOARD_UI_MS = 30_000
 /** Earliest time the "face the winner" / "keep playing" prompts may show. */
 let promptsShowAfterMs = 0
 
 export function openLeaderboard(): void {
   lbShowUntilMs = Date.now() + LEADERBOARD_UI_MS
-  // Prefetch faces for both filters so switching to "Daily UTC" shows them instantly.
+  // Prefetch faces for all 4 tabs so switching between them shows them instantly.
   const lj = readPenaltySnapshot().leaderboardJson
   prefetchLeaderboardFaces([
-    ...getLeaderboardRows(lj, LEADERBOARD_TOP_N, 'all').map((r) => r.addr),
-    ...getLeaderboardRows(lj, LEADERBOARD_TOP_N, 'day').map((r) => r.addr)
+    ...getLeaderboardRows(lj, LEADERBOARD_TOP_N, 'pvp', 'all').map((r) => r.addr),
+    ...getLeaderboardRows(lj, LEADERBOARD_TOP_N, 'pvp', 'day').map((r) => r.addr),
+    ...getLeaderboardRows(lj, LEADERBOARD_TOP_N, 'pve', 'all').map((r) => r.addr),
+    ...getLeaderboardRows(lj, LEADERBOARD_TOP_N, 'pve', 'day').map((r) => r.addr)
   ])
 }
 
@@ -417,7 +420,7 @@ const RootUi = () => {
   }
   const serverApproxNow = Date.now() + (serverClockOffset ?? 0)
 
-const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbScope)
+const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbMode, lbPeriod)
 
   if (prevPhase !== GameState.MatchEnd && s.phase === GameState.MatchEnd) {
     // Block the spot prompts while the winner banner + match-end leaderboard show.
@@ -920,9 +923,10 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbScope)
   const lbTitleWidth = Math.floor(lbContentWidthPx * 0.6)
   // Alto derivado del aspect real del sprite para no estirarlo.
   const lbTitleHeight = Math.floor(lbTitleWidth / leaderboardTitleAspect())
-  // "All-time" / "Daily UTC" filter pills (text buttons, solid color — no atlas sprite).
+  // Leaderboard tab pills (PvP/PvE × All-Time/Daily; text buttons, solid color — no atlas sprite).
   const lbFilterBtnW = vw(8)
-  const lbFilterBtnH = vw(2.4)
+  const lbFilterBtnH = vw(1.92)
+  const lbFilterRadius = vw(0.6)
   const lbFilterFs = fs(18)
   const lbFilterActiveBg = { color: Color4.create(1, 0.9, 0.3, 0.9) }
   const lbFilterIdleBg = { color: Color4.create(1, 1, 1, 0.08) }
@@ -1346,7 +1350,7 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbScope)
       )}
       {/* ========== fin LEAVE MATCH CONFIRM ========== */}
 
-      {/* ========== UI: LEADERBOARD (centrado en pantalla) ========== */}
+      {/* ========== UI: LEADERBOARD (top-aligned con margin-top 10vh) ========== */}
       {splashDismissed && showLeaderboard && <UiEntity
         uiTransform={{
           positionType: 'absolute',
@@ -1356,7 +1360,8 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbScope)
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
+          padding: { top: '10vh' },
           zIndex: 2000,
           pointerFilter: 'none'
         }}
@@ -1476,36 +1481,71 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbScope)
               uiBackground={leaderboardTitleBackground()}
             />
           </UiEntity>
-          {/* Filtro All-time / Daily UTC */}
+          {/* Pestañas: PvP/PvE × All-Time/Daily — todos en la misma fila */}
           <UiEntity
             uiTransform={{
               width: '100%',
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'center',
-              margin: { top: 28, bottom: 6 }
+              margin: { top: 36, bottom: 16 }
             }}
           >
             <Button
-              value="All-time"
+              value="PvP"
               fontSize={lbFilterFs}
-              color={lbScope === 'all' ? lbFilterActiveTextColor : lbFilterIdleTextColor}
-              uiTransform={{ width: lbFilterBtnW, height: lbFilterBtnH, margin: { right: 8 } }}
-              uiBackground={lbScope === 'all' ? lbFilterActiveBg : lbFilterIdleBg}
-              onMouseDown={() => { lbScope = 'all' }}
+              color={lbMode === 'pvp' && lbPeriod === 'all' ? lbFilterActiveTextColor : lbFilterIdleTextColor}
+              uiTransform={{
+                width: lbFilterBtnW,
+                height: lbFilterBtnH,
+                margin: { right: 1 },
+                borderRadius: { topLeft: lbFilterRadius, bottomLeft: lbFilterRadius }
+              }}
+              uiBackground={lbMode === 'pvp' && lbPeriod === 'all' ? lbFilterActiveBg : lbFilterIdleBg}
+              onMouseDown={() => { lbMode = 'pvp'; lbPeriod = 'all' }}
             />
             <Button
               value="Daily"
               fontSize={lbFilterFs}
-              color={lbScope === 'day' ? lbFilterActiveTextColor : lbFilterIdleTextColor}
-              uiTransform={{ width: lbFilterBtnW, height: lbFilterBtnH }}
-              uiBackground={lbScope === 'day' ? lbFilterActiveBg : lbFilterIdleBg}
-              onMouseDown={() => { lbScope = 'day' }}
+              color={lbMode === 'pvp' && lbPeriod === 'day' ? lbFilterActiveTextColor : lbFilterIdleTextColor}
+              uiTransform={{
+                width: lbFilterBtnW,
+                height: lbFilterBtnH,
+                margin: { right: 28 },
+                borderRadius: { topRight: lbFilterRadius, bottomRight: lbFilterRadius }
+              }}
+              uiBackground={lbMode === 'pvp' && lbPeriod === 'day' ? lbFilterActiveBg : lbFilterIdleBg}
+              onMouseDown={() => { lbMode = 'pvp'; lbPeriod = 'day' }}
+            />
+            <Button
+              value="PvE"
+              fontSize={lbFilterFs}
+              color={lbMode === 'pve' && lbPeriod === 'all' ? lbFilterActiveTextColor : lbFilterIdleTextColor}
+              uiTransform={{
+                width: lbFilterBtnW,
+                height: lbFilterBtnH,
+                margin: { right: 1 },
+                borderRadius: { topLeft: lbFilterRadius, bottomLeft: lbFilterRadius }
+              }}
+              uiBackground={lbMode === 'pve' && lbPeriod === 'all' ? lbFilterActiveBg : lbFilterIdleBg}
+              onMouseDown={() => { lbMode = 'pve'; lbPeriod = 'all' }}
+            />
+            <Button
+              value="Daily"
+              fontSize={lbFilterFs}
+              color={lbMode === 'pve' && lbPeriod === 'day' ? lbFilterActiveTextColor : lbFilterIdleTextColor}
+              uiTransform={{
+                width: lbFilterBtnW,
+                height: lbFilterBtnH,
+                borderRadius: { topRight: lbFilterRadius, bottomRight: lbFilterRadius }
+              }}
+              uiBackground={lbMode === 'pve' && lbPeriod === 'day' ? lbFilterActiveBg : lbFilterIdleBg}
+              onMouseDown={() => { lbMode = 'pve'; lbPeriod = 'day' }}
             />
           </UiEntity>
           {lbRows.length === 0 ? (
             <Label
-              value={lbScope === 'day' ? '(no wins today)' : '(no wins yet)'}
+              value={lbPeriod === 'day' ? '(no wins today)' : '(no wins yet)'}
               fontSize={fs(20)}
               color={Color4.create(0.9, 0.95, 1, 1)}
               uiTransform={{ margin: { top: 6 } }}
@@ -1557,22 +1597,31 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbScope)
             })}
             </UiEntity>
           )}
-          {lbScope !== 'day' && (
+          {lbPeriod === 'day' && (
             <Label
-              value="*Only Player vs Player matches count"
+              value="*Daily reset at 9AM UTC"
               fontSize={Math.round(fs(14) * (isMobile() ? 1.5 : 1.2))}
               color={Color4.create(0.7, 0.75, 0.85, 1)}
               textAlign="middle-center"
               uiTransform={{ margin: { top: 10 } }}
             />
           )}
-          {lbScope === 'day' && (
+          {lbPeriod === 'all' && lbMode === 'pvp' && (
             <Label
-              value="*Daily reset at 9AM UTC"
+              value="* Player vs Player All-Time"
               fontSize={Math.round(fs(14) * (isMobile() ? 1.5 : 1.2))}
               color={Color4.create(0.7, 0.75, 0.85, 1)}
               textAlign="middle-center"
-              uiTransform={{ margin: { top: 4 } }}
+              uiTransform={{ margin: { top: 10 } }}
+            />
+          )}
+          {lbPeriod === 'all' && lbMode === 'pve' && (
+            <Label
+              value="* Player vs Engine All-Time"
+              fontSize={Math.round(fs(14) * (isMobile() ? 1.5 : 1.2))}
+              color={Color4.create(0.7, 0.75, 0.85, 1)}
+              textAlign="middle-center"
+              uiTransform={{ margin: { top: 10 } }}
             />
           )}
           </UiEntity>
