@@ -4,6 +4,10 @@ export const UI_ATLAS_SRC = 'assets/images/UI_atlas.png'
 const UI_ATLAS_COLS = 8
 const UI_ATLAS_ROWS = 16
 
+export const UI_ATLAS_2_SRC = 'assets/images/UI_atlas_2.png'
+const UI_ATLAS_2_COLS = 8
+const UI_ATLAS_2_ROWS = 8
+
 /**
  * UI_atlas.png se referencia como un grid de 8 columnas (A–H) × 16 filas (1–16).
  * Conversión desde el viejo grid de 8 filas: una celda vieja de fila R ocupa las filas
@@ -16,6 +20,15 @@ export const LOGO_COORD_TO = 'D6'
 
 function parseAtlasCell(coordinates: string): { col: number; row: number } | null {
   const m = /^([A-H])(1[0-6]|[1-9])$/i.exec(coordinates.trim())
+  if (!m) return null
+  return {
+    col: m[1].toUpperCase().charCodeAt(0) - 65,
+    row: parseInt(m[2], 10) - 1
+  }
+}
+
+function parseAtlasCell2(coordinates: string): { col: number; row: number } | null {
+  const m = /^([A-H])([1-8])$/i.exec(coordinates.trim())
   if (!m) return null
   return {
     col: m[1].toUpperCase().charCodeAt(0) - 65,
@@ -37,6 +50,37 @@ export function uiAtlasRangeToUvs(from: string, to: string): number[] {
   const v0 = (UI_ATLAS_ROWS - row1 - 1) / UI_ATLAS_ROWS
   const v1 = (UI_ATLAS_ROWS - row0) / UI_ATLAS_ROWS
   return [u0, v0, u0, v1, u1, v1, u1, v0]
+}
+
+export function uiAtlas2RangeToUvs(from: string, to: string): number[] {
+  const a = parseAtlasCell2(from)
+  const b = parseAtlasCell2(to)
+  if (!a || !b) return [0, 0, 0, 1, 1, 1, 1, 0]
+  const col0 = Math.min(a.col, b.col)
+  const col1 = Math.max(a.col, b.col)
+  const row0 = Math.min(a.row, b.row)
+  const row1 = Math.max(a.row, b.row)
+  const u0 = col0 / UI_ATLAS_2_COLS
+  const u1 = (col1 + 1) / UI_ATLAS_2_COLS
+  const v0 = (UI_ATLAS_2_ROWS - row1 - 1) / UI_ATLAS_2_ROWS
+  const v1 = (UI_ATLAS_2_ROWS - row0) / UI_ATLAS_2_ROWS
+  return [u0, v0, u0, v1, u1, v1, u1, v0]
+}
+
+export function uiAtlas2RangeBackground(from: string, to: string) {
+  return {
+    textureMode: 'stretch' as const,
+    texture: { src: UI_ATLAS_2_SRC },
+    uvs: uiAtlas2RangeToUvs(from, to),
+    color: Color4.White()
+  }
+}
+
+export function uiAtlas2RangeAspect(from: string, to: string): number {
+  const uvs = uiAtlas2RangeToUvs(from, to)
+  const uW = uvs[4] - uvs[0]
+  const vH = uvs[5] - uvs[1]
+  return vH === 0 ? 1 : uW / vH
 }
 
 export function uiAtlasRangeBackground(from: string, to: string) {
@@ -74,28 +118,28 @@ export function welcomeChooseSpotOverlayAspect(): number {
 }
 
 export function pickDirectionLeftBackground() {
-  return uiAtlasRangeBackground('E1', 'E2')
+  return uiAtlas2RangeBackground('C7', 'D8')
 }
 
 export function pickDirectionCenterBackground() {
-  return uiAtlasRangeBackground('F1', 'F2')
+  return uiAtlas2RangeBackground('E7', 'F8')
 }
 
 export function pickDirectionRightBackground() {
-  return uiAtlasRangeBackground('G1', 'G2')
+  return uiAtlas2RangeBackground('G7', 'H8')
 }
 
 /** Selected-state sprites for the L/C/R buttons (E1–E2/F1–F2/G1–G2 → E7–E8/F7–F8/G7–G8). */
 export function pickDirectionLeftSelectedBackground() {
-  return uiAtlasRangeBackground('E7', 'E8')
+  return uiAtlas2RangeBackground('C5', 'D6')
 }
 
 export function pickDirectionCenterSelectedBackground() {
-  return uiAtlasRangeBackground('F7', 'F8')
+  return uiAtlas2RangeBackground('E5', 'F6')
 }
 
 export function pickDirectionRightSelectedBackground() {
-  return uiAtlasRangeBackground('G7', 'G8')
+  return uiAtlas2RangeBackground('G5', 'H6')
 }
 
 /** Pick title — DIVE on UI_atlas E11–H11, SHOOT on E12–H12. */
