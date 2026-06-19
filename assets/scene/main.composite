@@ -3046,7 +3046,7 @@
         "serializationType": "map"
       },
       "data": {
-        "526": {
+        "1": {
           "json": {
             "gizmo": 0
           }
@@ -5252,6 +5252,10 @@
             "email": "carlos.damian.munoz@gmail.com",
             "tags": [],
             "layout": {
+              "base": {
+                "x": 0,
+                "y": 0
+              },
               "parcels": [
                 {
                   "x": 0,
@@ -5277,51 +5281,35 @@
                   "x": 1,
                   "y": 0
                 }
-              ],
-              "base": {
-                "x": 0,
-                "y": 0
-              }
+              ]
             },
-            "silenceVoiceChat": false,
-            "disablePortableExperiences": false,
             "spawnPoints": [
               {
                 "name": "SpawnArea1",
                 "default": true,
                 "position": {
                   "x": {
-                    "$case": "range",
-                    "value": [
-                      14.75,
-                      17.75
-                    ]
+                    "$case": "single",
+                    "value": 16.25
                   },
                   "y": {
-                    "$case": "range",
-                    "value": [
-                      1.2899999618530273,
-                      1.2899999618530273
-                    ]
+                    "$case": "single",
+                    "value": 1.2899999618530273
                   },
                   "z": {
-                    "$case": "range",
-                    "value": [
-                      36.75,
-                      39.75
-                    ]
+                    "$case": "single",
+                    "value": 38.25
                   }
                 },
                 "cameraTarget": {
-                  "x": 16,
-                  "y": 5,
-                  "z": 28
+                  "x": 16.329999923706055,
+                  "y": 1.25,
+                  "z": 28.3799991607666
                 }
               }
             ],
             "skyboxConfig": {},
-            "creator": "0x4B538E1E044922aec2F428EC7E17A99f44205fF9",
-            "disableNearbyVoiceChat": false
+            "creator": "0x4B538E1E044922aec2F428EC7E17A99f44205fF9"
           }
         }
       }
