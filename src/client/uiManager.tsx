@@ -2752,6 +2752,12 @@ const lbRows = getLeaderboardRows(s.leaderboardJson, LEADERBOARD_TOP_N, lbMode, 
                 uiTransform={{ margin: { top: 4 } }}
               />
               <Label
+                value={`deploy_date: 20260724`}
+                fontSize={fs(14)}
+                color={Color4.create(0.6, 0.8, 1, 1)}
+                uiTransform={{ margin: { top: 4 } }}
+              />
+              <Label
                 value={`last server event: ${resolveEventAddrs(s.lastServerEvent, s.redAddr, s.redName, s.blueAddr, s.blueName) || '(none)'}`}
                 fontSize={fs(14)}
                 color={Color4.create(1, 0.9, 0.6, 1)}
