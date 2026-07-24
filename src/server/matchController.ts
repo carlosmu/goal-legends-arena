@@ -5,6 +5,7 @@ import { Vector3 } from '@dcl/sdk/math'
 import { GameState, type MatchMode, aimLabel } from '../shared/gameState'
 import { PenaltyMatchState } from '../shared/schemas'
 import { room } from '../shared/messages'
+import { DiscordWebhooks } from '../webhooks/discord-webhooks'
 import {
   AIM_COLLIDERS,
   BAN_COOLDOWN_MS,
@@ -793,6 +794,26 @@ export function serverTick() {
 export function refreshPlayerCount() {
   const m = mut()
   m.playersInScene = Array.from(engine.getEntitiesWith(PlayerIdentityData)).length
+  checkPlayerJoins()
+}
+
+// Addresses currently present in-scene, as of the last tick. Diffed each tick so a
+// rejoin after leaving fires a new webhook instead of being suppressed forever.
+const knownPlayerAddrs = new Set<string>()
+
+function checkPlayerJoins() {
+  const present = new Set<string>()
+  for (const [entity, id, base] of engine.getEntitiesWith(PlayerIdentityData, AvatarBase)) {
+    if (!id.address) continue
+    const a = id.address.toLowerCase()
+    present.add(a)
+    if (!knownPlayerAddrs.has(a)) {
+      const position = Transform.getOrNull(entity)?.position
+      DiscordWebhooks.newPlayer(base.name || shortAddr(id.address), id.address, position)
+    }
+  }
+  knownPlayerAddrs.clear()
+  for (const a of present) knownPlayerAddrs.add(a)
 }
 
 export function registerServerMessages() {
