@@ -803,13 +803,12 @@ const knownPlayerAddrs = new Set<string>()
 
 function checkPlayerJoins() {
   const present = new Set<string>()
-  for (const [entity, id, base] of engine.getEntitiesWith(PlayerIdentityData, AvatarBase)) {
+  for (const [, id, base] of engine.getEntitiesWith(PlayerIdentityData, AvatarBase)) {
     if (!id.address) continue
     const a = id.address.toLowerCase()
     present.add(a)
     if (!knownPlayerAddrs.has(a)) {
-      const position = Transform.getOrNull(entity)?.position
-      DiscordWebhooks.newPlayer(base.name || shortAddr(id.address), id.address, position)
+      DiscordWebhooks.newPlayer(base.name || shortAddr(id.address), id.address)
     }
   }
   knownPlayerAddrs.clear()

@@ -1,4 +1,3 @@
-import { Vector3 } from "@dcl/sdk/math"
 import { isServer } from "@dcl/sdk/network"
 import { EnvVar } from "@dcl/sdk/server"
 
@@ -10,39 +9,23 @@ export namespace DiscordWebhooks {
 	let discordWebhookUrlPromise: Promise<string | null> | null = null
 
 	// MARK: buildMessage
-	const buildMessage = (title: string, description: string) => {
+	const buildMessage = (description: string) => {
 		return { embeds: [
 			{
-				title      : title,
 				description: description,
-				color      : 16776960,
-				thumbnail  : {
-					url: "https://cdn.discordapp.com/emojis/1474816925954609164.webp?size=128&animated=true"
-				}
+				color      : 16776960
 			}
 		] }
 	}
 
 	// MARK: newPlayer
 	export const newPlayer = (
-		username: string, 
-		userId  : string,
-		position?: Vector3
+		username: string,
+		userId  : string
 	) => {
-		const title     = `Goal Legends Arena :balloon: ${username} has joined the game!`
-		let description = `UserID: ${userId}`
+		const description = `**${username}**\nhas joined to Goal Legends Arena\nWallet: ${userId}`
 
-		if (position) {
-			// Round off the position to 2 decimal places
-			const roundedPosition = Vector3.create(
-				Math.round(position.x * 100) / 100,
-				Math.round(position.y * 100) / 100,
-				Math.round(position.z * 100) / 100
-			)
-			description += `\nPosition: ${roundedPosition.x}, ${roundedPosition.y}, ${roundedPosition.z}`
-		}
-
-		const body = buildMessage(title, description)
+		const body = buildMessage(description)
 
 		void sendDiscordMessage(body)
 	}
