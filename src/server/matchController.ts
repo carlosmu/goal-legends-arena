@@ -6,6 +6,7 @@ import { GameState, type MatchMode, aimLabel } from '../shared/gameState'
 import { PenaltyMatchState } from '../shared/schemas'
 import { room } from '../shared/messages'
 import { DiscordWebhooks } from '../webhooks/discord-webhooks'
+import { isBlockedPlayer } from '../webhooks/blocklist'
 import {
   AIM_COLLIDERS,
   BAN_COOLDOWN_MS,
@@ -807,7 +808,7 @@ function checkPlayerJoins() {
     if (!id.address) continue
     const a = id.address.toLowerCase()
     present.add(a)
-    if (!knownPlayerAddrs.has(a)) {
+    if (!knownPlayerAddrs.has(a) && !isBlockedPlayer(a)) {
       DiscordWebhooks.newPlayer(base.name || shortAddr(id.address), id.address)
     }
   }
