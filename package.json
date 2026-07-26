@@ -14,7 +14,7 @@
   "dependencies": {
     "@dcl-sdk/utils": "^1.4.0",
     "@dcl/js-runtime": "7.24.6-29505165911.commit-d270434",
-    "@dcl/sdk": "^7.24.6-29505165911.commit-d270434"
+    "@dcl/sdk": "7.24.6-29505165911.commit-d270434"
   },
   "engines": {
     "node": ">=16.0.0",
